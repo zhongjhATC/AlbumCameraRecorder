@@ -1,26 +1,22 @@
-package com.zhongjh.common.utils;
+package com.zhongjh.common.utils
 
-import android.annotation.SuppressLint;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.os.storage.StorageManager;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.text.TextUtils;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.Objects;
+import android.annotation.SuppressLint
+import android.content.ContentResolver
+import android.content.ContentUris
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.os.storage.StorageManager
+import android.provider.DocumentsContract
+import android.provider.MediaStore
+import android.text.TextUtils
+import android.util.Log
+import com.zhongjh.common.utils.FileInputOutputUtils.writeFileFromInputStream
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
+import java.io.InputStream
 
 /**
  * uri工具类
@@ -28,25 +24,24 @@ import java.util.Objects;
  * @author zhongjh
  * @date 2022/01/05
  */
-public class UriUtils {
+object UriUtils {
+    private val TAG: String = UriUtils::class.java.simpleName
 
-    private static final String TAG = UriUtils.class.getSimpleName();
+    private const val PRIMARY = "primary"
+    private const val IMAGE = "image"
+    private const val VIDEO = "video"
+    private const val AUDIO = "audio"
+    private const val RAW = "raw:"
+    private const val MSF = "msf:"
 
-    private final static String PRIMARY = "primary";
-    private final static String IMAGE = "image";
-    private final static String VIDEO = "video";
-    private final static String AUDIO = "audio";
-    private final static String RAW = "raw:";
-    private final static String MSF = "msf:";
+    private const val URI_AUTHORITY_GOOGLE = "com.google.android.apps.photos.content"
+    private const val URI_AUTHORITY_TENCENT = "com.tencent.mtt.fileprovider"
+    private const val URI_AUTHORITY_HUAWEI = "com.huawei.hidisk.fileprovider"
 
-    private final static String URI_AUTHORITY_GOOGLE = "com.google.android.apps.photos.content";
-    private final static String URI_AUTHORITY_TENCENT = "com.tencent.mtt.fileprovider";
-    private final static String URI_AUTHORITY_HUAWEI = "com.huawei.hidisk.fileprovider";
-
-    private final static String FILES_PATH = "/files_path/";
-    private final static String CACHE_PATH = "/cache_path/";
-    private final static String EXTERNAL_FILES_PATH = "external_files_path";
-    private final static String EXTERNAL_CACHE_PATH = "external_cache_path";
+    private const val FILES_PATH = "/files_path/"
+    private const val CACHE_PATH = "/cache_path/"
+    private const val EXTERNAL_FILES_PATH = "external_files_path"
+    private const val EXTERNAL_CACHE_PATH = "external_cache_path"
 
     /**
      * Uri转换file
@@ -54,15 +49,15 @@ public class UriUtils {
      * @param uri The uri.
      * @return file
      */
-    public static File uriToFile(Context context, final Uri uri) {
+    fun uriToFile(context: Context, uri: Uri?): File? {
         if (uri == null) {
-            return null;
+            return null
         }
-        File file = uriToFileReal(context, uri);
+        val file = uriToFileReal(context, uri)
         if (file != null) {
-            return file;
+            return file
         }
-        return copyUri2Cache(context, uri);
+        return copyUri2Cache(context, uri)
     }
 
     /**
@@ -71,38 +66,39 @@ public class UriUtils {
      * @return file
      */
     @SuppressLint("ObsoleteSdkInt")
-    private static File uriToFileReal(Context context, Uri uri) {
+    private fun uriToFileReal(context: Context?, uri: Uri?): File? {
         if (context == null || uri == null) {
-            Log.d(TAG, " context or uri is null. -> uriToFile");
-            return null;
+            Log.d(TAG, " context or uri is null. -> uriToFile")
+            return null
         }
-        String scheme = uri.getScheme();
-        String path = uri.getPath();
+        val scheme = uri.scheme
+        val path = uri.path
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && path != null) {
             // 处理关键字的uri是否能直接使用file
-            File file = uriToFilePathKeywords(context, uri, path);
+            val file = uriToFilePathKeywords(context, uri, path)
             if (file != null && file.exists()) {
-                Log.d(TAG, uri + " -> " + path);
-                return file;
+                Log.d(TAG, "$uri -> $path")
+                return file
             }
         }
-        if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+        if (ContentResolver.SCHEME_FILE == scheme) {
             // 如果是file形式的uri可以直接转换file
             if (path != null) {
-                return new File(path);
+                return File(path)
             }
-            Log.d(TAG, uri + " parse failed. -> new File");
-            return null;
+            Log.d(TAG, "$uri parse failed. -> new File")
+            return null
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-                && DocumentsContract.isDocumentUri(context, uri)) {
+            && DocumentsContract.isDocumentUri(context, uri)
+        ) {
             // 处理Android 21以上的版本并且是document类型的Uri
-            return uriToFileAndroidKitkat(context, uri);
-        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            return uriToFileAndroidKitkat(context, uri)
+        } else if (ContentResolver.SCHEME_CONTENT == scheme) {
             // Android 19以下直接查询数据库获取文件
-            return getFileFromUri(context, uri, "uriToFile -> getFileFromUri");
+            return getFileFromUri(context, uri, "uriToFile -> getFileFromUri")
         } else {
-            Log.d(TAG, uri + " parse failed. -> uriToFile");
-            return null;
+            Log.d(TAG, "$uri parse failed. -> uriToFile")
+            return null
         }
     }
 
@@ -111,7 +107,8 @@ public class UriUtils {
      * 有些uri.getPath是直接跟真实路径有关,所以直接比较是否有关键字就直接替换成真实路径
      * 如果转换成file，但是file.exists()是不存在的，那么说明转成真实路径该uri是无效的，该方法行不通换其他方法继续转换file
      *
-     * <p>
+     *
+     *
      * 比如该场景产生的uri:
      * 微信打开文件后，然后该文件点击右上角显示菜单栏，然后点击“选择其他应用打开”选项，
      * 选择我们自己开发的app,然后我们app这边获取微信传递过来的uri是如下值:
@@ -124,35 +121,45 @@ public class UriUtils {
      * @param path    path
      * @return file
      */
-    private static File uriToFilePathKeywords(Context context, Uri uri, String path) {
-        String[] externals = new String[]{"/external/", "/external_path/"};
-        File file;
-        for (String external : externals) {
+    private fun uriToFilePathKeywords(context: Context, uri: Uri, path: String): File? {
+        val externals = arrayOf("/external/", "/external_path/")
+        var file: File?
+        for (external in externals) {
             if (path.startsWith(external)) {
-                file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                        + path.replace(external, "/"));
+                file = File(
+                    Environment.getExternalStorageDirectory().absolutePath
+                            + path.replace(external, "/")
+                )
                 if (file.exists()) {
-                    Log.d(TAG, uri.toString() + " -> " + external);
-                    return file;
+                    Log.d(TAG, "$uri -> $external")
+                    return file
                 }
             }
         }
-        file = null;
+        file = null
 
         if (path.startsWith(FILES_PATH)) {
-            file = new File(context.getFilesDir().getAbsolutePath()
-                    + path.replace(FILES_PATH, "/"));
+            file = File(
+                context.filesDir.absolutePath
+                        + path.replace(FILES_PATH, "/")
+            )
         } else if (path.startsWith(CACHE_PATH)) {
-            file = new File(context.getCacheDir().getAbsolutePath()
-                    + path.replace(CACHE_PATH, "/"));
+            file = File(
+                context.cacheDir.absolutePath
+                        + path.replace(CACHE_PATH, "/")
+            )
         } else if (path.startsWith(EXTERNAL_FILES_PATH)) {
-            file = new File(Objects.requireNonNull(context.getExternalFilesDir(null)).getAbsolutePath()
-                    + path.replace(EXTERNAL_FILES_PATH, "/"));
+            file = File(
+                context.getExternalFilesDir(null)?.absolutePath
+                        + path.replace(EXTERNAL_FILES_PATH, "/")
+            )
         } else if (path.startsWith(EXTERNAL_CACHE_PATH)) {
-            file = new File(Objects.requireNonNull(context.getExternalCacheDir()).getAbsolutePath()
-                    + path.replace(EXTERNAL_CACHE_PATH, "/"));
+            file = File(
+                context.externalCacheDir?.absolutePath
+                        + path.replace(EXTERNAL_CACHE_PATH, "/")
+            )
         }
-        return file;
+        return file
     }
 
     /**
@@ -162,18 +169,18 @@ public class UriUtils {
      *
      * @return 文件真实地址
      */
-    private static File uriToFileAndroidKitkat(Context context, Uri uri) {
+    private fun uriToFileAndroidKitkat(context: Context, uri: Uri): File? {
         if (isExternalStorageDocument(uri)) {
-            return uriToFileFromExternalStorageDocument(context, uri);
+            return uriToFileFromExternalStorageDocument(context, uri)
         } else if (isDownloadsDocument(uri)) {
-            return uriToFileFromDownloadsDocument(context, uri);
+            return uriToFileFromDownloadsDocument(context, uri)
         } else if (isMediaDocument(uri)) {
-            return uriToFileFromMediaDocument(context, uri);
-        } else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-            return getFileFromUri(context, uri, "uriToFileAndroidKitkat - content");
+            return uriToFileFromMediaDocument(context, uri)
+        } else if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
+            return getFileFromUri(context, uri, "uriToFileAndroidKitkat - content")
         } else {
-            Log.d(TAG, uri + " parse failed. -> else null");
-            return null;
+            Log.d(TAG, "$uri parse failed. -> else null")
+            return null
         }
     }
 
@@ -184,62 +191,61 @@ public class UriUtils {
      * @param uri     uri，该uri类型是系统文件未经过第三方App修饰
      * @return 文件真实地址
      */
-    private static File uriToFileFromExternalStorageDocument(Context context, Uri uri) {
-        String docId = DocumentsContract.getDocumentId(uri);
-        String[] split = docId.split(":");
-        String type = split[0];
-        if (PRIMARY.equalsIgnoreCase(type)) {
+    private fun uriToFileFromExternalStorageDocument(context: Context, uri: Uri): File? {
+        val docId = DocumentsContract.getDocumentId(uri)
+        val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val type = split[0]
+        if (PRIMARY.equals(type, ignoreCase = true)) {
             // 获取内置sd卡目录
-            return new File(Environment.getExternalStorageDirectory() + "/" + split[1]);
+            return File(Environment.getExternalStorageDirectory().toString() + "/" + split[1])
         } else {
             // 通过反射获取外置sd卡目录 http://stackoverflow.com/questions/28605278/android-5-sd-card-label
-            StorageManager storageManager = (StorageManager) context.getApplicationContext().getSystemService(Context.STORAGE_SERVICE);
+            val storageManager = context.applicationContext.getSystemService(Context.STORAGE_SERVICE) as StorageManager
             try {
-                Class<?> storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
-                Method getVolumeList = storageManager.getClass().getMethod("getVolumeList");
-                Method getUuid = storageVolumeClazz.getMethod("getUuid");
-                Method getState = storageVolumeClazz.getMethod("getState");
-                Method getPath = storageVolumeClazz.getMethod("getPath");
-                Method isPrimary = storageVolumeClazz.getMethod("isPrimary");
-                Method isEmulated = storageVolumeClazz.getMethod("isEmulated");
-                Object result = getVolumeList.invoke(storageManager);
+                val storageVolumeClazz = Class.forName("android.os.storage.StorageVolume")
+                val getVolumeList = storageManager.javaClass.getMethod("getVolumeList")
+                val getUuid = storageVolumeClazz.getMethod("getUuid")
+                val getState = storageVolumeClazz.getMethod("getState")
+                val getPath = storageVolumeClazz.getMethod("getPath")
+                val isPrimary = storageVolumeClazz.getMethod("isPrimary")
+                val isEmulated = storageVolumeClazz.getMethod("isEmulated")
+                val result = getVolumeList.invoke(storageManager)
 
                 if (result != null) {
-                    final int length = Array.getLength(result);
-                    for (int i = 0; i < length; i++) {
-                        Object storageVolumeElement = Array.get(result, i);
+                    val length = java.lang.reflect.Array.getLength(result)
+                    for (i in 0 until length) {
+                        val storageVolumeElement = java.lang.reflect.Array.get(result, i)
 
-                        final boolean mounted = Environment.MEDIA_MOUNTED.equals(getState.invoke(storageVolumeElement))
-                                || Environment.MEDIA_MOUNTED_READ_ONLY.equals(getState.invoke(storageVolumeElement));
+                        val mounted = Environment.MEDIA_MOUNTED == getState.invoke(storageVolumeElement) || Environment.MEDIA_MOUNTED_READ_ONLY == getState.invoke(storageVolumeElement)
 
                         // 判断如果sd卡没有挂载，就不需要获取文件详细信息
                         if (!mounted) {
-                            continue;
+                            continue
                         }
-                        Object isPrimaryB = isPrimary.invoke(storageVolumeElement);
-                        Object isEmulatedB = isEmulated.invoke(storageVolumeElement);
+                        val isPrimaryB = isPrimary.invoke(storageVolumeElement)
+                        val isEmulatedB = isEmulated.invoke(storageVolumeElement)
                         if (isPrimaryB == null || isEmulatedB == null) {
-                            continue;
+                            continue
                         }
                         // 判断sd卡是否主存储卡、是否系统虚拟，否则就不需要获取文件信息
-                        if ((boolean) isPrimaryB && (boolean) isEmulatedB) {
-                            continue;
+                        if (isPrimaryB as Boolean && isEmulatedB as Boolean) {
+                            continue
                         }
 
                         // 获取文件相关信息
-                        String uuid = (String) getUuid.invoke(storageVolumeElement);
+                        val uuid = getUuid.invoke(storageVolumeElement) as String
 
-                        if (uuid != null && uuid.equals(type)) {
-                            return new File(getPath.invoke(storageVolumeElement) + "/" + split[1]);
+                        if (uuid == type) {
+                            return File(getPath.invoke(storageVolumeElement)?.toString() + "/" + split[1])
                         }
                     }
                 }
-            } catch (Exception ex) {
-                Log.d(TAG, uri.toString() + " parse failed. " + ex + " -> uriToFileFromExternalStorageDocument - isExternalStorageDocument");
+            } catch (ex: Exception) {
+                Log.d(TAG, "$uri parse failed. $ex -> uriToFileFromExternalStorageDocument - isExternalStorageDocument")
             }
         }
-        Log.d(TAG, uri.toString() + " parse failed. -> uriToFileFromExternalStorageDocument - isExternalStorageDocument");
-        return null;
+        Log.d(TAG, "$uri parse failed. -> uriToFileFromExternalStorageDocument - isExternalStorageDocument")
+        return null
     }
 
     /**
@@ -249,43 +255,43 @@ public class UriUtils {
      * @param uri     uri，该uri类型处于系统下的下载文件夹里面
      * @return 文件真实地址
      */
-    private static File uriToFileFromDownloadsDocument(Context context, Uri uri) {
-        String id = DocumentsContract.getDocumentId(uri);
+    private fun uriToFileFromDownloadsDocument(context: Context, uri: Uri): File? {
+        var id = DocumentsContract.getDocumentId(uri)
         if (TextUtils.isEmpty(id)) {
-            Log.d(TAG, uri.toString() + " parse failed(id is null). -> uriToFileFromDownloadsDocument - isDownloadsDocument");
-            return null;
+            Log.d(TAG, "$uri parse failed(id is null). -> uriToFileFromDownloadsDocument - isDownloadsDocument")
+            return null
         }
         if (id.startsWith(RAW)) {
-            return new File(id.substring(4));
+            return File(id.substring(4))
         } else if (id.startsWith(MSF)) {
-            id = id.split(":")[1];
+            id = id.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         }
 
-        long availableId;
+        val availableId: Long
         try {
-            availableId = Long.parseLong(id);
-        } catch (Exception e) {
-            return null;
+            availableId = id.toLong()
+        } catch (e: Exception) {
+            return null
         }
 
-        String[] contentUriPrefixesToTry = new String[]{
-                "content://downloads/public_downloads",
-                "content://downloads/all_downloads",
-                "content://downloads/my_downloads"
-        };
+        val contentUriPrefixesToTry = arrayOf(
+            "content://downloads/public_downloads",
+            "content://downloads/all_downloads",
+            "content://downloads/my_downloads"
+        )
 
-        for (String contentUriPrefix : contentUriPrefixesToTry) {
-            Uri contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), availableId);
+        for (contentUriPrefix in contentUriPrefixesToTry) {
+            val contentUri = ContentUris.withAppendedId(Uri.parse(contentUriPrefix), availableId)
             try {
-                File file = getFileFromUri(context, contentUri, "uriToFileFromDownloadsDocument - isDownloadsDocument");
+                val file = getFileFromUri(context, contentUri, "uriToFileFromDownloadsDocument - isDownloadsDocument")
                 if (file != null) {
-                    return file;
+                    return file
                 }
-            } catch (Exception ignore) {
+            } catch (ignore: Exception) {
             }
         }
-        Log.d(TAG, uri.toString() + " parse failed. -> uriToFileFromDownloadsDocument - isDownloadsDocument");
-        return null;
+        Log.d(TAG, "$uri parse failed. -> uriToFileFromDownloadsDocument - isDownloadsDocument")
+        return null
     }
 
     /**
@@ -295,24 +301,23 @@ public class UriUtils {
      * @param uri     uri，该uri类型处于系统下的多媒体文件夹（IMAGE、VIDEO、AUDIO）里面
      * @return 文件真实地址
      */
-    private static File uriToFileFromMediaDocument(Context context, Uri uri) {
-        String docId = DocumentsContract.getDocumentId(uri);
-        String[] split = docId.split(":");
-        String type = split[0];
-        Uri contentUri;
-        if (IMAGE.equals(type)) {
-            contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        } else if (VIDEO.equals(type)) {
-            contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-        } else if (AUDIO.equals(type)) {
-            contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+    private fun uriToFileFromMediaDocument(context: Context, uri: Uri): File? {
+        val docId = DocumentsContract.getDocumentId(uri)
+        val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val type = split[0]
+        val contentUri = if (IMAGE == type) {
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        } else if (VIDEO == type) {
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        } else if (AUDIO == type) {
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         } else {
-            Log.d(TAG, uri.toString() + " parse failed. -> uriToFileFromMediaDocument - isMediaDocument");
-            return null;
+            Log.d(TAG, "$uri parse failed. -> uriToFileFromMediaDocument - isMediaDocument")
+            return null
         }
-        final String selection = "_id=?";
-        final String[] selectionArgs = new String[]{split[1]};
-        return getFileFromUri(context, contentUri, selection, selectionArgs, "uriToFileFromMediaDocument - isMediaDocument");
+        val selection = "_id=?"
+        val selectionArgs = arrayOf(split[1])
+        return getFileFromUri(context, contentUri, selection, selectionArgs, "uriToFileFromMediaDocument - isMediaDocument")
     }
 
     /**
@@ -323,8 +328,8 @@ public class UriUtils {
      * @param methodCode 来自于哪个方法作为标记
      * @return file
      */
-    private static File getFileFromUri(Context context, final Uri uri, final String methodCode) {
-        return getFileFromUri(context, uri, null, null, methodCode);
+    private fun getFileFromUri(context: Context, uri: Uri, methodCode: String): File? {
+        return getFileFromUri(context, uri, null, null, methodCode)
     }
 
     /**
@@ -338,55 +343,58 @@ public class UriUtils {
      * @param methodCode    来自于哪个方法作为标记
      * @return file
      */
-    private static File getFileFromUri(Context context, final Uri uri,
-                                       final String selection,
-                                       final String[] selectionArgs,
-                                       final String methodCode) {
-        if (URI_AUTHORITY_GOOGLE.equals(uri.getAuthority())) {
+    private fun getFileFromUri(
+        context: Context, uri: Uri,
+        selection: String?,
+        selectionArgs: Array<String>?,
+        methodCode: String
+    ): File? {
+        if (URI_AUTHORITY_GOOGLE == uri.authority) {
             // 特殊处理比如摩托罗拉
-            if (!TextUtils.isEmpty(uri.getLastPathSegment())) {
-                return new File(uri.getLastPathSegment());
+            if (!TextUtils.isEmpty(uri.lastPathSegment)) {
+                return File(uri.lastPathSegment.toString())
             }
-        } else if (URI_AUTHORITY_TENCENT.equals(uri.getAuthority())) {
+        } else if (URI_AUTHORITY_TENCENT == uri.authority) {
             // 特殊处理qq浏览器
-            String path = uri.getPath();
+            val path = uri.path
             if (!TextUtils.isEmpty(path)) {
-                File fileDir = Environment.getExternalStorageDirectory();
-                return new File(fileDir, path.substring("/QQBrowser".length()));
+                val fileDir = Environment.getExternalStorageDirectory()
+                return File(fileDir, path!!.substring("/QQBrowser".length))
             }
-        } else if (URI_AUTHORITY_HUAWEI.equals(uri.getAuthority())) {
+        } else if (URI_AUTHORITY_HUAWEI == uri.authority) {
             // 特殊处理华为
-            String path = uri.getPath();
+            val path = uri.path
             if (!TextUtils.isEmpty(path)) {
-                return new File(path.replace("/root", ""));
+                return File(path!!.replace("/root", ""))
             }
         }
 
         // 正式的查找数据库
-        final Cursor cursor = context.getContentResolver().query(
-                uri, new String[]{"_data"}, selection, selectionArgs, null);
+        val cursor = context.contentResolver.query(
+            uri, arrayOf("_data"), selection, selectionArgs, null
+        )
         if (cursor == null) {
-            Log.d(TAG, uri + " parse failed(cursor is null). -> " + methodCode);
-            return null;
+            Log.d(TAG, "$uri parse failed(cursor is null). -> $methodCode")
+            return null
         }
         try {
             if (cursor.moveToFirst()) {
-                final int columnIndex = cursor.getColumnIndex("_data");
+                val columnIndex = cursor.getColumnIndex("_data")
                 if (columnIndex > -1) {
-                    return new File(cursor.getString(columnIndex));
+                    return File(cursor.getString(columnIndex))
                 } else {
-                    Log.d(TAG, uri + " parse failed(columnIndex: " + columnIndex + " is wrong). -> " + methodCode);
-                    return null;
+                    Log.d(TAG, "$uri parse failed(columnIndex: $columnIndex is wrong). -> $methodCode")
+                    return null
                 }
             } else {
-                Log.d(TAG, uri + " parse failed(moveToFirst return false). -> " + methodCode);
-                return null;
+                Log.d(TAG, "$uri parse failed(moveToFirst return false). -> $methodCode")
+                return null
             }
-        } catch (Exception e) {
-            Log.d(TAG, uri + " parse failed. -> " + methodCode);
-            return null;
+        } catch (e: Exception) {
+            Log.d(TAG, "$uri parse failed. -> $methodCode")
+            return null
         } finally {
-            cursor.close();
+            cursor.close()
         }
     }
 
@@ -397,23 +405,23 @@ public class UriUtils {
      * @param uri     uri
      * @return file
      */
-    private static File copyUri2Cache(Context context, Uri uri) {
-        Log.d("UriUtils", "copyUri2Cache() called");
-        InputStream is = null;
+    private fun copyUri2Cache(context: Context, uri: Uri): File? {
+        Log.d("UriUtils", "copyUri2Cache() called")
+        var `is`: InputStream? = null
         try {
-            is = context.getContentResolver().openInputStream(uri);
-            File file = new File(context.getCacheDir(), "" + System.currentTimeMillis());
-            FileInputOutputUtils.writeFileFromInputStream(file.getAbsolutePath(), is);
-            return file;
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "copyUri2Cache" + e.getMessage());
-            return null;
+            `is` = context.contentResolver.openInputStream(uri)
+            val file = File(context.cacheDir, "" + System.currentTimeMillis())
+            writeFileFromInputStream(file.absolutePath, `is`)
+            return file
+        } catch (e: FileNotFoundException) {
+            Log.e(TAG, "copyUri2Cache" + e.message)
+            return null
         } finally {
-            if (is != null) {
+            if (`is` != null) {
                 try {
-                    is.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "copyUri2Cache" + e.getMessage());
+                    `is`.close()
+                } catch (e: IOException) {
+                    Log.e(TAG, "copyUri2Cache" + e.message)
                 }
             }
         }
@@ -427,8 +435,8 @@ public class UriUtils {
      * @param uri 需要检查的uri
      * @return Uri是否是externalstorage类型
      */
-    private static boolean isExternalStorageDocument(Uri uri) {
-        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    private fun isExternalStorageDocument(uri: Uri): Boolean {
+        return "com.android.externalstorage.documents" == uri.authority
     }
 
     /**
@@ -439,8 +447,8 @@ public class UriUtils {
      * @param uri 需要检查的uri
      * @return Uri是否是DownloadsProvider类型
      */
-    private static boolean isDownloadsDocument(Uri uri) {
-        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    private fun isDownloadsDocument(uri: Uri): Boolean {
+        return "com.android.providers.downloads.documents" == uri.authority
     }
 
     /**
@@ -449,9 +457,7 @@ public class UriUtils {
      * @param uri 需要检查的uri
      * @return Uri是否是多媒体类型
      */
-    private static boolean isMediaDocument(Uri uri) {
-        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    private fun isMediaDocument(uri: Uri): Boolean {
+        return "com.android.providers.media.documents" == uri.authority
     }
-
-
 }
