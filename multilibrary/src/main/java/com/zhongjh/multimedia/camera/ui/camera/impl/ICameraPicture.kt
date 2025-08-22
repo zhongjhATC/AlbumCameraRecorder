@@ -1,7 +1,5 @@
 package com.zhongjh.multimedia.camera.ui.camera.impl
 
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.multimedia.camera.entity.BitmapData
 
 /**
@@ -66,7 +64,7 @@ interface ICameraPicture {
      *
      * @return 迁移图片的线程
      */
-    fun newMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>>
+    fun newMovePictureFileTask()
 
     /**
      * 删除临时图片

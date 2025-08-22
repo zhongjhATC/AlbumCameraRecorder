@@ -22,7 +22,6 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.FileUtils.copy
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
-import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R

@@ -24,6 +24,7 @@ import androidx.constraintlayout.widget.Group
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.zhongjh.common.entity.LocalMedia
@@ -33,7 +34,7 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
-import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
@@ -56,6 +57,7 @@ import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
+import kotlinx.coroutines.Job
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -108,14 +110,16 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private val mIsRefresh = false
 
     /**
-     * 压缩异步线程
+     * 压缩异步协程
      */
-    private var mCompressFileTask: ThreadUtils.SimpleTask<ArrayList<LocalMedia>>? = null
+    private var mCompressFileJob: Job? = null
 
     /**
      * 异步线程的逻辑
      */
-    private var mAlbumCompressFileTask: AlbumCompressFileTask? = null
+    private val mAlbumCompressFileTask by lazy {
+        AlbumCompressFileTask(requireActivity(), tag, AlbumFragment::class.java, mGlobalSpec)
+    }
 
     private lateinit var mViewHolder: ViewHolder
 
@@ -162,7 +166,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
 
         mViewHolder = ViewHolder(view)
         initConfig()
-        mAlbumCompressFileTask = AlbumCompressFileTask(requireActivity(), tag, AlbumFragment::class.java, mGlobalSpec)
         initView(savedInstanceState)
         initActivityResult()
         initListener()
@@ -290,7 +293,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 点击Loading停止
         mViewHolder.pbLoading.setOnClickListener {
             // 中断线程
-            mCompressFileTask?.cancel()
+            mCompressFileJob?.cancel()
             // 恢复界面可用
             setControlTouchEnable(true)
         }
@@ -403,9 +406,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         mGlobalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
             videoCompressCoordinator.onCompressDestroy(this@AlbumFragment.javaClass)
             mGlobalSpec.videoCompressCoordinator = null
-        }
-        mCompressFileTask?.let {
-            ThreadUtils.cancel(it)
         }
         mMediaViewUtil.onDestroyView()
         mAlbumSpinner.setOnAlbumItemClickListener(null)
@@ -543,8 +543,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         setControlTouchEnable(false)
 
         // 复制相册的文件
-        mCompressFileTask = getCompressFileTask(localMediaArrayList)
-        ThreadUtils.executeByIo(mCompressFileTask)
+        compressFileTask(localMediaArrayList)
     }
 
     /**
@@ -552,33 +551,21 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      *
      * @param localMediaArrayList 需要压缩的数据源
      */
-    private fun getCompressFileTask(localMediaArrayList: ArrayList<LocalMedia>): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
-        // noinspection unused
-        return object : ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
-            /** @noinspection unused
-             */
-            override fun doInBackground(): ArrayList<LocalMedia> {
-                return mAlbumCompressFileTask!!.compressFileTaskDoInBackground(localMediaArrayList, false)
-            }
-
-            override fun onSuccess(result: ArrayList<LocalMedia>) {
-                setResultOk(result)
-            }
-
-            override fun onFail(t: Throwable) {
-                super.onFail(t)
-                // 结束loading
-                setControlTouchEnable(true)
-                Toast.makeText(mApplicationContext, t.message, Toast.LENGTH_SHORT).show()
-                Log.e(tag, t.message, t)
-            }
-
-            override fun onCancel() {
-                super.onCancel()
-                // 结束loading
-                setControlTouchEnable(true)
-            }
-        }
+    private fun compressFileTask(localMediaArrayList: ArrayList<LocalMedia>) {
+        // 启动协程并获取Job对象
+        mCompressFileJob = lifecycleScope.request {
+            mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList, false)
+        }.onSuccess { data ->
+            setResultOk(data)
+        }.onFail { error ->
+            // 结束loading
+            setControlTouchEnable(true)
+            Toast.makeText(mApplicationContext, error.message, Toast.LENGTH_SHORT).show()
+            Log.e(tag, error.message, error)
+        }.onCancel {
+            // 结束loading
+            setControlTouchEnable(true)
+        }.launch()
     }
 
     /**

@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2022/2/9
  */
-class AlbumCompressFileTask(private val context: Context, private val tag: String, private val clsKey: Class<*>, private val globalSpec: GlobalSpec) {
+class AlbumCompressFileTask(context: Context, private val tag: String, private val clsKey: Class<*>, private val globalSpec: GlobalSpec) {
 
     // 用弱引用持有Context，避免内存泄漏
     private val contextRef = WeakReference(context.applicationContext)

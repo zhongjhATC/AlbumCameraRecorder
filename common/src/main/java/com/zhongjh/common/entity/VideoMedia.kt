@@ -2,7 +2,6 @@ package com.zhongjh.common.entity
 
 import android.os.Parcel
 import android.os.Parcelable
-import com.zhongjh.common.utils.ThreadUtils
 
 /**
  * 音频实体

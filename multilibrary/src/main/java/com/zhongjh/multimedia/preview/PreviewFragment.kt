@@ -37,8 +37,6 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
-import com.zhongjh.common.utils.ThreadUtils
-import com.zhongjh.common.utils.ThreadUtils.SimpleTask
 import com.zhongjh.imageedit.ImageEditActivity
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity

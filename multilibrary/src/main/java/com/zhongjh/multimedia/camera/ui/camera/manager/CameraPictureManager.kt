@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
@@ -17,7 +18,7 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaUtils
-import com.zhongjh.common.utils.ThreadUtils
+import com.zhongjh.common.utils.request
 import com.zhongjh.imageedit.ImageEditActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.entity.BitmapData
@@ -27,11 +28,11 @@ import com.zhongjh.multimedia.camera.ui.camera.adapter.PhotoAdapterListener
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.util.LogUtil
-import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.utils.FileMediaUtil.getOutFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
@@ -82,7 +83,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     /**
      * 一个迁移图片的异步线程
      */
-    private var movePictureFileTask: ThreadUtils.SimpleTask<ArrayList<LocalMedia>>? = null
+    private var movePictureFileJob: Job? = null
 
     /**
      * 初始化多图适配器
@@ -169,7 +170,6 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
         // 置空所有可能持有引用的对象
         imageEditActivityResult = null
-        movePictureFileTask = null
         photoFile = null
         photoEditFile = null
     }
@@ -283,35 +283,27 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      *
      * @return 迁移图片的线程
      */
-    override fun newMovePictureFileTask(): ThreadUtils.SimpleTask<ArrayList<LocalMedia>> {
-        movePictureFileTask = object : ThreadUtils.SimpleTask<ArrayList<LocalMedia>>() {
-            override fun doInBackground(): ArrayList<LocalMedia> {
-                Log.d(TAG, "doInBackground")
-                return movePictureFileTaskInBackground()
+    override fun newMovePictureFileTask() {
+        movePictureFileJob = fragmentRef.get()?.lifecycleScope?.request {
+            movePictureFileTaskInBackground()
+        }?.onSuccess { data ->
+            fragmentRef.get()?.let { baseCameraFragment ->
+                Log.d(TAG, "onSuccess")
+                baseCameraFragment.commitPictureSuccess(data)
+                // 恢复预览状态
+                baseCameraFragment.cameraStateManager.state = baseCameraFragment.cameraStateManager.preview
             }
-
-            override fun onSuccess(newFiles: ArrayList<LocalMedia>) {
-                fragmentRef.get()?.let { baseCameraFragment ->
-                    Log.d(TAG, "onSuccess")
-                    baseCameraFragment.commitPictureSuccess(newFiles)
-                    // 恢复预览状态
-                    baseCameraFragment.cameraStateManager.state = baseCameraFragment.cameraStateManager.preview
+        }?.onFail { error ->
+            fragmentRef.get()?.let { baseCameraFragment ->
+                // 打印堆栈日志
+                Log.e(TAG, "getMovePictureFileTask")
+                val stackTraceElements: Array<StackTraceElement> = error.stackTrace
+                for (stackTraceElement in stackTraceElements) {
+                    Log.e(TAG, stackTraceElement.toString())
                 }
+                baseCameraFragment.commitFail(error)
             }
-
-            override fun onFail(t: Throwable) {
-                fragmentRef.get()?.let { baseCameraFragment ->
-                    // 打印堆栈日志
-                    Log.e(TAG, "getMovePictureFileTask")
-                    val stackTraceElements: Array<StackTraceElement> = t.stackTrace
-                    for (stackTraceElement in stackTraceElements) {
-                        Log.e(TAG, stackTraceElement.toString())
-                    }
-                    baseCameraFragment.commitFail(t)
-                }
-            }
-        }
-        return movePictureFileTask as ThreadUtils.SimpleTask<ArrayList<LocalMedia>>
+        }?.launch()
     }
 
     /**
@@ -334,7 +326,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      * 停止迁移图片的线程运行
      */
     override fun cancelMovePictureFileTask() {
-        movePictureFileTask?.cancel()
+        movePictureFileJob?.cancel()
     }
 
     /**

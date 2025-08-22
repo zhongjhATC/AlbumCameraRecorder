@@ -7,6 +7,9 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.GridMedia
@@ -14,7 +17,6 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.MediaStoreCompat
-import com.zhongjh.common.utils.ThreadUtils.runOnUiThread
 import com.zhongjh.gridview.R
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.api.GridViewApi
@@ -22,6 +24,8 @@ import com.zhongjh.gridview.engine.ImageEngine
 import com.zhongjh.gridview.entity.Masking
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /**
@@ -181,10 +185,11 @@ class GridView : FrameLayout, GridViewApi {
         }
     }
 
-    override fun setPercentage(multiMedia: GridMedia, percentage: Int) {
+    override fun setPercentage(owner: LifecycleOwner, multiMedia: GridMedia, percentage: Int) {
         multiMedia.progress = percentage
-        // 找出图片视频音频的 viewHolder 赋值
-        runOnUiThread {
+        // 已在主线程
+        owner.lifecycleScope.launch(Dispatchers.Main) {
+            // 找出图片视频音频的 viewHolder 赋值
             val position = getAllData().indexOf(multiMedia)
             val photoViewHolder = mViewHolder.rlGrid.findViewHolderForAdapterPosition(position)
             photoViewHolder?.let {

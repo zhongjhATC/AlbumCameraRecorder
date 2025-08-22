@@ -1,5 +1,6 @@
 package com.zhongjh.gridview.api
 
+import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 
@@ -14,10 +15,11 @@ interface GridViewApi {
     /**
      * 设置进度
      *
+     * @param owner 界面的生命周期
      * @param multiMedia 需要设置进度的实体
      * @param percentage 进度值
      */
-    fun setPercentage(multiMedia: GridMedia, percentage: Int)
+    fun setPercentage(owner: LifecycleOwner, multiMedia: GridMedia, percentage: Int)
 
     /**
      * 添加[LocalMedia],根据自身类型进行相应的显示

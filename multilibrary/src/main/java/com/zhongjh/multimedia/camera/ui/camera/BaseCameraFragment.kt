@@ -21,7 +21,6 @@ import androidx.core.app.ActivityOptionsCompat
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
-import com.zhongjh.common.utils.ThreadUtils
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
@@ -711,7 +710,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     fun movePictureFile() {
         showProgress()
         // 开始迁移文件
-        ThreadUtils.executeByIo(cameraPictureManager.newMovePictureFileTask())
+        cameraPictureManager.newMovePictureFileTask()
     }
 
     /**
