@@ -46,8 +46,8 @@ allprojects {
 
 ext {
 
-    versionCode = 2000
-    versionName = '2.0.00'
+    versionCode = 2004
+    versionName = '2.0.04'
 
     androidCompileSdkVersion = 34
     recyclerviewSdkVersion = '1.3.0'
