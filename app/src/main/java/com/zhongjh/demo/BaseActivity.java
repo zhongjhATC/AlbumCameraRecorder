@@ -220,7 +220,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    getGridView().setPercentage(this, gridMedia, percentage);
+                    getGridView().setPercentage(BaseActivity.this, gridMedia, percentage);
                     // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();

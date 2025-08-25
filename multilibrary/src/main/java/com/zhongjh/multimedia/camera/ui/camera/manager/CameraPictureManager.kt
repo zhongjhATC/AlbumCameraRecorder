@@ -280,8 +280,6 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
     /**
      * 返回迁移图片的线程
-     *
-     * @return 迁移图片的线程
      */
     override fun newMovePictureFileTask() {
         movePictureFileJob = fragmentRef.get()?.lifecycleScope?.request {

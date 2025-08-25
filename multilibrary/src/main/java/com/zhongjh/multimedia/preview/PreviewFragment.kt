@@ -26,6 +26,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -37,6 +38,7 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
+import com.zhongjh.common.utils.request
 import com.zhongjh.imageedit.ImageEditActivity
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
@@ -60,6 +62,7 @@ import com.zhongjh.multimedia.sharedanimation.SharedAnimationView
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -89,6 +92,7 @@ class PreviewFragment : BaseFragment() {
     }
 
     private lateinit var mContext: Context
+    private val weakFragment = WeakReference(this@PreviewFragment)
     private lateinit var mMediaController: MediaController
     private lateinit var mViewHolder: ViewHolder
     private lateinit var mViewPager2: ViewPager2
@@ -131,50 +135,7 @@ class PreviewFragment : BaseFragment() {
     /**
      * 完成压缩-复制的异步线程
      */
-    private val mCompressFileTask: SimpleTask<ArrayList<LocalMedia>> by lazy {
-        object : SimpleTask<ArrayList<LocalMedia>>() {
-            private val weakFragment = WeakReference(this@PreviewFragment)
-
-            override fun doInBackground(): ArrayList<LocalMedia> {
-                handleEditImages()
-                val fragment = weakFragment.get()
-                fragment?.let {
-                    // 是否只压缩编辑的图片
-                    val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
-                    return fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
-                } ?: let {
-                    return ArrayList()
-                }
-            }
-
-            override fun onSuccess(result: ArrayList<LocalMedia>) {
-                val fragment = weakFragment.get()
-                fragment?.setResultOk(result)
-            }
-
-            override fun onFail(t: Throwable) {
-                val fragment = weakFragment.get()
-                fragment?.let {
-                    super.onFail(t)
-                    // 结束loading
-                    fragment.setControlTouchEnable(true)
-                    Toast.makeText(fragment.mContext, t.message, Toast.LENGTH_SHORT).show()
-                    t.message?.let {
-                        Log.e(TAG, it)
-                    }
-                }
-            }
-
-            override fun onCancel() {
-                val fragment = weakFragment.get()
-                fragment?.let {
-                    super.onCancel()
-                    // 结束loading
-                    fragment.setControlTouchEnable(true)
-                }
-            }
-        }
-    }
+    private var mCompressFileJob: Job? = null
 
     /**
      * 异步线程的逻辑，确定当前选择的文件列表，根据是否压缩配置决定重新返回新的文件列表
@@ -482,7 +443,7 @@ class PreviewFragment : BaseFragment() {
         // 点击Loading停止
         mViewHolder.pbLoading.setOnClickListener {
             // 中断线程
-            mCompressFileTask.cancel()
+            mCompressFileJob?.cancel()
             // 恢复界面可用
             setControlTouchEnable(true)
         }
@@ -682,7 +643,44 @@ class PreviewFragment : BaseFragment() {
         setControlTouchEnable(false)
 
         // 复制相册的文件
-        ThreadUtils.executeByIo(mCompressFileTask)
+        compressFileJob()
+    }
+
+    /**
+     * 复制相册的文件的协程
+     */
+    private fun compressFileJob() {
+        mCompressFileJob?.cancel()
+        mCompressFileJob = lifecycleScope.request {
+            handleEditImages()
+            val fragment = weakFragment.get()
+            fragment?.let {
+                // 是否只压缩编辑的图片
+                val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
+                return@request fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
+            } ?: let {
+                return@request ArrayList()
+            }
+        }.onSuccess { data ->
+            val fragment = weakFragment.get()
+            fragment?.setResultOk(data)
+        }.onFail { error ->
+            val fragment = weakFragment.get()
+            fragment?.let {
+                // 结束loading
+                fragment.setControlTouchEnable(true)
+                Toast.makeText(fragment.mContext, error.message, Toast.LENGTH_SHORT).show()
+                error.message?.let {
+                    Log.e(TAG, it)
+                }
+            }
+        }.onCancel {
+            val fragment = weakFragment.get()
+            fragment?.let {
+                // 结束loading
+                fragment.setControlTouchEnable(true)
+            }
+        }.launch()
     }
 
     /**

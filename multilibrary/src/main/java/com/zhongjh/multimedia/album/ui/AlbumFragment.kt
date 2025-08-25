@@ -552,6 +552,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * @param localMediaArrayList 需要压缩的数据源
      */
     private fun compressFileTask(localMediaArrayList: ArrayList<LocalMedia>) {
+        mCompressFileJob?.cancel()
         // 启动协程并获取Job对象
         mCompressFileJob = lifecycleScope.request {
             mAlbumCompressFileTask.compressFileTaskDoInBackground(localMediaArrayList, false)

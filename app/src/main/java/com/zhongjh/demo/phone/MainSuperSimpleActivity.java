@@ -7,18 +7,18 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.zhongjh.combined.Combined;
+import com.zhongjh.common.entity.GridMedia;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.demo.configuration.Glide4Engine;
+import com.zhongjh.demo.databinding.ActivityMainSuperSimpleBinding;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.listener.AbstractGridViewListener;
 import com.zhongjh.multimedia.settings.AlbumSetting;
 import com.zhongjh.multimedia.settings.CameraSetting;
 import com.zhongjh.multimedia.settings.GlobalSetting;
 import com.zhongjh.multimedia.settings.MultiMediaSetting;
 import com.zhongjh.multimedia.settings.RecorderSetting;
-import com.zhongjh.demo.configuration.Glide4Engine;
-import com.zhongjh.demo.databinding.ActivityMainSuperSimpleBinding;
-import com.zhongjh.combined.Combined;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.common.entity.GridMedia;
-import com.zhongjh.gridview.listener.AbstractGridViewListener;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -158,7 +158,7 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     percentage++;
-                    mBinding.gridView.setPercentage(multiMedia, percentage);
+                    mBinding.gridView.setPercentage(MainSuperSimpleActivity.this, multiMedia, percentage);
                     // 真实场景的应用设置完成赋值url的时候可以这样写如下代码：multiMedia.setUrl(url);multiMedia.setPercentage(100);
                     if (percentage == PROGRESS_MAX) {
                         this.cancel();

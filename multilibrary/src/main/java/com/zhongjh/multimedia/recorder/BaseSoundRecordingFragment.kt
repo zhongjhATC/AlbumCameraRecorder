@@ -16,12 +16,15 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.FileUtils.copy
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
@@ -33,9 +36,17 @@ import com.zhongjh.multimedia.settings.RecordeSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.widget.BaseOperationLayout
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
+import kotlin.coroutines.resumeWithException
 
 abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView {
 
@@ -52,6 +63,13 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
 
     lateinit var myContext: Context
         private set
+
+    /**
+     * 完成压缩-复制的异步线程
+     */
+    private var moveRecordFileJob: Job? = null
+
+    private var stopRecordingJob: Job? = null
 
     /**
      * 是否正在播放中
@@ -304,8 +322,6 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             it.release()
             recorder = null // 置空引用
         }
-        mMoveRecordFileTask.cancel()
-        mStopRecordingTask.cancel()
         super.onDestroy()
     }
 
@@ -450,61 +466,140 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
         // 执行等待动画
         soundRecordingLayout.soundRecordingLayoutViewHolder.btnConfirm.setProgress(1)
         // 开始迁移文件
-        ThreadUtils.executeByIo(mMoveRecordFileTask)
+        moveRecordFileJob()
     }
 
     /**
      * 迁移语音的异步线程
      */
-    private val mMoveRecordFileTask: ThreadUtils.SimpleTask<Unit> = object : ThreadUtils.SimpleTask<Unit>() {
-
-        override fun doInBackground() {
+    private fun moveRecordFileJob() {
+        moveRecordFileJob?.cancel()
+        moveRecordFileJob = lifecycleScope.request {
             // 用弱引用持有Fragment，避免强引用
             val fragmentRef = WeakReference(this@BaseSoundRecordingFragment)
             val fragment = fragmentRef.get()
-            // 检查 Fragment 是否有效（未销毁、未脱离 Activity）
-            if (fragment == null || !fragment.isAdded || fragment.isDetached || fragment.activity == null || fragment.activity?.isFinishing == true) {
-                return
+            // 检查Fragment是否处于有效状态（未销毁、已添加到Activity）
+            if (!isFragmentValid(fragment)) {
+                // 无效则终止协程
+                return@request false
             }
-            // 初始化保存好的音频文件
-            fragment.initAudio()
-            val newFile = createCacheFile(myContext, MediaType.TYPE_AUDIO)
-            copy(File(fragment.localMedia.absolutePath), newFile, null) { ioProgress: Double, _: File? ->
-                val progress = (ioProgress * FULL).toInt()
-                ThreadUtils.runOnUiThread {
-                    if (isAdded) {
-                        fragment.soundRecordingLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
-                        fragment.localMedia.absolutePath = newFile.path
-                        if (progress >= FULL) {
-                            val result = Intent()
-                            val localFiles = ArrayList<LocalMedia>()
-                            localFiles.add(localMedia)
-                            result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, localFiles)
-                            fragment.mainActivity?.setResult(Activity.RESULT_OK, result)
-                            fragment.mainActivity?.finish()
+            fragment?.let {
+                // 初始化保存好的音频文件
+                fragment.initAudio()
+                val newFile = createCacheFile(myContext, MediaType.TYPE_AUDIO)
+                val sourceFile = File(fragment.localMedia.absolutePath)
+                // 用挂起函数包装复制操作，支持协程取消
+                val copySuccess = copyFileWithProgress(sourceFile, newFile, fragment)
+                return@request copySuccess
+            }
+            return@request false
+        }.onSuccess { copySuccess ->
+            val fragmentRef = WeakReference(this@BaseSoundRecordingFragment)
+            val fragment = fragmentRef.get()
+            if (copySuccess) {
+                // 再次检查Fragment状态（避免在UI线程执行时Fragment已销毁）
+                if (isFragmentValid(fragment)) {
+                    fragment?.let {
+                        val result = Intent().apply {
+                            putParcelableArrayListExtra(SelectedData.STATE_SELECTION, arrayListOf(fragment.localMedia))
+                        }
+                        fragment.mainActivity?.apply {
+                            setResult(Activity.RESULT_OK, result)
+                            finish()
                         }
                     }
                 }
             }
+        }.onFail {
+            // 清理可能的残留文件
+            val targetFile = File(localMedia.absolutePath)
+            if (targetFile.exists()) {
+                targetFile.delete()
+            }
+        }.launch()
+    }
+
+    /**
+     * 包装文件复制操作，支持进度回调和协程取消
+     * 注意：将回调转为挂起函数风格，确保与协程生命周期同步
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private suspend fun copyFileWithProgress(source: File, dest: File, fragment: BaseSoundRecordingFragment): Boolean = suspendCancellableCoroutine { continuation ->
+
+        // 1. 保存当前协程作用域，用于在回调中启动子协程
+        val coroutineScope = CoroutineScope(continuation.context)
+        try {
+            // 执行复制操作
+            copy(source, dest, null) { ioProgress: Double, _: File? ->
+                // 检查协程是否已取消（如页面销毁），若取消则终止回调
+                if (continuation.isCancelled) {
+                    return@copy
+                }
+
+                // 计算进度并更新UI（确保在主线程）
+                val progress = (ioProgress * FULL).toInt()
+                coroutineScope.launch(Dispatchers.Main) {
+                    updateProgressUI(progress, fragment)
+                    // 复制完成后恢复协程（可选，根据业务是否需要等待完成）
+                    if (progress >= FULL) {
+                        Log.d(TAG, "UI进度更新continuation.resume完成：$progress%")
+                        continuation.resume(true) {}
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            if (!continuation.isCancelled) {
+                continuation.resumeWithException(e)
+            }
         }
 
-        /** @noinspection unused
-         */
-        override fun onSuccess(result: Unit) {
+        // 协程被取消时的回调（清理资源）
+        continuation.invokeOnCancellation {
+            // 取消时删除目标文件（避免残留）
+            if (dest.exists()) dest.delete()
         }
+    }
+
+    /**
+     * 挂起函数：更新UI进度，确保更新完成后再返回
+     * @return 是否成功更新（Fragment是否有效）
+     */
+    private suspend fun updateProgressUI(progress: Int, fragment: BaseSoundRecordingFragment): Boolean =
+        withContext(Dispatchers.Main) { // 切换到主线程并挂起，等待执行完成
+            if (isFragmentValid(fragment)) {
+                // 更新进度条
+                soundRecordingLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
+                Log.d(TAG, "UI进度更新完成：$progress%")
+                // 更新成功
+                true
+            } else {
+                Log.e(TAG, "Fragment已无效，无法更新UI")
+                // 更新失败
+                false
+            }
+        }
+
+    /**
+     * 检查Fragment是否处于有效状态
+     */
+    private fun isFragmentValid(fragment: Fragment?): Boolean {
+        return fragment?.let {
+            fragment.isAdded && !fragment.isDetached && fragment.activity != null && fragment.activity?.isFinishing == false && fragment.activity?.isDestroyed == false
+        } ?: let { false }
     }
 
     /**
      * 停止录音的异步线程
      */
-    private val mStopRecordingTask: ThreadUtils.SimpleTask<Boolean> = object : ThreadUtils.SimpleTask<Boolean>() {
-        override fun doInBackground(): Boolean {
+    private fun stopRecordingJob() {
+        stopRecordingJob?.cancel()
+        stopRecordingJob = lifecycleScope.request {
             // 用弱引用持有Fragment，避免强引用
             val fragmentRef = WeakReference(this@BaseSoundRecordingFragment)
             val fragment = fragmentRef.get()
             // 检查 Fragment 是否有效（未销毁、未脱离 Activity）
             if (fragment == null || !fragment.isAdded || fragment.isDetached || fragment.activity == null || fragment.activity?.isFinishing == true) {
-                return false
+                return@request false
             }
             val mElapsedMillis = (System.currentTimeMillis() - startingTimeMillis)
             // 存储到缓存的文件地址
@@ -522,23 +617,14 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
                 it.release()
                 recorder = null
             }
-            return true
-        }
-
-        override fun onSuccess(result: Boolean) {
+            return@request true
+        }.onSuccess {
             soundRecordingLayout.isEnabled = true
-        }
-
-        override fun onCancel() {
-            super.onCancel()
+        }.onFail {
             soundRecordingLayout.isEnabled = true
-        }
-
-        override fun onFail(t: Throwable) {
-            super.onFail(t)
+        }.onCancel {
             soundRecordingLayout.isEnabled = true
-        }
-
+        }.launch()
     }
 
     // region 有关录音相关方法
@@ -577,7 +663,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
      */
     private fun stopRecording() {
         soundRecordingLayout.isEnabled = false
-        ThreadUtils.executeByIo(mStopRecordingTask)
+        stopRecordingJob()
     }
 
     companion object {
