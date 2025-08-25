@@ -27,8 +27,8 @@ class RecorderSetting : RecorderSettingApi {
         return this
     }
 
-    override fun duration(duration: Int): RecorderSetting {
-        mRecordeSpec.duration = duration
+    override fun maxDuration(maxDuration: Int): RecorderSetting {
+        mRecordeSpec.maxDuration = maxDuration
         return this
     }
 

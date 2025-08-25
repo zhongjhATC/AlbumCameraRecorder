@@ -144,7 +144,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
         // 提示文本
         soundRecordingLayout.setTip(resources.getString(R.string.z_multi_library_long_press_sound_recording))
         // 设置录制时间
-        soundRecordingLayout.setDuration(mRecordSpec.duration * 1000)
+        soundRecordingLayout.setDuration(mRecordSpec.maxDuration)
         soundRecordingLayout.setReadinessDuration(mRecordSpec.readinessDuration)
         // 设置只能长按
         soundRecordingLayout.setButtonFeatures(ClickOrLongButton.BUTTON_STATE_ONLY_LONG_CLICK)

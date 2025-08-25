@@ -20,12 +20,12 @@ interface RecorderSettingApi {
     fun soundRecordingFragment(baseSoundRecordingFragment: BaseSoundRecordingFragment): RecorderSetting
 
     /**
-     * 最长录制时间,默认10秒
+     * 最长录制时间,默认1000毫秒
      *
-     * @param duration 最长录制时间,单位为秒
+     * @param maxDuration 最长录制时间,单位为毫秒
      * @return [RecorderSetting] for fluent API.
      */
-    fun duration(duration: Int): RecorderSetting
+    fun maxDuration(maxDuration: Int): RecorderSetting
 
     /**
      * 最短录制时间限制，单位为毫秒，即是如果长按在1500毫秒内，都暂时不开启录制
