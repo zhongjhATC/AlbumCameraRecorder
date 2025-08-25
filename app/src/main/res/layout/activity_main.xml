@@ -810,7 +810,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:text="10000"
+                        android:text="11000"
                         tools:ignore="HardcodedText" />
 
                 </LinearLayout>

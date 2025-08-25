@@ -207,26 +207,39 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             }
 
             override fun onLongClickEnd(time: Long) {
-                soundRecordingLayout.hideBtnClickOrLong()
-                soundRecordingLayout.startShowLeftRightButtonsAnimator(true)
                 Log.d(TAG, "onLongClickEnd")
-                // 录音结束
-                onRecord(false)
-                showRecordEndView()
+                recordEnd()
             }
 
             override fun onLongClickFinish() {
+                Log.d(TAG, "onLongClickFinish")
+                recordEnd()
             }
 
             override fun onLongClickError() {
+                Log.d(TAG, "onLongClickError")
             }
 
             override fun onBanClickTips() {
+                Log.d(TAG, "onBanClickTips")
             }
 
             override fun onClickStopTips() {
+                Log.d(TAG, "onClickStopTips")
             }
         })
+    }
+
+    /**
+     * 录音结束
+     */
+    private fun recordEnd() {
+        soundRecordingLayout.hideBtnClickOrLong()
+        soundRecordingLayout.startShowLeftRightButtonsAnimator(true)
+        Log.d(TAG, "onLongClickEnd")
+        // 录音结束
+        onRecord(false)
+        showRecordEndView()
     }
 
     /**

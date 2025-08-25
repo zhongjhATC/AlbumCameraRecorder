@@ -10,7 +10,7 @@ object RecordeSpec {
     /**
      * 最长录制时间，单位为毫秒
      */
-    var maxDuration = 10000
+    var maxDuration = 11000
 
     /**
      * 最短录制时间限制，单位为毫秒，如果录制期间低于2000毫秒，均不算录制
@@ -37,7 +37,7 @@ object RecordeSpec {
      */
     private fun reset() {
         // 最长录制时间
-        maxDuration = 10000
+        maxDuration = 11000
         // 最短录制时间限制，单位为毫秒，如果录制期间低于2000毫秒，均不算录制
         minDuration = 2000
         readinessDuration = 1000
