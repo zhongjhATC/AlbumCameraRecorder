@@ -32,7 +32,7 @@ class ImageCustom {
      * 原始图像对象，存储正在编辑的主图像
      * 所有编辑操作的基础图像数据源
      */
-    private var image: Bitmap?
+    private var image = DEFAULT_IMAGE
 
     /**
      * 马赛克图像对象，用于存储应用马赛克效果后的图像
@@ -156,12 +156,26 @@ class ImageCustom {
     /**
      * 专门用于绘制马赛克效果的画笔
      */
-    private var mMosaicPaint: Paint? = null
+    private val mMosaicPaint by lazy {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        // 禁用位图过滤，增强马赛克效果
+        paint.isFilterBitmap = false
+        // 设置混合模式
+        paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
+        paint
+    }
 
     /**
      * 用于绘制裁剪区域外阴影的画笔
+     * 设置为抗锯齿、半透明黑色、填充样式
      */
-    private var mShadePaint: Paint? = null
+    private val mShadePaint by lazy {
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        paint.color = COLOR_SHADE
+        // 设置为填充样式
+        paint.style = Paint.Style.FILL
+        paint
+    }
 
     /**
      * 矩阵变换对象，用于处理图像的各种平移、缩放、旋转等变换
@@ -179,37 +193,20 @@ class ImageCustom {
     }
 
     /**
-     * 构造函数，初始化ImageCustom对象
-     * 设置默认图像，并根据初始编辑模式初始化相应的资源
-     */
-    init {
-        Log.d(TAG, "IMGImage")
-        // 设置默认图像为初始编辑对象
-        image = DEFAULT_IMAGE
-
-        if (mMode == ImageMode.CLIP) {
-            // 如果初始模式为裁剪，初始化阴影画笔
-            initShadePaint()
-        }
-    }
-
-    /**
      * 设置要编辑的位图
      *
      * @param bitmap 要设置的位图对象
      */
-    fun setBitmap(bitmap: Bitmap?) {
+    fun setBitmap(bitmap: Bitmap) {
         Log.d(TAG, "setBitmap")
-        if (bitmap == null || bitmap.isRecycled) {
+        if (bitmap.isRecycled) {
             return
         }
 
         this.image = bitmap
 
         // 清空马赛克图层
-        if (mosaicImage != null) {
-            mosaicImage!!.recycle()
-        }
+        mosaicImage?.recycle()
         this.mosaicImage = null
 
         makeMosaicBitmap()
@@ -248,10 +245,6 @@ class ImageCustom {
             this.mMode = mode
 
             if (mMode == ImageMode.CLIP) {
-                // 初始化Shade 画刷
-
-                initShadePaint()
-
                 // 备份裁剪前Clip 区域
                 mBackupClipRotate = rotate
                 mBackupClipFrame.set(mClipFrame)
@@ -282,27 +275,9 @@ class ImageCustom {
         mMatrix.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY())
         for (sticker in mBackStickers) {
             mMatrix.mapRect(sticker.frame)
-            sticker.rotation = sticker.rotation + rotate
+            sticker.rotation += rotate
             sticker.x = sticker.frame.centerX() - sticker.pivotX
             sticker.y = sticker.frame.centerY() - sticker.pivotY
-        }
-    }
-
-    /**
-     * 初始化阴影画笔
-     * 创建并配置用于绘制裁剪区域外阴影效果的画笔
-     * 设置为抗锯齿、半透明黑色、填充样式
-     * 只在需要时创建画笔实例，避免不必要的资源消耗
-     */
-    private fun initShadePaint() {
-        Log.d(TAG, "initShadePaint")
-        if (mShadePaint == null) {
-            // 创建带抗锯齿的画笔
-            mShadePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-            // 设置为半透明黑色
-            mShadePaint!!.color = COLOR_SHADE
-            // 设置为填充样式
-            mShadePaint!!.style = Paint.Style.FILL
         }
     }
 
@@ -333,7 +308,7 @@ class ImageCustom {
      */
     fun undoDoodle() {
         Log.d(TAG, "undoDoodle")
-        if (!mDoodles.isEmpty()) {
+        if (mDoodles.isNotEmpty()) {
             mDoodles.removeAt(mDoodles.size - 1)
         }
     }
@@ -343,7 +318,7 @@ class ImageCustom {
      */
     fun undoMosaic() {
         Log.d(TAG, "undoMosaic")
-        if (!mMosaics.isEmpty()) {
+        if (mMosaics.isNotEmpty()) {
             mMosaics.removeAt(mMosaics.size - 1)
         }
     }
@@ -411,30 +386,22 @@ class ImageCustom {
      */
     private fun makeMosaicBitmap() {
         Log.d(TAG, "makeMosaicBitmap")
-        if (mosaicImage != null || image == null) {
+        if (mosaicImage != null) {
             return  // 如果马赛克图像已存在或原图为空，则直接返回
         }
 
+        val image = image ?: return
         if (mMode == ImageMode.MOSAIC) {
             // 计算马赛克图像的尺寸（原图宽高的1/64）
-            var w = Math.round(image!!.width / 64f)
-            var h = Math.round(image!!.height / 64f)
+            var w = Math.round(image.width / 64f)
+            var h = Math.round(image.height / 64f)
 
             // 确保马赛克图像尺寸不小于8x8像素
             w = max(w.toDouble(), 8.0).toInt()
             h = max(h.toDouble(), 8.0).toInt()
 
-            // 初始化马赛克画笔
-            if (mMosaicPaint == null) {
-                mMosaicPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-                // 禁用位图过滤，增强马赛克效果
-                mMosaicPaint!!.isFilterBitmap = false
-                // 设置混合模式
-                mMosaicPaint!!.setXfermode(PorterDuffXfermode(PorterDuff.Mode.SRC_IN))
-            }
-
             // 创建低分辨率的马赛克图像
-            mosaicImage = Bitmap.createScaledBitmap(image!!, w, h, false)
+            mosaicImage = Bitmap.createScaledBitmap(image, w, h, false)
         }
     }
 
@@ -457,7 +424,7 @@ class ImageCustom {
      * @return 归位操作是否成功
      * @noinspection UnusedReturnValue
      */
-    fun onClipHoming(): Boolean {
+    private fun onClipHoming(): Boolean {
         Log.d(TAG, "onClipHoming")
         return mClipWin.homing()
     }
@@ -470,7 +437,7 @@ class ImageCustom {
      * @return 包含滚动位置、缩放和旋转信息的ImageHoming对象
      */
     fun getStartHoming(scrollX: Float, scrollY: Float): ImageHoming {
-        Log.d(TAG, "getStartHoming: scrollX(" + scrollX + ") scrollY(" + scrollY + ") getScale(" + scale + ") getRotate(" + rotate + ")")
+        Log.d(TAG, "getStartHoming: scrollX($scrollX) scrollY($scrollY) getScale($scale) getRotate($rotate)")
         return ImageHoming(scrollX, scrollY, scale, rotate)
     }
 
@@ -574,7 +541,7 @@ class ImageCustom {
         when (path.mode) {
             ImageMode.DOODLE -> mDoodles.add(path) // 涂鸦模式下添加到涂鸦路径集合
             ImageMode.MOSAIC -> {
-                path.width = path.width * scale
+                path.width *= scale
                 mMosaics.add(path) // 马赛克模式下添加到马赛克路径集合
             }
 
@@ -707,18 +674,20 @@ class ImageCustom {
      */
     private fun onInitialHoming(width: Float, height: Float) {
         Log.d(TAG, "onInitialHoming")
-        frame[0f, 0f, image!!.width.toFloat()] = image!!.height.toFloat()
-        mClipFrame.set(frame)
-        mClipWin.setClipWinSize(width, height)
+        image?.let { image ->
+            frame[0f, 0f, image.width.toFloat()] = image.height.toFloat()
+            mClipFrame.set(frame)
+            mClipWin.setClipWinSize(width, height)
 
-        if (mClipFrame.isEmpty) {
-            return
+            if (mClipFrame.isEmpty) {
+                return
+            }
+
+            toBaseHoming()
+
+            isInitialHoming = true
+            onInitialHomingDone()
         }
-
-        toBaseHoming()
-
-        isInitialHoming = true
-        onInitialHomingDone()
     }
 
     /**
@@ -774,7 +743,7 @@ class ImageCustom {
 
         if (DEBUG) {
             // 调试模式下，绘制边框以便于查看
-            mPaint!!.color = Color.RED
+            mPaint.color = Color.RED
             mPaint.strokeWidth = 6f
             canvas.drawRect(frame, mPaint) // 绘制完整图像边框
             canvas.drawRect(mClipFrame, mPaint) // 绘制裁剪区域边框
@@ -817,10 +786,12 @@ class ImageCustom {
      */
     fun onDrawMosaic(canvas: Canvas, layerCount: Int) {
         Log.d(TAG, "onDrawMosaic")
-        // 在保存的图层上绘制马赛克图像，利用混合模式实现马赛克效果
-        canvas.drawBitmap(mosaicImage!!, null, frame, mMosaicPaint)
-        // 恢复到之前保存的图层状态
-        canvas.restoreToCount(layerCount)
+        mosaicImage?.let { mosaicImage ->
+            // 在保存的图层上绘制马赛克图像，利用混合模式实现马赛克效果
+            canvas.drawBitmap(mosaicImage, null, frame, mMosaicPaint)
+            // 恢复到之前保存的图层状态
+            canvas.restoreToCount(layerCount)
+        }
     }
 
     /**
@@ -905,7 +876,7 @@ class ImageCustom {
             // 添加裁剪区域矩形（逆时针方向），与前一个矩形形成差集
             mShade.addRect(mClipFrame, Path.Direction.CCW)
             // 使用阴影画笔绘制差集区域，形成阴影效果
-            canvas.drawPath(mShade, mShadePaint!!)
+            canvas.drawPath(mShade, mShadePaint)
         }
     }
 
@@ -944,7 +915,8 @@ class ImageCustom {
     fun onTouchUp() {
         Log.d(TAG, "onTouchUp")
         if (mAnchor != null) {
-            mAnchor = null // 清除锚点选择
+            // 清除锚点选择
+            mAnchor = null
         }
     }
 
@@ -990,7 +962,7 @@ class ImageCustom {
         return null
     }
 
-    var targetRotate: Float
+    private var targetRotate: Float
         /**
          * 获取目标旋转角度
          *
@@ -1068,7 +1040,7 @@ class ImageCustom {
      * @param focusX 缩放焦点的X坐标
      * @param focusY 缩放焦点的Y坐标
      */
-    fun setScale(scale: Float, focusX: Float, focusY: Float) {
+    private fun setScale(scale: Float, focusX: Float, focusY: Float) {
         Log.d(TAG, "setScale")
         onScale(scale / this.scale, focusX, focusY)
     }
@@ -1082,10 +1054,10 @@ class ImageCustom {
      * @param focusY 缩放焦点的Y坐标
      */
     fun onScale(factor: Float, focusX: Float, focusY: Float) {
-        var factor = factor
+        var factorValue = factor
         Log.d(TAG, "onScale")
 
-        if (abs(factor.toDouble()) == abs(SCALE_MAX.toDouble())) {
+        if (abs(factorValue.toDouble()) == abs(SCALE_MAX.toDouble())) {
             return  // 达到最大缩放限制，停止缩放
         }
 
@@ -1093,11 +1065,11 @@ class ImageCustom {
         if (max(mClipFrame.width().toDouble(), mClipFrame.height().toDouble()) >= MAX_SIZE
             || min(mClipFrame.width().toDouble(), mClipFrame.height().toDouble()) <= MIN_SIZE
         ) {
-            factor += (1 - factor) / 2
+            factorValue += (1 - factorValue) / 2
         }
 
         // 创建缩放变换矩阵并应用到图像边框和裁剪区域
-        mMatrix.setScale(factor, factor, focusX, focusY)
+        mMatrix.setScale(factorValue, factorValue, focusX, focusY)
         mMatrix.mapRect(frame)
         mMatrix.mapRect(mClipFrame)
 
@@ -1106,7 +1078,7 @@ class ImageCustom {
             mMatrix.mapRect(sticker.frame) // 变换贴纸边框
             val tPivotX = sticker.x + sticker.pivotX
             val tPivotY = sticker.y + sticker.pivotY
-            sticker.addScale(factor) // 更新贴纸自身的缩放因子
+            sticker.addScale(factorValue) // 更新贴纸自身的缩放因子
             // 调整贴纸位置以保持相对于图像的正确位置
             sticker.x = sticker.x + sticker.frame.centerX() - tPivotX
             sticker.y = sticker.y + sticker.frame.centerY() - tPivotY
@@ -1214,20 +1186,8 @@ class ImageCustom {
      */
     fun release() {
         Log.d(TAG, "release")
-        // 释放主图像资源（如果存在且未被回收）
-        if (image != null && !image!!.isRecycled) {
-            image!!.recycle()
-        }
-    }
-
-    /**
-     * 对象被回收时调用的方法，释放默认图像资源
-     * 在对象被垃圾回收器回收之前调用，确保所有资源都被正确释放
-     *
-     * @throws Throwable 抛出任何可能的异常
-     */
-    fun onDestroy() {
-        Log.d(TAG, "finalize")
+        // 释放主图像资源
+        image?.recycle()
         // 释放静态的默认图像资源
         DEFAULT_IMAGE?.recycle()
     }
