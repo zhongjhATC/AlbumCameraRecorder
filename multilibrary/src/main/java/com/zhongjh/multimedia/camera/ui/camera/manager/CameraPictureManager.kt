@@ -41,9 +41,9 @@ import kotlin.coroutines.resume
 
 
 /**
- * 图片管理类
- * 这是专门负责图片的有关逻辑
- * 涉及到图片的拍照、编辑图片、提交图片、多图系列等等都是该类负责
+ * 相机图片管理类
+ * 负责处理相机拍照、图片编辑、图片预览、多图管理等相机图片相关的核心逻辑
+ * 实现了PhotoAdapterListener和ICameraPicture接口，提供图片数据的管理和操作功能
  *
  * @author zhongjh
  * @date 2022/8/22
@@ -51,42 +51,53 @@ import kotlin.coroutines.resume
 open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : PhotoAdapterListener, ICameraPicture {
 
     /**
-     * 使用弱引用持有 Fragment
+     * 使用弱引用持有 CameraFragment
+     * 避免在异步操作中导致的内存泄漏
      */
     val fragmentRef = WeakReference(baseCameraFragment)
 
     /**
-     * 单图：从编辑图片界面回来
+     * 单图：从编辑图片界面回来的回调处理
+     * 用于处理从ImageEditActivity返回的编辑结果
      */
     private var imageEditActivityResult: ActivityResultLauncher<Intent>? = null
 
     /**
      * 拍照的多图片集合适配器
+     * 用于在多图模式下显示已拍摄的图片列表
      */
     private lateinit var photoAdapter: PhotoAdapter
 
     /**
-     * 图片,单图或者多图都会加入该列表
+     * 图片数据列表
+     * 无论单图还是多图模式，所有拍摄的图片数据都会保存在此列表中
+     * 存储BitmapData对象，包含图片的临时ID、URI和文件路径
      */
     private var bitmapDataList: MutableList<BitmapData> = ArrayList()
 
     /**
-     * 照片File,用于后面能随时删除,作用于单图
+     * 当前照片文件
+     * 主要用于单图模式下，存储当前正在编辑或预览的照片文件
+     * 便于后续删除、编辑等操作
      */
     private var photoFile: File? = null
 
     /**
-     * 编辑后的照片
+     * 编辑后的照片文件
+     * 存储从ImageEditActivity返回的编辑结果文件
      */
     private var photoEditFile: File? = null
 
     /**
-     * 一个迁移图片的异步线程
+     * 迁移图片的异步任务
+     * 负责将临时缓存的图片文件迁移到指定的存储目录
      */
     private var movePictureFileJob: Job? = null
 
     /**
      * 初始化多图适配器
+     * 根据配置的最大图片数量决定是否显示多图列表
+     * 如果maxCount>1，则初始化水平RecyclerView显示已拍摄的图片
      */
     override fun initMultiplePhotoAdapter() {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -110,6 +121,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
     /**
      * 初始化Activity的有关图片回调
+     * 注册从图片编辑界面返回的结果处理器
      */
     override fun initActivityResult() {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -130,7 +142,8 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 编辑单个图片事件
+     * 初始化图片编辑事件监听器
+     * 为编辑按钮设置点击事件，启动图片编辑Activity
      */
     override fun initPhotoEditListener() {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -150,8 +163,9 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
     /**
      * 生命周期onDestroy
+     * 清理资源，释放持有的引用
      *
-     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余文件
+     * @param isCommit 是否提交了数据,如果不是提交则要删除冗余的临时文件
      */
     override fun onDestroy(isCommit: Boolean) {
         LogUtil.i("BaseCameraPicturePresenter destroy")
@@ -175,7 +189,9 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 拍照
+     * 执行拍照操作
+     * 检查当前是否可以拍照（无视频正在录制、未达到最大拍摄数量）
+     * 然后通过相机管理器执行实际的拍照
      */
     override fun takePhoto() {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -194,9 +210,11 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 添加入数据源
+     * 将拍摄的图片添加到数据源
+     * 根据配置的最大图片数量决定是单图模式还是多图模式
+     * 处理图片旋转，并更新UI显示
      *
-     * @param path 文件路径
+     * @param path 拍摄的图片文件路径
      */
     override fun addCaptureData(path: String) {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -232,7 +250,10 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 刷新多个图片
+     * 刷新多图数据
+     * 更新内部存储的图片数据列表，并通知适配器刷新UI
+     *
+     * @param bitmapDataList 新的图片数据列表
      */
     override fun refreshMultiPhoto(bitmapDataList: ArrayList<BitmapData>) {
         this.bitmapDataList = bitmapDataList
@@ -241,9 +262,10 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
 
     /**
      * 刷新编辑后的单图
+     * 删除原图，使用编辑后的图片替换，并更新UI显示
      *
-     * @param width  最新图片的宽度
-     * @param height 最新图片的高度
+     * @param width  编辑后图片的宽度
+     * @param height 编辑后图片的高度
      */
     override fun refreshEditPhoto(width: Int, height: Int) {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -279,7 +301,9 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 返回迁移图片的线程
+     * 创建并启动图片迁移任务
+     * 将临时缓存的图片文件迁移到指定目录，并添加到媒体库
+     * 处理迁移成功或失败的回调
      */
     override fun newMovePictureFileTask() {
         movePictureFileJob = fragmentRef.get()?.lifecycleScope?.request {
@@ -305,7 +329,8 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 删除临时图片
+     * 删除临时图片文件
+     * 删除当前持有的photoFile对象对应的文件
      */
     override fun deletePhotoFile() {
         photoFile?.let {
@@ -314,33 +339,38 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 清除数据源
+     * 清除所有图片数据源
+     * 清空bitmapDataList中的所有图片数据
      */
     override fun clearBitmapDataList() {
         bitmapDataList.clear()
     }
 
     /**
-     * 停止迁移图片的线程运行
+     * 取消图片迁移任务
+     * 停止正在运行的movePictureFileJob任务
      */
     override fun cancelMovePictureFileTask() {
         movePictureFileJob?.cancel()
     }
 
     /**
-     * 点击图片事件
+     * 点击图片事件处理
+     * 当用户点击多图适配器中的图片时调用
      *
-     * @param intent 点击后，封装相关数据进入该intent
+     * @param intent 封装了图片信息的意图对象，用于启动预览界面
      */
     override fun onPhotoAdapterClick(intent: Intent) {
         fragmentRef.get()?.openAlbumPreviewActivity(intent)
     }
 
     /**
-     * 多图进行删除的时候
+     * 删除多图适配器中的图片
+     * 当用户在多图模式下删除图片时调用
+     * 删除对应的文件和数据源，并处理相关的UI更新
      *
-     * @param bitmapData 数据
-     * @param position   删除的索引
+     * @param bitmapData 要删除的图片数据
+     * @param position   要删除的图片在列表中的索引位置
      */
     override fun onPhotoAdapterDelete(bitmapData: BitmapData, position: Int) {
         fragmentRef.get()?.let { baseCameraFragment ->
@@ -362,17 +392,11 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 迁移图片的线程方法
+     * 在后台执行图片迁移任务
+     * 将临时缓存的图片文件迁移到指定的存储目录
+     * 处理图片压缩、媒体库扫描等操作
      *
-     *                 // AndroidQ才加入相册数据
-     *                 var uri = movePictureFileQ(cacheFile)
-     *                 newFile = cacheFile
-     *                 // 获取相册数据
-     *                 uri?.let {
-     *                     localMedia = MediaStoreUtils.getMediaDataByUri(baseCameraFragment.myContext, it)
-     *                 }
-     *
-     * @return 迁移后的数据
+     * @return 迁移后生成的LocalMedia对象列表，包含完整的图片信息
      */
     private fun movePictureFileTaskInBackground(): ArrayList<LocalMedia> {
         // 每次拷贝文件后记录，最后用于全部添加到相册，回调等操作
@@ -419,8 +443,12 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     }
 
     /**
-     * 扫描
-     * 根据真实路径返回LocalMedia
+     * 扫描媒体文件并获取媒体信息
+     * 使用MediaScannerConnection扫描指定路径的文件，使其在系统相册中可见
+     * 然后通过MediaStoreUtils获取完整的媒体信息
+     *
+     * @param path 要扫描的文件路径
+     * @return 扫描后生成的LocalMedia对象，包含媒体文件的完整信息
      */
     private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
         fragmentRef.get()?.let { baseCameraFragment ->

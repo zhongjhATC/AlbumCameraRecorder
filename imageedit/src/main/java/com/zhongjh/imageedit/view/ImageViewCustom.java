@@ -328,7 +328,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         if (mImage.getMode() == ImageMode.CLIP) {
             canvas.save();
             canvas.translate(getScrollX(), getScrollY());
-            mImage.onDrawClip(canvas, getScrollX(), getScrollY());
+            mImage.onDrawClip(canvas);
             canvas.restore();
         }
     }
@@ -492,7 +492,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                mImage.onTouchUp(getScrollX(), getScrollY());
+                mImage.onTouchUp();
                 onHoming();
                 break;
             default:
@@ -578,7 +578,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
             Log.d(TAG, "onSteady: isHoming=" + isHoming());
         }
         if (!isHoming()) {
-            mImage.onSteady(getScrollX(), getScrollY());
+            mImage.onSteady();
             onHoming();
             return true;
         }
@@ -703,7 +703,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public void onAnimationEnd(@NonNull Animator animation) {
         Log.d(TAG, "onAnimationEnd");
-        if (mImage.onHomingEnd(getScrollX(), getScrollY(), mHomingAnimator.isRotate())) {
+        if (mImage.onHomingEnd()) {
             toApplyHoming(mImage.clip(getScrollX(), getScrollY()));
         }
     }
@@ -711,7 +711,7 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
     @Override
     public void onAnimationCancel(@NonNull Animator animation) {
         Log.d(TAG, "onAnimationCancel");
-        mImage.onHomingCancel(mHomingAnimator.isRotate());
+        mImage.onHomingCancel();
     }
 
     @Override

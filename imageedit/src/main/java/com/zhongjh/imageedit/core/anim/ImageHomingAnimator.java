@@ -7,7 +7,6 @@ import com.zhongjh.imageedit.core.homing.ImageHoming;
 import com.zhongjh.imageedit.core.homing.ImageHomingEvaluator;
 
 /**
- *
  * @author felix
  * @date 2017/11/28 下午12:54
  */

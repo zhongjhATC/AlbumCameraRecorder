@@ -24,8 +24,8 @@ import kotlin.math.min
  * 图像处理核心类，负责图像的显示、编辑、裁剪、涂鸦和马赛克等操作
  * 该类是图像编辑器的核心实现，提供了图像变换、贴纸管理、涂鸦绘制、马赛克效果等功能
  *
- * @author felix
- * @date 2017/11/21 下午10:03
+ * @author zhongjh
+ * @date 2025/08/27
  */
 class ImageCustom {
     /**
