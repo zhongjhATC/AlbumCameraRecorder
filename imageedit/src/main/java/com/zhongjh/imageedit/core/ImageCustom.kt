@@ -11,8 +11,8 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.util.Log
-import com.zhongjh.imageedit.core.clip.ImageClip
 import com.zhongjh.imageedit.core.clip.ImageClipWindow
+import com.zhongjh.imageedit.core.constants.Anchor
 import com.zhongjh.imageedit.core.homing.ImageHoming
 import com.zhongjh.imageedit.core.sticker.ImageSticker
 import com.zhongjh.imageedit.core.util.ImageUtils
@@ -88,7 +88,7 @@ class ImageCustom {
     /**
      * 裁剪模式时当前触摸锚点，标识用户正在拖动的裁剪框锚点
      */
-    private var mAnchor: ImageClip.Anchor? = null
+    private var mAnchor: Anchor? = null
 
     /**
      * 是否处于稳定状态，标识图像是否处于可编辑状态
@@ -885,7 +885,7 @@ class ImageCustom {
      *
      * @param canvas 目标画布对象
      */
-    fun onDrawClip(canvas: Canvas?) {
+    fun onDrawClip(canvas: Canvas) {
         Log.d(TAG, "onDrawClip")
         if (mMode == ImageMode.CLIP) {
             mClipWin.onDraw(canvas)
@@ -944,8 +944,8 @@ class ImageCustom {
         Log.d(TAG, "onScroll")
         if (mMode == ImageMode.CLIP) {
             mClipWin.isShowShade = false // 滚动时隐藏阴影效果
-            if (mAnchor != null) { // 如果用户正在拖动裁剪框的锚点
-                mClipWin.onScroll(mAnchor, dx, dy) // 处理锚点的滚动
+            mAnchor?.let { anchor ->
+                mClipWin.onScroll(anchor, dx, dy) // 处理锚点的滚动
 
                 // 计算旋转后的裁剪区域
                 val clipFrame = RectF()
