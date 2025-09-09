@@ -16,18 +16,6 @@ import android.net.Uri
 abstract class BaseImageDecoder(var uri: Uri) {
 
     /**
-     * 解码图像文件，使用默认配置选项
-     * 这是一个便捷方法，内部调用带参数的decode方法，但传入null作为选项参数
-     * 调用此方法将使用默认的BitmapFactory.Options进行解码，不进行特殊配置
-     *
-     * @return 解码后的Bitmap对象，如果解码失败则返回null
-     * 解码失败的原因可能包括文件不存在、格式不支持、权限不足等
-     */
-    fun decode(): Bitmap {
-        return decode(null)
-    }
-
-    /**
      * 使用指定的配置选项解码图像文件
      * 抽象方法，由派生类实现具体的解码逻辑
      * 该方法是整个解码器框架的核心，不同类型的解码器通过实现此方法提供特定的图像加载逻辑
@@ -38,5 +26,5 @@ abstract class BaseImageDecoder(var uri: Uri) {
      * @return 解码后的Bitmap对象，如果解码失败则返回null
      * 解码失败的原因可能包括文件不存在、格式不支持、权限不足等
      */
-    abstract fun decode(options: BitmapFactory.Options?): Bitmap
+    abstract fun decode(options: BitmapFactory.Options): Bitmap?
 }
