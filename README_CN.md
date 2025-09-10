@@ -7,6 +7,8 @@
 ## 该版本使用camerax完成的拍摄,在自定义拍摄参数等会更加容易、动态水印更加简单。全局动画会更加细腻。同时整理了冗余的配置、属性等
 ## 有任何建议或者想添加的功能，都可提在Issues
 
+## 依然支持java调用
+
 ## [English](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/README_EN.md)
 一个高效的多媒体支持操作库，可多方面的简单配置操作拍照、相册、录制、录音等功能。
 
@@ -54,19 +56,19 @@
 
 	dependencies {
 	     // 如果想简化代码并且同时用到multilibrary和grid、albumCameraRecorderCommon,可以直接使用combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:2.0.04'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:2.0.05'
 
 	     // 公共库，如果不使用上面的combined库
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2.0.04'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2.0.05'
 	     // 核心lib，调用显示相册、录屏、录音等
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2.0.04'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2.0.05'
          // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:2.0.04'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:2.0.05'
 
          // 配套编辑图片使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2.0.04'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2.0.05'
 	     // 配套编辑视频使用,目前只有压缩功能,后续持续添加相关功能,因为该库使用了ffmpeg,占用了文件大小25M,根据实际情况选择是否使用
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2.0.04'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2.0.05'
         
 	}
 
