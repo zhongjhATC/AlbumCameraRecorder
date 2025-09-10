@@ -97,12 +97,12 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     /**
      * 专辑下拉框控件
      */
-    private lateinit var mAlbumSpinner: AlbumSpinner
+    private var mAlbumSpinner: AlbumSpinner? = null
 
     /**
      * 单独处理相册数据源的类
      */
-    private lateinit var mMediaViewUtil: MediaViewUtil
+    private var mMediaViewUtil: MediaViewUtil? = null
 
     /**
      * 是否刷新
@@ -259,12 +259,12 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         mViewHolder.imgClose.setOnClickListener { requireActivity().finish() }
 
         // 下拉框选择的时候
-        mAlbumSpinner.setOnAlbumItemClickListener(object : OnAlbumItemClickListener {
+        mAlbumSpinner?.setOnAlbumItemClickListener(object : OnAlbumItemClickListener {
             override fun onItemClick(position: Int, album: Album) {
                 // 设置缓存值
                 mMainModel.currentSelection = position
                 onAlbumSelected(album)
-                mAlbumSpinner.dismiss()
+                mAlbumSpinner?.dismiss()
             }
         })
 
@@ -323,30 +323,32 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private fun initObserveData() {
         // 专辑加载完毕
         mMainModel.albums.observe(viewLifecycleOwner) { data: List<Album> ->
-            // 更新专辑列表
-            mAlbumSpinner.bindFolder(data)
-            // 可能因为别的原因销毁当前界面，回到当前选择的位置
-            val album = data[mMainModel.currentSelection]
-            val albumChecks = ArrayList<Album>()
-            albumChecks.add(album)
-            mAlbumSpinner.updateCheckStatus(albumChecks)
-            val displayName = album.name
-            if (mViewHolder.tvAlbumTitle.visibility == View.VISIBLE) {
-                mViewHolder.tvAlbumTitle.text = displayName
-            } else {
-                mViewHolder.tvAlbumTitle.alpha = 0.0f
-                mViewHolder.tvAlbumTitle.visibility = View.VISIBLE
-                mViewHolder.tvAlbumTitle.text = displayName
-                mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(
-                    mApplicationContext.resources.getInteger(
-                        android.R.integer.config_longAnimTime
-                    ).toLong()
-                ).start()
+            if (data.isNotEmpty()) {
+                // 更新专辑列表
+                mAlbumSpinner?.bindFolder(data)
+                // 可能因为别的原因销毁当前界面，回到当前选择的位置
+                val album = data[mMainModel.currentSelection]
+                val albumChecks = ArrayList<Album>()
+                albumChecks.add(album)
+                mAlbumSpinner?.updateCheckStatus(albumChecks)
+                val displayName = album.name
+                if (mViewHolder.tvAlbumTitle.visibility == View.VISIBLE) {
+                    mViewHolder.tvAlbumTitle.text = displayName
+                } else {
+                    mViewHolder.tvAlbumTitle.alpha = 0.0f
+                    mViewHolder.tvAlbumTitle.visibility = View.VISIBLE
+                    mViewHolder.tvAlbumTitle.text = displayName
+                    mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(
+                        mApplicationContext.resources.getInteger(
+                            android.R.integer.config_longAnimTime
+                        ).toLong()
+                    ).start()
+                }
+                onAlbumSelected(album)
             }
-            onAlbumSelected(album)
         }
         // 选择数据改变
-        mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { mMediaViewUtil.notifyItemByLocalMedia() }
+        mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { mMediaViewUtil?.notifyItemByLocalMedia() }
         // 原图选项改变
         mMainModel.getOriginalEnableObserve().observe(viewLifecycleOwner) { value: Boolean -> mViewHolder.original.setChecked(value) }
         // 预览界面的viewPage滑动时触发
@@ -397,8 +399,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
 
         mAlbumSpinner = AlbumSpinner(mApplicationContext, albumSpinnerStyle)
-        mAlbumSpinner.setArrowImageView(mViewHolder.imgArrow)
-        mAlbumSpinner.setTitleTextView(mViewHolder.tvAlbumTitle)
+        mAlbumSpinner?.setArrowImageView(mViewHolder.imgArrow)
+        mAlbumSpinner?.setTitleTextView(mViewHolder.tvAlbumTitle)
     }
 
     override fun onDestroy() {
@@ -407,8 +409,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             videoCompressCoordinator.onCompressDestroy(this@AlbumFragment.javaClass)
             mGlobalSpec.videoCompressCoordinator = null
         }
-        mMediaViewUtil.onDestroyView()
-        mAlbumSpinner.setOnAlbumItemClickListener(null)
+        mMediaViewUtil?.onDestroyView()
+        mAlbumSpinner?.setOnAlbumItemClickListener(null)
         super.onDestroy()
     }
 
@@ -474,7 +476,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mViewHolder.recyclerview.visibility = View.VISIBLE
             mViewHolder.emptyView.visibility = View.GONE
             if (!mIsRefresh) {
-                mMediaViewUtil.load(album)
+                mMediaViewUtil?.load(album)
                 mViewHolder.tvAlbumTitle.text = album.name
             }
         }

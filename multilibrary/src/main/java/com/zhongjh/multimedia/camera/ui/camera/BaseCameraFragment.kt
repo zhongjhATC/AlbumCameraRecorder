@@ -228,19 +228,15 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         // 清除视图引用
         closeView?.setOnClickListener(null)
         flashView?.setOnClickListener(null)
         switchView?.setOnClickListener(null)
         cameraManage.setOnCameraManageListener(null)
-    }
-
-    override fun onDestroy() {
         onDestroy(isCommit)
         photoVideoLayout.onDestroy()
         cameraManage.onDestroy()
-        super.onDestroy()
+        super.onDestroyView()
     }
 
     /**

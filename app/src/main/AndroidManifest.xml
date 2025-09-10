@@ -15,20 +15,20 @@
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <!-- 蓝牙录音检测耳机状态 -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 -->
+    <!-- 写入扩展存储，向扩展卡写入数据，用于写入离线定位数据 旧版本选择权限-->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-    <!-- Devices running Android 12L (API level 32) or lower  -->
+    <!-- Devices running Android 12L (API level 32) or lower 旧版本选择权限 -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
-    <!-- Devices running Android 13 (API level 33) or higher -->
+    <!-- Android 13多媒体选择权限 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
-    <!-- To handle the reselection within the app on Android 14 (API level 34) -->
+    <!-- Android 14新增的视觉媒体选择权限 -->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
 
     <!-- 视频权限 begin -->

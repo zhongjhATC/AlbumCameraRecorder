@@ -66,7 +66,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      * 拍照的多图片集合适配器
      * 用于在多图模式下显示已拍摄的图片列表
      */
-    private lateinit var photoAdapter: PhotoAdapter
+    private var photoAdapter: PhotoAdapter? = null
 
     /**
      * 图片数据列表
@@ -175,11 +175,13 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
                 FileUtils.deleteFile(it)
             }
             // 删除多个图片
-            for (bitmapData in photoAdapter.listData) {
-                FileUtils.deleteFile(bitmapData.absolutePath)
+            photoAdapter?.let {
+                for (bitmapData in it.listData) {
+                    FileUtils.deleteFile(bitmapData.absolutePath)
+                }
             }
         }
-        photoAdapter.release()
+        photoAdapter?.release()
         cancelMovePictureFileTask()
 
         // 置空所有可能持有引用的对象
@@ -198,12 +200,14 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
             // 如果已经有视频，则不允许拍照了
             if (baseCameraFragment.cameraVideoManager.videoTime <= 0) {
                 // 判断数量
-                if (photoAdapter.itemCount < imageMaxCount) {
-                    // 设置不能点击，防止多次点击报错
-                    baseCameraFragment.childClickableLayout.setChildClickable(false)
-                    baseCameraFragment.cameraManage.takePictures()
-                } else {
-                    baseCameraFragment.photoVideoLayout.setTipAlphaAnimation(baseCameraFragment.resources.getString(R.string.z_multi_library_the_camera_limit_has_been_reached))
+                photoAdapter?.let {
+                    if (it.itemCount < imageMaxCount) {
+                        // 设置不能点击，防止多次点击报错
+                        baseCameraFragment.childClickableLayout.setChildClickable(false)
+                        baseCameraFragment.cameraManage.takePictures()
+                    } else {
+                        baseCameraFragment.photoVideoLayout.setTipAlphaAnimation(baseCameraFragment.resources.getString(R.string.z_multi_library_the_camera_limit_has_been_reached))
+                    }
                 }
             }
         }
@@ -230,8 +234,10 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
                 // 添加入数据源
                 bitmapDataList.add(bitmapData)
                 // 更新最后一个添加
-                photoAdapter.notifyItemInserted(photoAdapter.itemCount - 1)
-                photoAdapter.notifyItemRangeChanged(photoAdapter.itemCount - 1, photoAdapter.itemCount)
+                photoAdapter?.let {
+                    it.notifyItemInserted(it.itemCount - 1)
+                    it.notifyItemRangeChanged(it.itemCount - 1, it.itemCount)
+                }
                 baseCameraFragment.showMultiplePicture()
             } else {
                 bitmapDataList.add(bitmapData)
@@ -257,7 +263,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      */
     override fun refreshMultiPhoto(bitmapDataList: ArrayList<BitmapData>) {
         this.bitmapDataList = bitmapDataList
-        photoAdapter.dispatchUpdatesTo(this.bitmapDataList)
+        photoAdapter?.dispatchUpdatesTo(this.bitmapDataList)
     }
 
     /**

@@ -20,6 +20,7 @@ import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -150,19 +151,10 @@ open class MainActivity : AppCompatActivity() {
     @TargetApi(23)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        // 至少一个不再提醒,就提示去到应用设置里面修改配置
         if (!mIsShowDialog) {
-            // 全部拒绝后就提示去到应用设置里面修改配置
-            var permissionsLength = 0
-            for (i in grantResults.indices) {
-                // 只有当用户同时点选了拒绝开启权限和不再提醒后才会true
-                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
-                    if (grantResults[i] == PermissionChecker.PERMISSION_DENIED) {
-                        permissionsLength++
-                    }
-                }
-            }
-            // 至少一个不再提醒
-            if (permissionsLength > 0) {
+            if (isRejectWithoutReminderPermissions(permissions, grantResults)) {
                 val builder = AlertDialog.Builder(this@MainActivity, R.style.MyAlertDialogStyle)
                 builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { _: DialogInterface?, _: Int ->
                     val intent = Intent()
@@ -200,6 +192,8 @@ open class MainActivity : AppCompatActivity() {
                 mIsShowDialog = true
             }
         }
+
+        // 看是否需要再次请求权限
         if (!mIsShowDialog) {
             if (requestCode == GET_PERMISSION_REQUEST) {
                 var permissionsLength = 0
@@ -209,7 +203,7 @@ open class MainActivity : AppCompatActivity() {
                         permissionsLength++
                     }
                 }
-                if (permissionsLength > 0) {
+                if (isRejectWithoutReminderPermissions(permissions, grantResults)) {
                     requestPermissionsDialog()
                 } else {
                     requestPermissions(null)
@@ -313,7 +307,7 @@ open class MainActivity : AppCompatActivity() {
      */
     private fun requestPermissions(savedInstanceState: Bundle?) {
         // 判断权限，权限通过才可以初始化相关
-        val needPermissions = needPermissions
+        val needPermissions = getNeedPermissions()
         if (needPermissions.size > 0) {
             // 请求权限
             requestPermissions2(needPermissions)
@@ -328,7 +322,7 @@ open class MainActivity : AppCompatActivity() {
      */
     private fun requestPermissionsDialog() {
         // 判断权限，权限通过才可以初始化相关
-        val needPermissions = needPermissions
+        val needPermissions = getNeedPermissions()
         if (needPermissions.size > 0) {
             // 动态消息
             val message = StringBuilder()
@@ -376,76 +370,113 @@ open class MainActivity : AppCompatActivity() {
     /**
      * 获取目前需要请求的权限
      */
-    private val needPermissions: ArrayList<String>
-        get() {
-            // 需要请求的权限列表
-            val permissions = ArrayList<String>()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (albumValid()) {
-                    // 如果开启相册功能,则验证存储功能,兼容Android SDK 33
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(
-                                ofVideo()
-                            )
-                        ) {
-                            // 如果所有功能都支持视频图片，就请求视频图片权限
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
-                                != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                            }
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
-                                != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-                            }
-                        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage())) {
-                            // 如果所有功能只支持图片，就只请求图片权限
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES)
-                                != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                            }
-                        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
-                            // 如果所有功能只支持视频，就只请求视频权限
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO)
-                                != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-                            }
-                        }
-                    } else {
-                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED
-                        ) {
-                            permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+    private fun getNeedPermissions(): ArrayList<String> {
+        // 需要请求的权限列表
+        val permissions = ArrayList<String>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 如果开启相册功能,则验证存储功能
+            if (albumValid()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    // 兼容 Android 14 只要支持视频或者图片都要检测该权限
+                    if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) || getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
+                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) != PackageManager.PERMISSION_GRANTED) {
+                            permissions.add(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+                            // 当READ_MEDIA_VISUAL_USER_SELECTED不同意时,才将READ_MEDIA_IMAGES和READ_MEDIA_VIDEO纳入进来请求
+                            addPermissionImagesAndVideo(permissions)
                         }
                     }
-                }
-
-                // 判断如果有录音功能则验证录音
-                if (recorderValid() || videoValid()) {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                        != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
-                            permissions.add(Manifest.permission.RECORD_AUDIO)
-                        }
-                    }
-                }
-                // 判断如果有录制功能则验证录音、录制
-                if (cameraValid()) {
-                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                        != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        if (!permissions.contains(Manifest.permission.CAMERA)) {
-                            permissions.add(Manifest.permission.CAMERA)
-                        }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    // 兼容 Android 13
+                    addPermissionImagesAndVideo(permissions)
+                } else {
+                    // 兼容Android 旧版
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
                     }
                 }
             }
-            return permissions
+
+            // 判断如果有录音功能则验证录音
+            if (recorderValid() || videoValid()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                    if (!permissions.contains(Manifest.permission.RECORD_AUDIO)) {
+                        permissions.add(Manifest.permission.RECORD_AUDIO)
+                    }
+                }
+            }
+            // 判断如果有录制功能则验证录音、录制
+            if (cameraValid()) {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    if (!permissions.contains(Manifest.permission.CAMERA)) {
+                        permissions.add(Manifest.permission.CAMERA)
+                    }
+                }
+            }
         }
+        return permissions
+    }
+
+    /**
+     * 判断这些权限是否 拒绝+无需提醒的权限
+     * @param permissions 请求的权限
+     * @param grantResults 被拒绝的权限
+     */
+    private fun isRejectWithoutReminderPermissions(permissions: Array<String>, grantResults: IntArray): Boolean {
+        var permissionsLength = 0
+        for (i in grantResults.indices) {
+            if (isLimitedAccessPermission(permissions[i])) {
+                // 如果该权限是有限访问允许的,则直接忽略
+                continue
+            }
+            // 只有当用户同时点选了拒绝开启权限和不再提醒后才会true
+            if (grantResults[i] == PermissionChecker.PERMISSION_DENIED && !ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i])) {
+                permissionsLength++
+            }
+        }
+        return permissionsLength > 0
+    }
+
+    /**
+     * 是否有限访问的 图片/视频 权限
+     */
+    private fun isLimitedAccessPermission(permission: String): Boolean {
+        // 满足Android 14
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            // 有限访问允许
+            if (checkSelfPermission(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED) {
+                if (permission == Manifest.permission.READ_MEDIA_IMAGES || permission == Manifest.permission.READ_MEDIA_VIDEO) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    /**
+     * 根据配置来确定添加的权限类型 - 图片、视频
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun addPermissionImagesAndVideo(permissions: ArrayList<String>) {
+        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
+            // 如果所有功能都支持视频图片，就请求视频图片权限
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+            }
+        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage())) {
+            // 如果所有功能只支持图片，就只请求图片权限
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
+            // 如果所有功能只支持视频，就只请求视频权限
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+            }
+        }
+    }
 
     /**
      * 请求权限
@@ -453,9 +484,7 @@ open class MainActivity : AppCompatActivity() {
      * @param permissions 权限
      */
     private fun requestPermissions2(permissions: ArrayList<String>) {
-        ActivityCompat.requestPermissions(
-            this@MainActivity, permissions.toTypedArray(), GET_PERMISSION_REQUEST
-        )
+        ActivityCompat.requestPermissions(this@MainActivity, permissions.toTypedArray(), GET_PERMISSION_REQUEST)
     }
 
     /**
