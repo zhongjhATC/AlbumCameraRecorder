@@ -66,11 +66,9 @@ open class MainActivity : AppCompatActivity() {
         ActivityMainZjhBinding.inflate(layoutInflater)
     }
 
-    private val mStartActivityLauncher = registerForActivityResult(StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-            requestPermissions(null)
-        }
+    private val mStartActivityLauncher = registerForActivityResult(StartActivityForResult()) { _ ->
+        // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
+        requestPermissions(null)
     }
 
     private val mAdapterViewPager by lazy {
