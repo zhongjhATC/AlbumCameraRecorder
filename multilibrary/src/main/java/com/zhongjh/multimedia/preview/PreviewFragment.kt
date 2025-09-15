@@ -252,7 +252,7 @@ class PreviewFragment : BaseFragment() {
      * 初始化样式
      */
     private fun initStyle(inflater: LayoutInflater, container: ViewGroup?): View {
-        val wrapper = ContextThemeWrapper(mContext, mGlobalSpec.themeId)
+        val wrapper = ContextThemeWrapper(activity, mGlobalSpec.themeId)
         val cloneInContext = inflater.cloneInContext(wrapper)
         return cloneInContext.inflate(R.layout.fragment_preview_zjh, container, false)
     }
@@ -377,6 +377,7 @@ class PreviewFragment : BaseFragment() {
         // 编辑
         mViewHolder.tvEdit.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
+                mViewHolder.tvEdit.text = resources.getText(R.string.z_multi_library_button_edit)
                 openImageEditActivity()
             }
         })
