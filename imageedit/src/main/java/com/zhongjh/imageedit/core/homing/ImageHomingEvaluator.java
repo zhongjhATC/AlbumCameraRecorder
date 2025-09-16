@@ -13,10 +13,10 @@ public class ImageHomingEvaluator implements TypeEvaluator<ImageHoming> {
 
     @Override
     public ImageHoming evaluate(float fraction, ImageHoming startValue, ImageHoming endValue) {
-        float x = startValue.x + fraction * (endValue.x - startValue.x);
-        float y = startValue.y + fraction * (endValue.y - startValue.y);
-        float scale = startValue.scale + fraction * (endValue.scale - startValue.scale);
-        float rotate = startValue.rotate + fraction * (endValue.rotate - startValue.rotate);
+        float x = startValue.getX() + fraction * (endValue.getX() - startValue.getX());
+        float y = startValue.getY() + fraction * (endValue.getY() - startValue.getY());
+        float scale = startValue.getScale() + fraction * (endValue.getScale() - startValue.getScale());
+        float rotate = startValue.getRotate() + fraction * (endValue.getRotate() - startValue.getRotate());
 
         if (homing == null) {
             homing = new ImageHoming(x, y, scale, rotate);

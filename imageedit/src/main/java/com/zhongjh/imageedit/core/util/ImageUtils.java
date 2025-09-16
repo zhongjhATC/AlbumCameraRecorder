@@ -107,30 +107,30 @@ public class ImageUtils {
         // 只有当框架的宽高都小于窗口时，才进行放大操作
         if (frame.width() < win.width() && frame.height() < win.height()) {
             // 计算最小缩放比例，确保框架完全适应窗口
-            dHoming.scale = Math.min(win.width() / frame.width(), win.height() / frame.height());
+            dHoming.setScale(Math.min(win.width() / frame.width(), win.height() / frame.height()));
         }
 
         RectF rect = new RectF();
-        M.setScale(dHoming.scale, dHoming.scale, frame.centerX(), frame.centerY());
+        M.setScale(dHoming.getScale(), dHoming.getScale(), frame.centerX(), frame.centerY());
         M.mapRect(rect, frame);
 
         if (rect.width() < win.width()) {
-            dHoming.x += win.centerX() - rect.centerX();
+            dHoming.setX(dHoming.getX() + win.centerX() - rect.centerX());
         } else {
             if (rect.left > win.left) {
-                dHoming.x += win.left - rect.left;
+                dHoming.setX(dHoming.getX() + win.left - rect.left);
             } else if (rect.right < win.right) {
-                dHoming.x += win.right - rect.right;
+                dHoming.setX(dHoming.getX() + win.right - rect.right);
             }
         }
 
         if (rect.height() < win.height()) {
-            dHoming.y += win.centerY() - rect.centerY();
+            dHoming.setY(dHoming.getY() + win.centerY() - rect.centerY());
         } else {
             if (rect.top > win.top) {
-                dHoming.y += win.top - rect.top;
+                dHoming.setY(dHoming.getY() + win.top - rect.top);
             } else if (rect.bottom < win.bottom) {
-                dHoming.y += win.bottom - rect.bottom;
+                dHoming.setY(dHoming.getY() + win.bottom - rect.bottom);
             }
         }
 
@@ -156,30 +156,30 @@ public class ImageUtils {
 
         // 宽高都小于Win，才有必要放大
         if (frame.width() < win.width() && frame.height() < win.height()) {
-            dHoming.scale = Math.min(win.width() / frame.width(), win.height() / frame.height());
+            dHoming.setScale(Math.min(win.width() / frame.width(), win.height() / frame.height()));
         }
 
         RectF rect = new RectF();
-        M.setScale(dHoming.scale, dHoming.scale, centerX, centerY);
+        M.setScale(dHoming.getScale(), dHoming.getScale(), centerX, centerY);
         M.mapRect(rect, frame);
 
         if (rect.width() < win.width()) {
-            dHoming.x += win.centerX() - rect.centerX();
+            dHoming.setX(dHoming.getX() + win.centerX() - rect.centerX());
         } else {
             if (rect.left > win.left) {
-                dHoming.x += win.left - rect.left;
+                dHoming.setX(dHoming.getX() + win.left - rect.left);
             } else if (rect.right < win.right) {
-                dHoming.x += win.right - rect.right;
+                dHoming.setX(dHoming.getX() + win.right - rect.right);
             }
         }
 
         if (rect.height() < win.height()) {
-            dHoming.y += win.centerY() - rect.centerY();
+            dHoming.setY(dHoming.getY() + win.centerY() - rect.centerY());
         } else {
             if (rect.top > win.top) {
-                dHoming.y += win.top - rect.top;
+                dHoming.setY(dHoming.getY() + win.top - rect.top);
             } else if (rect.bottom < win.bottom) {
-                dHoming.y += win.bottom - rect.bottom;
+                dHoming.setY(dHoming.getY() + win.bottom - rect.bottom);
             }
         }
 
@@ -206,30 +206,30 @@ public class ImageUtils {
         // 宽高都小于Win，才有必要放大
         boolean isScale = isJustInner || frame.width() < win.width() && frame.height() < win.height();
         if (isScale) {
-            dHoming.scale = Math.min(win.width() / frame.width(), win.height() / frame.height());
+            dHoming.setScale(Math.min(win.width() / frame.width(), win.height() / frame.height()));
         }
 
         RectF rect = new RectF();
-        M.setScale(dHoming.scale, dHoming.scale, frame.centerX(), frame.centerY());
+        M.setScale(dHoming.getScale(), dHoming.getScale(), frame.centerX(), frame.centerY());
         M.mapRect(rect, frame);
 
         if (rect.width() < win.width()) {
-            dHoming.x += win.centerX() - rect.centerX();
+            dHoming.setX(dHoming.getX() + win.centerX() - rect.centerX());
         } else {
             if (rect.left > win.left) {
-                dHoming.x += win.left - rect.left;
+                dHoming.setX(dHoming.getX() + win.left - rect.left);
             } else if (rect.right < win.right) {
-                dHoming.x += win.right - rect.right;
+                dHoming.setX(dHoming.getX() + win.right - rect.right);
             }
         }
 
         if (rect.height() < win.height()) {
-            dHoming.y += win.centerY() - rect.centerY();
+            dHoming.setY(dHoming.getY() + win.centerY() - rect.centerY());
         } else {
             if (rect.top > win.top) {
-                dHoming.y += win.top - rect.top;
+                dHoming.setY(dHoming.getY() + win.top - rect.top);
             } else if (rect.bottom < win.bottom) {
-                dHoming.y += win.bottom - rect.bottom;
+                dHoming.setY(dHoming.getY() + win.bottom - rect.bottom);
             }
         }
 
@@ -252,23 +252,23 @@ public class ImageUtils {
         }
 
         if (frame.width() < win.width() || frame.height() < win.height()) {
-            dHoming.scale = Math.max(win.width() / frame.width(), win.height() / frame.height());
+            dHoming.setScale(Math.max(win.width() / frame.width(), win.height() / frame.height()));
         }
 
         RectF rect = new RectF();
-        M.setScale(dHoming.scale, dHoming.scale, frame.centerX(), frame.centerY());
+        M.setScale(dHoming.getScale(), dHoming.getScale(), frame.centerX(), frame.centerY());
         M.mapRect(rect, frame);
 
         if (rect.left > win.left) {
-            dHoming.x += win.left - rect.left;
+            dHoming.setX(dHoming.getX() + win.left - rect.left);
         } else if (rect.right < win.right) {
-            dHoming.x += win.right - rect.right;
+            dHoming.setX(dHoming.getX() + win.right - rect.right);
         }
 
         if (rect.top > win.top) {
-            dHoming.y += win.top - rect.top;
+            dHoming.setY(dHoming.getY() + win.top - rect.top);
         } else if (rect.bottom < win.bottom) {
-            dHoming.y += win.bottom - rect.bottom;
+            dHoming.setY(dHoming.getY() + win.bottom - rect.bottom);
         }
 
         return dHoming;
@@ -292,23 +292,23 @@ public class ImageUtils {
         }
 
         if (frame.width() < win.width() || frame.height() < win.height()) {
-            dHoming.scale = Math.max(win.width() / frame.width(), win.height() / frame.height());
+            dHoming.setScale(Math.max(win.width() / frame.width(), win.height() / frame.height()));
         }
 
         RectF rect = new RectF();
-        M.setScale(dHoming.scale, dHoming.scale, pivotX, pivotY);
+        M.setScale(dHoming.getScale(), dHoming.getScale(), pivotX, pivotY);
         M.mapRect(rect, frame);
 
         if (rect.left > win.left) {
-            dHoming.x += win.left - rect.left;
+            dHoming.setX(dHoming.getX() + win.left - rect.left);
         } else if (rect.right < win.right) {
-            dHoming.x += win.right - rect.right;
+            dHoming.setX(dHoming.getX() + win.right - rect.right);
         }
 
         if (rect.top > win.top) {
-            dHoming.y += win.top - rect.top;
+            dHoming.setY(dHoming.getY() + win.top - rect.top);
         } else if (rect.bottom < win.bottom) {
-            dHoming.y += win.bottom - rect.bottom;
+            dHoming.setY(dHoming.getY() + win.bottom - rect.bottom);
         }
 
         return dHoming;
@@ -330,14 +330,14 @@ public class ImageUtils {
         }
 
         // 第一次时缩放到裁剪区域内
-        dHoming.scale = Math.max(win.width() / frame.width(), win.height() / frame.height());
+        dHoming.setScale(Math.max(win.width() / frame.width(), win.height() / frame.height()));
 
         RectF rect = new RectF();
-        M.setScale(dHoming.scale, dHoming.scale, frame.centerX(), frame.centerY());
+        M.setScale(dHoming.getScale(), dHoming.getScale(), frame.centerX(), frame.centerY());
         M.mapRect(rect, frame);
 
-        dHoming.x += win.centerX() - rect.centerX();
-        dHoming.y += win.centerY() - rect.centerY();
+        dHoming.setX(dHoming.getX() + win.centerX() - rect.centerX());
+        dHoming.setY(dHoming.getY() + win.centerY() - rect.centerY());
 
         return dHoming;
     }

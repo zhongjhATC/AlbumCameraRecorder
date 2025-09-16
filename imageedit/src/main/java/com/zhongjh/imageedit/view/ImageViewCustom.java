@@ -640,10 +640,10 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
      */
     private void toApplyHoming(ImageHoming homing) {
         Log.d(TAG, "toApplyHoming " +
-                "homing.scale(" + homing.scale + ")homing.rotate(" + homing.rotate + ")homing.x(" + homing.x + ")homing.y" + homing.y + ")");
-        mImage.setScale(homing.scale);
-        mImage.setRotate(homing.rotate);
-        if (!onScrollTo(Math.round(homing.x), Math.round(homing.y))) {
+                "homing.scale(" + homing.getScale() + ")homing.rotate(" + homing.getRotate() + ")homing.x(" + homing.getX() + ")homing.y" + homing.getY() + ")");
+        mImage.setScale(homing.getScale());
+        mImage.setRotate(homing.getRotate());
+        if (!onScrollTo(Math.round(homing.getX()), Math.round(homing.getY()))) {
             invalidate();
         }
     }
