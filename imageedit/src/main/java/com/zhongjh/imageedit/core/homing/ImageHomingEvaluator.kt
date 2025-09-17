@@ -1,29 +1,25 @@
-package com.zhongjh.imageedit.core.homing;
+package com.zhongjh.imageedit.core.homing
 
-import android.animation.TypeEvaluator;
+import android.animation.TypeEvaluator
 
 /**
  * 用来处理放大-旋转的实体
  * @author zhongjh
  * @date 2017/11/28 下午4:13
  */
-public class ImageHomingEvaluator implements TypeEvaluator<ImageHoming> {
+class ImageHomingEvaluator : TypeEvaluator<ImageHoming> {
+    private var homing: ImageHoming? = null
 
-    private ImageHoming homing;
+    override fun evaluate(fraction: Float, startValue: ImageHoming, endValue: ImageHoming): ImageHoming {
+        val x = startValue.x + fraction * (endValue.x - startValue.x)
+        val y = startValue.y + fraction * (endValue.y - startValue.y)
+        val scale = startValue.scale + fraction * (endValue.scale - startValue.scale)
+        val rotate = startValue.rotate + fraction * (endValue.rotate - startValue.rotate)
 
-    @Override
-    public ImageHoming evaluate(float fraction, ImageHoming startValue, ImageHoming endValue) {
-        float x = startValue.getX() + fraction * (endValue.getX() - startValue.getX());
-        float y = startValue.getY() + fraction * (endValue.getY() - startValue.getY());
-        float scale = startValue.getScale() + fraction * (endValue.getScale() - startValue.getScale());
-        float rotate = startValue.getRotate() + fraction * (endValue.getRotate() - startValue.getRotate());
-
-        if (homing == null) {
-            homing = new ImageHoming(x, y, scale, rotate);
-        } else {
-            homing.set(x, y, scale, rotate);
+        homing?.set(x, y, scale, rotate) ?: let {
+            homing = ImageHoming(x, y, scale, rotate)
         }
 
-        return homing;
+        return homing!!
     }
 }
