@@ -5,7 +5,7 @@ import android.animation.TypeEvaluator
 /**
  * 用来处理放大-旋转的实体
  * @author zhongjh
- * @date 2017/11/28 下午4:13
+ * @date 2025/09/16
  */
 class ImageHomingEvaluator : TypeEvaluator<ImageHoming> {
     private var homing: ImageHoming? = null
