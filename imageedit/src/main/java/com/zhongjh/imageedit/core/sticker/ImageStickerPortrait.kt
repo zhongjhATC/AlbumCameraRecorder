@@ -42,14 +42,14 @@ interface ImageStickerPortrait {
      * 通常用于条件判断，决定是否需要执行某些操作（如保存贴纸状态）
      * @return true 表示贴纸当前可见并处于活动状态，false表示贴纸处于隐藏或非活动状态
      */
-    val isShowing: Boolean
+    fun isShowing(): Boolean
 
     /**
      * 获取贴纸的边界框架矩形
      * 返回的RectF对象表示贴纸在视图坐标系中的精确位置和尺寸，常用于碰撞检测、布局计算等场景
      * @return 贴纸在视图坐标系中的矩形边界，包含位置、宽度和高度信息
      */
-    val frame: RectF?
+    fun getFrame(): RectF?
 
     /**
      * 绘制贴纸的核心方法

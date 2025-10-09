@@ -112,7 +112,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      *
      * @param canvas 用于绘制贴纸的画布对象
      */
-    override fun onSticker(canvas: Canvas) {
+    override fun onSticker(canvas: Canvas?) {
         // 空实现，由子类重写
     }
 
@@ -121,7 +121,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      *
      * @param callback 实现了Callback接口的监听器对象
      */
-    override fun registerCallback(callback: ImageStickerPortrait.Callback) {
+    override fun registerCallback(callback: ImageStickerPortrait.Callback?) {
         mCallback = callback
     }
 
@@ -130,7 +130,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      *
      * @param callback 之前注册的回调监听器
      */
-    override fun unregisterCallback(callback: ImageStickerPortrait.Callback) {
+    override fun unregisterCallback(callback: ImageStickerPortrait.Callback?) {
         mCallback = null
     }
 

@@ -56,7 +56,7 @@ object BitmapLoadUtils {
         }
 
         // Check for max texture size via GL
-        val maxTextureSize = EglUtils.getMaxTextureSize()
+        val maxTextureSize = EglUtils.maxTextureSize
         if (maxTextureSize > 0) {
             maxBitmapSize = min(maxBitmapSize.toDouble(), maxTextureSize.toDouble()).toInt()
         }

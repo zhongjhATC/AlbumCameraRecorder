@@ -274,10 +274,12 @@ class ImageCustom {
         Log.d(TAG, "rotateStickers")
         mMatrix.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY())
         for (sticker in mBackStickers) {
-            mMatrix.mapRect(sticker.frame)
-            sticker.rotation += rotate
-            sticker.x = sticker.frame.centerX() - sticker.pivotX
-            sticker.y = sticker.frame.centerY() - sticker.pivotY
+            sticker.getFrame()?.let {
+                mMatrix.mapRect(sticker.getFrame())
+                sticker.rotation += rotate
+                sticker.x = it.centerX() - sticker.pivotX
+                sticker.y = it.centerY() - sticker.pivotY
+            }
         }
     }
 
@@ -562,7 +564,7 @@ class ImageCustom {
 
         moveToBackground(mForeSticker)
 
-        if (sticker.isShowing) {
+        if (sticker.isShowing()) {
             mForeSticker = sticker
             // 从BackStickers中移除
             mBackStickers.remove(sticker)
@@ -582,7 +584,7 @@ class ImageCustom {
             return
         }
 
-        if (!sticker.isShowing) {
+        if (!sticker.isShowing()) {
             // 加入BackStickers中
             if (!mBackStickers.contains(sticker)) {
                 mBackStickers.add(sticker)
@@ -842,7 +844,7 @@ class ImageCustom {
         }
         canvas.save()
         for (sticker in mBackStickers) {
-            if (!sticker.isShowing) {
+            if (!sticker.isShowing()) {
                 val tPivotX = sticker.x + sticker.pivotX
                 val tPivotY = sticker.y + sticker.pivotY
 
@@ -1075,13 +1077,15 @@ class ImageCustom {
 
         // 对所有贴纸应用相同的缩放变换
         for (sticker in mBackStickers) {
-            mMatrix.mapRect(sticker.frame) // 变换贴纸边框
+            mMatrix.mapRect(sticker.getFrame()) // 变换贴纸边框
             val tPivotX = sticker.x + sticker.pivotX
             val tPivotY = sticker.y + sticker.pivotY
             sticker.addScale(factorValue) // 更新贴纸自身的缩放因子
             // 调整贴纸位置以保持相对于图像的正确位置
-            sticker.x = sticker.x + sticker.frame.centerX() - tPivotX
-            sticker.y = sticker.y + sticker.frame.centerY() - tPivotY
+            sticker.getFrame()?.let {
+                sticker.x = sticker.x + it.centerX() - tPivotX
+                sticker.y = sticker.y + it.centerY() - tPivotY
+            }
         }
     }
 
