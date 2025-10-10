@@ -1,33 +1,34 @@
-package com.zhongjh.imageedit.core;
+package com.zhongjh.imageedit.core
 
 /**
  * 图像编辑器工作模式枚举类
  * 定义了图像编辑器支持的不同操作模式，用于控制编辑器的行为和交互方式
- * 
- * @author felix
- * @date 2017/11/22 下午6:18
+ *
+ * @author zhongjh
+ * @date 2025/10/10
  */
-public enum ImageMode {
-
+enum class ImageMode {
     /**
      * 默认模式
      * 不进行任何特殊操作，用户可以对图像进行基本的平移和缩放
      */
     NONE,
+
     /**
      * 涂鸦模式
      * 用户可以在图像上绘制自由曲线，添加个性化的标记或绘画
      */
     DOODLE,
+
     /**
      * 马赛克模式
      * 用户可以在图像上涂抹马赛克效果，用于模糊或隐藏特定区域
      */
     MOSAIC,
+
     /**
      * 裁剪模式
      * 用户可以调整裁剪框大小和位置，对图像进行裁剪操作，保留选定区域
      */
     CLIP
-
 }
