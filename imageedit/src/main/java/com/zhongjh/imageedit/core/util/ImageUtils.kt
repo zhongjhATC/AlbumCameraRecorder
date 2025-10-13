@@ -29,15 +29,10 @@ object ImageUtils {
     }
 
     /**
-     * 将框架矩形等比例缩放到适应窗口，保持中心点不变（带统一内边距）
-     * @param win 目标窗口矩形
-     * @param frame 要缩放的框架矩形
-     * @param padding 四周统一的内边距值
-     */
-    /**
      * 将框架矩形等比例缩放到适应窗口，保持中心点不变（无内边距）
      * @param win 目标窗口矩形
      * @param frame 要缩放的框架矩形
+     * @param padding 四周统一的内边距值
      */
     @JvmOverloads
     fun fitCenter(win: RectF, frame: RectF, padding: Float = 0f) {
