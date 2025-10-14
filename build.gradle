@@ -11,6 +11,12 @@ buildscript {
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         gradlePluginPortal()
+        // 华为云镜像Maven中央仓库
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        // 华为云Google镜像（关键：包含AGP最新版本）
+        maven { url 'https://repo.huaweicloud.com/repository/google/' }
+        // 华为云Gradle镜像插件仓库
+        maven { url 'https://repo.huaweicloud.com/repository/gradle-plugin/' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.0'
@@ -32,6 +38,12 @@ allprojects {
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         gradlePluginPortal()
+        // 华为云镜像Maven中央仓库
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        // 华为云Google镜像（关键：包含AGP最新版本）
+        maven { url 'https://repo.huaweicloud.com/repository/google/' }
+        // 华为云Gradle镜像插件仓库
+        maven { url 'https://repo.huaweicloud.com/repository/gradle-plugin/' }
     }
 
     configurations.configureEach {
