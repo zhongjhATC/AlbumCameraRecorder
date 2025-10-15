@@ -261,9 +261,7 @@ class PreviewFragment : BaseFragment() {
      * 针对回调
      */
     private fun initActivityResult() {
-        mImageEditActivityResult = registerForActivityResult(
-            StartActivityForResult()
-        ) { result: ActivityResult ->
+        mImageEditActivityResult = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == RESULT_OK) {
                 mIsEdit = true
                 refreshMultiMediaItem()

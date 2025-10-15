@@ -762,13 +762,13 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         private int identity = Integer.MIN_VALUE;
 
         void reset() {
-            this.path.reset();
+            this.getPath().reset();
             this.identity = Integer.MIN_VALUE;
         }
 
         void reset(float x, float y) {
-            this.path.reset();
-            this.path.moveTo(x, y);
+            this.getPath().reset();
+            this.getPath().moveTo(x, y);
             this.identity = Integer.MIN_VALUE;
         }
 
@@ -781,15 +781,15 @@ public class ImageViewCustom extends FrameLayout implements Runnable, ScaleGestu
         }
 
         void lineTo(float x, float y) {
-            this.path.lineTo(x, y);
+            this.getPath().lineTo(x, y);
         }
 
         boolean isEmpty() {
-            return this.path.isEmpty();
+            return this.getPath().isEmpty();
         }
 
         ImagePen toPath() {
-            return new ImagePen(new Path(this.path), getMode(), getColor(), getWidth());
+            return new ImagePen(new Path(this.getPath()), getMode(), getColor(), getWidth());
         }
     }
 }
