@@ -112,7 +112,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      *
      * @param canvas 用于绘制贴纸的画布对象
      */
-    override fun onSticker(canvas: Canvas?) {
+    override fun onSticker(canvas: Canvas) {
         // 空实现，由子类重写
     }
 

@@ -276,9 +276,9 @@ class ImageCustom {
         for (sticker in mBackStickers) {
             sticker.getFrame()?.let {
                 mMatrix.mapRect(sticker.getFrame())
-                sticker.rotation += rotate
-                sticker.x = it.centerX() - sticker.pivotX
-                sticker.y = it.centerY() - sticker.pivotY
+                sticker.stickerRotation += rotate
+                sticker.stickerX = it.centerX() - sticker.stickerPivotX
+                sticker.stickerY = it.centerY() - sticker.stickerPivotY
             }
         }
     }
@@ -845,13 +845,13 @@ class ImageCustom {
         canvas.save()
         for (sticker in mBackStickers) {
             if (!sticker.isShowing()) {
-                val tPivotX = sticker.x + sticker.pivotX
-                val tPivotY = sticker.y + sticker.pivotY
+                val tPivotX = sticker.stickerX + sticker.stickerPivotX
+                val tPivotY = sticker.stickerY + sticker.stickerPivotY
 
                 canvas.save()
-                mMatrix.setTranslate(sticker.x, sticker.y)
-                mMatrix.postScale(sticker.scale, sticker.scale, tPivotX, tPivotY)
-                mMatrix.postRotate(sticker.rotation, tPivotX, tPivotY)
+                mMatrix.setTranslate(sticker.stickerX, sticker.stickerY)
+                mMatrix.postScale(sticker.stickerScale, sticker.stickerScale, tPivotX, tPivotY)
+                mMatrix.postRotate(sticker.stickerRotation, tPivotX, tPivotY)
 
                 canvas.concat(mMatrix)
                 sticker.onSticker(canvas)
@@ -1078,13 +1078,13 @@ class ImageCustom {
         // 对所有贴纸应用相同的缩放变换
         for (sticker in mBackStickers) {
             mMatrix.mapRect(sticker.getFrame()) // 变换贴纸边框
-            val tPivotX = sticker.x + sticker.pivotX
-            val tPivotY = sticker.y + sticker.pivotY
-            sticker.addScale(factorValue) // 更新贴纸自身的缩放因子
+            val tPivotX = sticker.stickerX + sticker.stickerPivotX
+            val tPivotY = sticker.stickerY + sticker.stickerPivotY
+            sticker.addStickerScale(factorValue) // 更新贴纸自身的缩放因子
             // 调整贴纸位置以保持相对于图像的正确位置
             sticker.getFrame()?.let {
-                sticker.x = sticker.x + it.centerX() - tPivotX
-                sticker.y = sticker.y + it.centerY() - tPivotY
+                sticker.stickerX = sticker.stickerX + it.centerX() - tPivotX
+                sticker.stickerY = sticker.stickerY + it.centerY() - tPivotY
             }
         }
     }

@@ -67,8 +67,8 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 计算触摸点相对于容器中心点的坐标
-                pointX = mView.x + x - mContainer.pivotX
-                pointY = mView.y + y - mContainer.pivotY
+                pointX = mView.x + x - mContainer.stickerPivotX
+                pointY = mView.y + y - mContainer.stickerPivotY
 
 
                 // 记录调试信息
@@ -102,8 +102,8 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 计算移动后触摸点相对于容器中心点的坐标
-                pointX = mView.x + xy[0] - mContainer.pivotX
-                pointY = mView.y + xy[1] - mContainer.pivotY
+                pointX = mView.x + xy[0] - mContainer.stickerPivotX
+                pointY = mView.y + xy[1] - mContainer.stickerPivotY
 
 
                 // 记录调试信息
@@ -120,7 +120,7 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 应用缩放
-                mContainer.addScale(scale)
+                mContainer.addStickerScale(scale)
 
 
                 // 记录调试信息
@@ -128,7 +128,7 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 应用旋转
-                mContainer.rotation = (mContainer.rotation + degrees - mDegrees).toFloat()
+                mContainer.stickerRotation = (mContainer.stickerRotation + degrees - mDegrees).toFloat()
 
 
                 // 更新当前半径，用于下一次计算

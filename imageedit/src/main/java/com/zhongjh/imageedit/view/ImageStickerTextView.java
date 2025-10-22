@@ -7,6 +7,8 @@ import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.zhongjh.imageedit.ImageTextEditDialog;
 import com.zhongjh.imageedit.core.ImageText;
 
@@ -86,7 +88,7 @@ public class ImageStickerTextView extends BaseImageStickerView implements ImageT
      * @param context 上下文对象
      */
     @Override
-    public void onInitialize(Context context) {
+    public void onInitialize(@NonNull Context context) {
         if (mBaseTextSize <= 0) {
             // 将sp单位转换为像素单位
             mBaseTextSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 
@@ -104,7 +106,7 @@ public class ImageStickerTextView extends BaseImageStickerView implements ImageT
      * @return 创建的文本视图
      */
     @Override
-    public View onCreateContentView(Context context) {
+    public View onCreateContentView(@NonNull Context context) {
         mTextView = new TextView(context);
         // 设置文本大小
         mTextView.setTextSize(mBaseTextSize);
@@ -186,5 +188,45 @@ public class ImageStickerTextView extends BaseImageStickerView implements ImageT
             // 更新文本颜色
             mTextView.setTextColor(mText.getColor());
         }
+    }
+
+    @Override
+    public float getStickerRotation() {
+        return getRotation();
+    }
+
+    @Override
+    public void setStickerRotation(float v) {
+        setRotation(v);
+    }
+
+    @Override
+    public float getStickerPivotX() {
+        return getPivotX();
+    }
+
+    @Override
+    public float getStickerPivotY() {
+        return getPivotY();
+    }
+
+    @Override
+    public float getStickerX() {
+        return getX();
+    }
+
+    @Override
+    public void setStickerX(float v) {
+        setX(v);
+    }
+
+    @Override
+    public float getStickerY() {
+        return getY();
+    }
+
+    @Override
+    public void setStickerY(float v) {
+        setY(v);
     }
 }

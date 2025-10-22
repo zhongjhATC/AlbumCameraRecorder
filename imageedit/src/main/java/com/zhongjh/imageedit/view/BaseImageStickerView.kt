@@ -1,102 +1,89 @@
-package com.zhongjh.imageedit.view;
+package com.zhongjh.imageedit.view
 
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-
-import androidx.annotation.NonNull;
-
-import com.zhongjh.imageedit.R;
-import com.zhongjh.imageedit.core.sticker.ImageSticker;
-import com.zhongjh.imageedit.core.sticker.ImageStickerAdjustHelper;
-import com.zhongjh.imageedit.core.sticker.ImageStickerHelper;
-import com.zhongjh.imageedit.core.sticker.ImageStickerMoveHelper;
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
+import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewConfiguration
+import android.view.ViewGroup
+import android.widget.ImageView
+import com.zhongjh.imageedit.R
+import com.zhongjh.imageedit.core.sticker.ImageSticker
+import com.zhongjh.imageedit.core.sticker.ImageStickerAdjustHelper
+import com.zhongjh.imageedit.core.sticker.ImageStickerHelper
+import com.zhongjh.imageedit.core.sticker.ImageStickerMoveHelper
+import com.zhongjh.imageedit.core.sticker.ImageStickerPortrait
+import kotlin.math.max
 
 /**
  *
- * @author felix
- * @date 2017/12/12 下午4:26
+ * @author zhongjh
+ * @date 2025/10/22
  */
-
-public abstract class BaseImageStickerView extends ViewGroup implements ImageSticker, View.OnClickListener {
-
-    private View mContentView;
-
-    private float mScale = 1f;
-
-    private int mDownShowing = 0;
-
-    private ImageStickerMoveHelper mMoveHelper;
-
-    private ImageStickerHelper<BaseImageStickerView> mStickerHelper;
-
-    private ImageView mRemoveView, mAdjustView;
-
-    private final Paint mPaint;
-
-    private final Matrix mMatrix = new Matrix();
-
-    private final RectF mFrame = new RectF();
-
-    private final Rect mTempFrame = new Rect();
-
-    private static final int ANCHOR_SIZE = 48;
-
-    private static final int ANCHOR_SIZE_HALF = ANCHOR_SIZE >> 1;
-
-    private static final float STROKE_WIDTH = 3f;
-
-    {
-        mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mPaint.setColor(Color.WHITE);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeWidth(STROKE_WIDTH);
+abstract class BaseImageStickerView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
+    ViewGroup(context, attrs, defStyleAttr), ImageSticker, View.OnClickListener {
+    private val mContentView: View by lazy {
+        onCreateContentView(context)
     }
 
-    public BaseImageStickerView(Context context) {
-        this(context, null, 0);
+    private var mScale = 1f
+
+    private var mDownShowing = 0
+
+    private val mMoveHelper: ImageStickerMoveHelper by lazy {
+        ImageStickerMoveHelper(this)
     }
 
-    public BaseImageStickerView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    private val mStickerHelper: ImageStickerHelper<BaseImageStickerView> by lazy {
+        ImageStickerHelper(this)
     }
 
-    public BaseImageStickerView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        onInitialize(context);
+    private val mRemoveView: ImageView by lazy {
+        ImageView(context)
+    }
+    private val mAdjustView: ImageView by lazy {
+        ImageView(context)
     }
 
-    public void onInitialize(Context context) {
-        setBackgroundColor(Color.TRANSPARENT);
+    private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
-        mContentView = onCreateContentView(context);
-        addView(mContentView, getContentLayoutParams());
+    private val mMatrix = Matrix()
 
-        mRemoveView = new ImageView(context);
-        mRemoveView.setScaleType(ImageView.ScaleType.FIT_XY);
-        mRemoveView.setImageResource(R.mipmap.image_ic_delete);
-        addView(mRemoveView, getAnchorLayoutParams());
-        mRemoveView.setOnClickListener(this);
+    private val mFrame = RectF()
 
-        mAdjustView = new ImageView(context);
-        mAdjustView.setScaleType(ImageView.ScaleType.FIT_XY);
-        mAdjustView.setImageResource(R.mipmap.image_ic_adjust);
-        addView(mAdjustView, getAnchorLayoutParams());
+    private val mTempFrame = Rect()
 
-        new ImageStickerAdjustHelper(this, mAdjustView);
+    init {
+        mPaint.color = Color.WHITE
+        mPaint.style = Paint.Style.STROKE
+        mPaint.strokeWidth = STROKE_WIDTH
+    }
 
-        mStickerHelper = new ImageStickerHelper<>(this);
-        mMoveHelper = new ImageStickerMoveHelper(this);
+    init {
+        this.onInitialize(context)
+    }
+
+    open fun onInitialize(context: Context) {
+        setBackgroundColor(Color.TRANSPARENT)
+
+        addView(mContentView, contentLayoutParams)
+
+        mRemoveView.scaleType = ImageView.ScaleType.FIT_XY
+        mRemoveView.setImageResource(R.mipmap.image_ic_delete)
+        addView(mRemoveView, anchorLayoutParams)
+        mRemoveView.setOnClickListener(this)
+
+        mAdjustView.scaleType = ImageView.ScaleType.FIT_XY
+        mAdjustView.setImageResource(R.mipmap.image_ic_adjust)
+        addView(mAdjustView, anchorLayoutParams)
+
+        ImageStickerAdjustHelper(this, mAdjustView)
     }
 
     /**
@@ -104,203 +91,185 @@ public abstract class BaseImageStickerView extends ViewGroup implements ImageSti
      * @param context 上下文
      * @return view
      */
-    public abstract View onCreateContentView(Context context);
+    abstract fun onCreateContentView(context: Context): View
 
-    @Override
-    public float getScale() {
-        return mScale;
-    }
+    override var stickerScale: Float
+        get() = mScale
+        set(scale) {
+            mScale = scale
 
+            mContentView.scaleX = mScale
+            mContentView.scaleY = mScale
 
+            val pivotX = (left + right) shr 1
+            val pivotY = (top + bottom) shr 1
 
-    @Override
-    public void setScale(float scale) {
-        mScale = scale;
+            mFrame[pivotX.toFloat(), pivotY.toFloat(), pivotX.toFloat()] = pivotY.toFloat()
+            mFrame.inset(-(mContentView.measuredWidth shr 1).toFloat(), -(mContentView.measuredHeight shr 1).toFloat())
 
-        mContentView.setScaleX(mScale);
-        mContentView.setScaleY(mScale);
+            mMatrix.setScale(mScale, mScale, mFrame.centerX(), mFrame.centerY())
+            mMatrix.mapRect(mFrame)
 
-        int pivotX = (getLeft() + getRight()) >> 1;
-        int pivotY = (getTop() + getBottom()) >> 1;
+            mFrame.round(mTempFrame)
 
-        mFrame.set(pivotX, pivotY, pivotX, pivotY);
-        mFrame.inset(-(mContentView.getMeasuredWidth() >> 1), -(mContentView.getMeasuredHeight() >> 1));
-
-        mMatrix.setScale(mScale, mScale, mFrame.centerX(), mFrame.centerY());
-        mMatrix.mapRect(mFrame);
-
-        mFrame.round(mTempFrame);
-
-        layout(mTempFrame.left, mTempFrame.top, mTempFrame.right, mTempFrame.bottom);
-    }
-
-    @Override
-    public void addScale(float scale) {
-        setScale(getScale() * scale);
-    }
-
-    private LayoutParams getContentLayoutParams() {
-        return new LayoutParams(
-                LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT
-        );
-    }
-
-    private LayoutParams getAnchorLayoutParams() {
-        return new LayoutParams(ANCHOR_SIZE, ANCHOR_SIZE);
-    }
-
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        if (isShowing()) {
-            canvas.drawRect(ANCHOR_SIZE_HALF, ANCHOR_SIZE_HALF,
-                    getWidth() - ANCHOR_SIZE_HALF,
-                    getHeight() - ANCHOR_SIZE_HALF, mPaint);
+            layout(mTempFrame.left, mTempFrame.top, mTempFrame.right, mTempFrame.bottom)
         }
-        super.draw(canvas);
+
+
+    override fun addStickerScale(scale: Float) {
+        this.stickerScale = scale * scale
     }
 
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int count = getChildCount();
+    private val contentLayoutParams: LayoutParams
+        get() = LayoutParams(
+            LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT
+        )
 
-        int maxHeight = 0;
-        int maxWidth = 0;
-        int childState = 0;
+    private val anchorLayoutParams: LayoutParams
+        get() = LayoutParams(ANCHOR_SIZE, ANCHOR_SIZE)
 
-        for (int i = 0; i < count; i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() != GONE) {
-                child.measure(widthMeasureSpec, heightMeasureSpec);
+    override fun draw(canvas: Canvas) {
+        if (isShowing()) {
+            canvas.drawRect(
+                ANCHOR_SIZE_HALF.toFloat(), ANCHOR_SIZE_HALF.toFloat(),
+                (width - ANCHOR_SIZE_HALF).toFloat(),
+                (height - ANCHOR_SIZE_HALF).toFloat(), mPaint
+            )
+        }
+        super.draw(canvas)
+    }
 
-                maxWidth = Math.round(Math.max(maxWidth, child.getMeasuredWidth() * child.getScaleX()));
-                maxHeight = Math.round(Math.max(maxHeight, child.getMeasuredHeight() * child.getScaleY()));
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val count = childCount
 
-                childState = combineMeasuredStates(childState, child.getMeasuredState());
+        var maxHeight = 0
+        var maxWidth = 0
+        var childState = 0
+
+        for (i in 0 until count) {
+            val child = getChildAt(i)
+            if (child.visibility != GONE) {
+                child.measure(widthMeasureSpec, heightMeasureSpec)
+
+                maxWidth = Math.round(max(maxWidth.toDouble(), (child.measuredWidth * child.scaleX).toDouble())).toInt()
+                maxHeight = Math.round(max(maxHeight.toDouble(), (child.measuredHeight * child.scaleY).toDouble())).toInt()
+
+                childState = combineMeasuredStates(childState, child.measuredState)
             }
         }
 
-        maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
-        maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
+        maxHeight = max(maxHeight.toDouble(), suggestedMinimumHeight.toDouble()).toInt()
+        maxWidth = max(maxWidth.toDouble(), suggestedMinimumWidth.toDouble()).toInt()
 
-        setMeasuredDimension(resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
-                resolveSizeAndState(maxHeight, heightMeasureSpec, childState << MEASURED_HEIGHT_STATE_SHIFT));
+        setMeasuredDimension(
+            resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
+            resolveSizeAndState(maxHeight, heightMeasureSpec, childState shl MEASURED_HEIGHT_STATE_SHIFT)
+        )
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+        mFrame[left.toFloat(), top.toFloat(), right.toFloat()] = bottom.toFloat()
 
-        mFrame.set(left, top, right, bottom);
-
-        int count = getChildCount();
+        val count = childCount
         if (count == 0) {
-            return;
+            return
         }
 
-        mRemoveView.layout(0, 0, mRemoveView.getMeasuredWidth(), mRemoveView.getMeasuredHeight());
+        mRemoveView.layout(0, 0, mRemoveView.measuredWidth, mRemoveView.measuredHeight)
         mAdjustView.layout(
-                right - left - mAdjustView.getMeasuredWidth(),
-                bottom - top - mAdjustView.getMeasuredHeight(),
-                right - left, bottom - top
-        );
+            right - left - mAdjustView.measuredWidth,
+            bottom - top - mAdjustView.measuredHeight,
+            right - left, bottom - top
+        )
 
-        int centerX = (right - left) >> 1, centerY = (bottom - top) >> 1;
-        int hw = mContentView.getMeasuredWidth() >> 1;
-        int hh = mContentView.getMeasuredHeight() >> 1;
+        val centerX = (right - left) shr 1
+        val centerY = (bottom - top) shr 1
+        val hw = mContentView.measuredWidth shr 1
+        val hh = mContentView.measuredHeight shr 1
 
-        mContentView.layout(centerX - hw, centerY - hh, centerX + hw, centerY + hh);
+        mContentView.layout(centerX - hw, centerY - hh, centerX + hw, centerY + hh)
     }
 
-    @Override
-    protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
-        return isShowing() && super.drawChild(canvas, child, drawingTime);
+    override fun drawChild(canvas: Canvas, child: View, drawingTime: Long): Boolean {
+        return isShowing() && super.drawChild(canvas, child, drawingTime)
     }
 
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (!isShowing() && ev.getAction() == MotionEvent.ACTION_DOWN) {
-            mDownShowing = 0;
-            show();
-            return true;
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        if (!isShowing() && ev.action == MotionEvent.ACTION_DOWN) {
+            mDownShowing = 0
+            show()
+            return true
         }
-        return isShowing() && super.onInterceptTouchEvent(ev);
+        return isShowing() && super.onInterceptTouchEvent(ev)
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val handled = mMoveHelper.onTouch(this, event)
 
-        boolean handled = mMoveHelper.onTouch(this, event);
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> mDownShowing++
+            MotionEvent.ACTION_UP -> if (mDownShowing > 1 && event.eventTime - event.downTime < ViewConfiguration.getTapTimeout()) {
+                onContentTap()
+                return true
+            }
 
-        switch (event.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                mDownShowing++;
-                break;
-            case MotionEvent.ACTION_UP:
-                if (mDownShowing > 1 && event.getEventTime() - event.getDownTime() < ViewConfiguration.getTapTimeout()) {
-                    onContentTap();
-                    return true;
-                }
-                break;
-            default:
-                break;
+            else -> {}
         }
-
-        return handled | super.onTouchEvent(event);
+        return handled or super.onTouchEvent(event)
     }
 
-    @Override
-    public void onClick(View v) {
-        if (v == mRemoveView) {
-            onRemove();
+    override fun onClick(v: View) {
+        if (v === mRemoveView) {
+            onRemove()
         }
     }
 
-    public void onRemove() {
-        mStickerHelper.remove();
+    private fun onRemove() {
+        mStickerHelper.remove()
     }
 
-    public void onContentTap() {
-
+    open fun onContentTap() {
     }
 
-    @Override
-    public boolean show() {
-        return mStickerHelper.show();
+    override fun show(): Boolean {
+        return mStickerHelper.show()
     }
 
-    @Override
-    public boolean remove() {
-        return mStickerHelper.remove();
+    override fun remove(): Boolean {
+        return mStickerHelper.remove()
     }
 
-    @Override
-    public boolean dismiss() {
-        return mStickerHelper.dismiss();
+    override fun dismiss(): Boolean {
+        return mStickerHelper.dismiss()
     }
 
-    @Override
-    public boolean isShowing() {
-        return mStickerHelper.isShowing();
+    override fun isShowing(): Boolean {
+        return mStickerHelper.isShowing()
     }
 
-    @Override
-    public RectF getFrame() {
-        return mStickerHelper.getFrame();
+    override fun getFrame(): RectF? {
+        return mStickerHelper.getFrame()
     }
 
-    @Override
-    public void onSticker(Canvas canvas) {
-        canvas.translate(mContentView.getX(), mContentView.getY());
-        mContentView.draw(canvas);
+    override fun onSticker(canvas: Canvas) {
+        canvas.translate(mContentView.x, mContentView.y)
+        mContentView.draw(canvas)
     }
 
-    @Override
-    public void registerCallback(Callback callback) {
-        mStickerHelper.registerCallback(callback);
+    override fun registerCallback(callback: ImageStickerPortrait.Callback?) {
+        mStickerHelper.registerCallback(callback)
     }
 
-    @Override
-    public void unregisterCallback(Callback callback) {
-        mStickerHelper.unregisterCallback(callback);
+    override fun unregisterCallback(callback: ImageStickerPortrait.Callback?) {
+        mStickerHelper.unregisterCallback(callback)
+    }
+
+    companion object {
+        private const val ANCHOR_SIZE = 48
+
+        private const val ANCHOR_SIZE_HALF = ANCHOR_SIZE shr 1
+
+        private const val STROKE_WIDTH = 3f
     }
 }

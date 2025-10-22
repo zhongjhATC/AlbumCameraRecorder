@@ -57,7 +57,7 @@ interface ImageStickerPortrait {
      * 通常由视图的onDraw()方法内部调用，实现贴纸的可视化呈现
      * @param canvas 用于绘制贴纸的画布对象
      */
-    fun onSticker(canvas: Canvas?)
+    fun onSticker(canvas: Canvas)
 
     /**
      * 注册贴纸事件回调监听器
