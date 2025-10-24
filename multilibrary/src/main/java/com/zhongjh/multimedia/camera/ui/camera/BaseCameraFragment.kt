@@ -81,6 +81,13 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     private var mainActivityRef: WeakReference<MainActivity>? = null
 
     /**
+     * 使用弱引用持有 BaseCameraFragment - 延迟初始化以避免构造时泄露
+     */
+    private val fragmentRef by lazy {
+        WeakReference(this@BaseCameraFragment)
+    }
+
+    /**
      * 安全获取 Activity
      */
     val mainActivity: MainActivity?
@@ -348,27 +355,31 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
 
             override fun onClick() {
                 Log.d(TAG, "pvLayout onClick")
-                this@BaseCameraFragment.cameraPictureManager.takePhoto()
+                // 点击事件：通过弱引用调用拍照逻辑
+                fragmentRef.get()?.cameraPictureManager?.takePhoto()
             }
 
             override fun onLongClick() {
                 Log.d(TAG, "pvLayout onLongClick ")
-                this@BaseCameraFragment.cameraVideoManager.recordVideo()
-                // 设置录制状态
-                this@BaseCameraFragment.cameraStateManager.state = this@BaseCameraFragment.cameraStateManager.videoMultipleIn
-                // 开始录像
-                setMenuVisibility(View.INVISIBLE)
+                // 长按事件：通过弱引用调用录像逻辑
+                fragmentRef.get()?.let { fragment ->
+                    if (!fragment.isDetached) {
+                        fragment.cameraVideoManager.recordVideo()
+                        fragment.cameraStateManager.state = fragment.cameraStateManager.videoMultipleIn
+                        fragment.setMenuVisibility(View.INVISIBLE)
+                    }
+                }
             }
 
             override fun onLongClickEnd(time: Long) {
                 Log.d(TAG, "pvLayout onLongClickEnd ")
-                // 录像暂停
-                pauseRecord()
+                // 长按结束：通过弱引用调用暂停录制
+                fragmentRef.get()?.pauseRecord()
             }
 
             override fun onLongClickFinish() {
                 Log.d(TAG, "pvLayout onLongClickFinish ")
-                this@BaseCameraFragment.state.onLongClickFinish()
+                fragmentRef.get()?.state?.onLongClickFinish()
             }
 
             override fun onLongClickError() {
@@ -377,11 +388,19 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
 
             override fun onBanClickTips() {
                 // 判断如果是分段录制模式就提示
-                photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_multi_library_working_video_click_later))
+                fragmentRef.get()?.let { fragment ->
+                    fragment.photoVideoLayout.setTipAlphaAnimation(
+                        fragment.resources.getString(R.string.z_multi_library_working_video_click_later)
+                    )
+                }
             }
 
             override fun onClickStopTips() {
-                photoVideoLayout.setTipAlphaAnimation(resources.getString(R.string.z_multi_library_touch_your_suspension))
+                fragmentRef.get()?.let { fragment ->
+                    fragment.photoVideoLayout.setTipAlphaAnimation(
+                        fragment.resources.getString(R.string.z_multi_library_touch_your_suspension)
+                    )
+                }
             }
         })
     }

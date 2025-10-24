@@ -229,6 +229,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
                 intent.putExtra(EXTRA_WIDTH, bitmap.getWidth());
                 intent.putExtra(EXTRA_HEIGHT, bitmap.getHeight());
                 setResult(RESULT_OK, intent);
+                bitmap.recycle();
                 finish();
                 return;
             }

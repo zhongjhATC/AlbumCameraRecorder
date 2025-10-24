@@ -20,7 +20,8 @@ object AlbumCameraRecorderApi {
      */
     @JvmStatic
     fun getFileSize(context: Context): String {
-        context.externalCacheDir?.let { externalCacheDir ->
+        val appContext = context.applicationContext
+        appContext.externalCacheDir?.let { externalCacheDir ->
             val file = File(externalCacheDir.path)
             return getSize(file)
         } ?: let {

@@ -331,7 +331,11 @@ class ClickOrLongButton : View {
      * 销毁事件
      */
     fun onDestroy() {
+        touchTimeHandler.removeCallbacksAndMessages(null) // 新增：移除所有未处理消息
         touchTimeHandler.clearMsg()
+        // 重置画笔资源（可选，降低内存占用）
+        centerCirclePaint.reset()
+        outBlackCirclePaint.reset()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -460,6 +464,9 @@ class ClickOrLongButton : View {
      */
     fun reset() {
         resetCommon()
+        mCurrentLocation.clear()
+        // 新增：释放多余容量
+        mCurrentLocation.trimToSize()
         mCurrentSumNumberDegrees = 0f
         mCurrentSumTime = 0L
         mCurrentLocation.clear()

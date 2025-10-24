@@ -200,6 +200,8 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * onDestroy
      */
     fun onDestroy() {
+        // 解除 CameraX 用例绑定
+        cameraProvider.unbindAll()
         displayManager.unregisterDisplayListener(displayListener)
         recording?.close()
         stopCheckOrientation()

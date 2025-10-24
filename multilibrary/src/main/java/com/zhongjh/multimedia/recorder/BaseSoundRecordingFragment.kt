@@ -303,6 +303,8 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             val sharePreferences = mainActivity.getSharedPreferences("sp_name_audio", Context.MODE_PRIVATE)
             val filePath = sharePreferences?.getString("audio_path", "") as String
             val elapsed = sharePreferences.getLong("elapsed", 0)
+            // 可选：若不再使用，清除临时数据
+            sharePreferences.edit().clear().apply()
             val file = File(filePath)
             localMedia.absolutePath = filePath
             localMedia.uri = MediaStoreCompat.getUri(myContext, filePath).toString()
@@ -321,7 +323,8 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
         }
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         mediaPlayer?.let {
             stopPlaying()
         }
@@ -335,11 +338,6 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             it.release()
             recorder = null // 置空引用
         }
-        super.onDestroy()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
         // 移除pvLayout的所有监听器（需SoundRecordingLayout提供移除方法）
         soundRecordingLayout.soundRecordingLayoutViewHolder.rlEdit.setOnClickListener(null)
         // 移除所有监听器，避免SoundRecordingLayout持有Fragment引用
