@@ -1,144 +1,134 @@
-package com.zhongjh.imageedit.view;
+package com.zhongjh.imageedit.view
 
-import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Build;
-import android.util.AttributeSet;
-import android.view.animation.AccelerateDecelerateInterpolator;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatRadioButton;
-
-import com.zhongjh.imageedit.R;
+import android.animation.ValueAnimator
+import android.animation.ValueAnimator.AnimatorUpdateListener
+import android.content.Context
+import android.content.res.TypedArray
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.os.Build
+import android.util.AttributeSet
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.appcompat.widget.AppCompatRadioButton
+import com.zhongjh.imageedit.R
+import kotlin.math.min
 
 /**
- * @author felix
- * @date 2017/12/1 下午2:50
+ * @author zhongjh
+ * @date 2025/10/27
  */
+class ImageColorRadio : AppCompatRadioButton, AnimatorUpdateListener {
+    private var mColor = Color.WHITE
 
-public class ImageColorRadio extends AppCompatRadioButton implements ValueAnimator.AnimatorUpdateListener {
+    private var mStrokeColor = Color.WHITE
 
-    private int mColor = Color.WHITE;
+    private var mRadiusRatio = 0f
 
-    private int mStrokeColor = Color.WHITE;
-
-    private float mRadiusRatio = 0f;
-
-    private ValueAnimator mAnimator;
-
-    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-    private static final float RADIUS_BASE = 0.6f;
-
-    private static final float RADIUS_RING = 0.9f;
-
-    private static final float RADIUS_BALL = 0.72f;
-
-    public ImageColorRadio(Context context) {
-        this(context, null, 0);
+    private val mAnimator: ValueAnimator by lazy {
+        ValueAnimator.ofFloat(0f, 1f)
     }
 
-    public ImageColorRadio(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initialize(context, attrs);
+    private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        initialize(context, attrs)
     }
 
-    public ImageColorRadio(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initialize(context, attrs);
+    @JvmOverloads
+    constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(context, attrs, defStyleAttr) {
+        initialize(context, attrs)
     }
 
-    private void initialize(Context context, AttributeSet attrs) {
-        TypedArray imageColorRadio = null;
+    private fun initialize(context: Context, attrs: AttributeSet?) {
+        var imageColorRadio: TypedArray? = null
         try {
-            imageColorRadio = context.obtainStyledAttributes(attrs, R.styleable.ImageColorRadio);
-            mColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_color, Color.WHITE);
-            mStrokeColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_stroke_color, Color.WHITE);
+            imageColorRadio = context.obtainStyledAttributes(attrs, R.styleable.ImageColorRadio)
+            mColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_color, Color.WHITE)
+            mStrokeColor = imageColorRadio.getColor(R.styleable.ImageColorRadio_z_image_stroke_color, Color.WHITE)
         } finally {
             if (null != imageColorRadio) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    imageColorRadio.close();
+                    imageColorRadio.close()
                 } else {
-                    imageColorRadio.recycle();
+                    imageColorRadio.recycle()
                 }
             }
         }
 
-        setButtonDrawable(null);
+        buttonDrawable = null
 
-        mPaint.setColor(mColor);
-        mPaint.setStrokeWidth(5f);
+        mPaint.color = mColor
+        mPaint.strokeWidth = 5f
     }
 
-    private ValueAnimator getAnimator() {
-        if (mAnimator == null) {
-            mAnimator = ValueAnimator.ofFloat(0f, 1f);
-            mAnimator.addUpdateListener(this);
-            mAnimator.setDuration(200);
-            mAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+    private val animator: ValueAnimator
+        get() {
+            mAnimator.addUpdateListener(this)
+            mAnimator.setDuration(200)
+            mAnimator.interpolator = AccelerateDecelerateInterpolator()
+            return mAnimator
         }
-        return mAnimator;
+
+    var color: Int
+        get() = mColor
+        set(color) {
+            mColor = color
+            mPaint.color = mColor
+        }
+
+    override fun draw(canvas: Canvas) {
+        super.draw(canvas)
+
+        val hw = width / 2f
+        val hh = height / 2f
+        val radius = min(hw.toDouble(), hh.toDouble()).toFloat()
+
+        canvas.save()
+        mPaint.color = mColor
+        mPaint.style = Paint.Style.FILL
+        canvas.drawCircle(hw, hh, getBallRadius(radius), mPaint)
+
+        mPaint.color = mStrokeColor
+        mPaint.style = Paint.Style.STROKE
+        canvas.drawCircle(hw, hh, getRingRadius(radius), mPaint)
+        canvas.restore()
     }
 
-    public void setColor(int color) {
-        mColor = color;
-        mPaint.setColor(mColor);
+    private fun getBallRadius(radius: Float): Float {
+        return radius * ((RADIUS_BALL - RADIUS_BASE) * mRadiusRatio + RADIUS_BASE)
     }
 
-    public int getColor() {
-        return mColor;
+    private fun getRingRadius(radius: Float): Float {
+        return radius * ((RADIUS_RING - RADIUS_BASE) * mRadiusRatio + RADIUS_BASE)
     }
 
-    @Override
-    public void draw(@NonNull Canvas canvas) {
-        super.draw(canvas);
+    override fun setChecked(checked: Boolean) {
+        val isChanged = checked != isChecked
 
-        float hw = getWidth() / 2f, hh = getHeight() / 2f;
-        float radius = Math.min(hw, hh);
-
-        canvas.save();
-        mPaint.setColor(mColor);
-        mPaint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(hw, hh, getBallRadius(radius), mPaint);
-
-        mPaint.setColor(mStrokeColor);
-        mPaint.setStyle(Paint.Style.STROKE);
-        canvas.drawCircle(hw, hh, getRingRadius(radius), mPaint);
-        canvas.restore();
-    }
-
-    private float getBallRadius(float radius) {
-        return radius * ((RADIUS_BALL - RADIUS_BASE) * mRadiusRatio + RADIUS_BASE);
-    }
-
-    private float getRingRadius(float radius) {
-        return radius * ((RADIUS_RING - RADIUS_BASE) * mRadiusRatio + RADIUS_BASE);
-    }
-
-    @Override
-    public void setChecked(boolean checked) {
-        boolean isChanged = checked != isChecked();
-
-        super.setChecked(checked);
+        super.setChecked(checked)
 
         if (isChanged) {
-            ValueAnimator animator = getAnimator();
+            val animator = animator
 
             if (checked) {
-                animator.start();
+                animator.start()
             } else {
-                animator.reverse();
+                animator.reverse()
             }
         }
     }
 
-    @Override
-    public void onAnimationUpdate(ValueAnimator animation) {
-        mRadiusRatio = (float) animation.getAnimatedValue();
-        invalidate();
+    override fun onAnimationUpdate(animation: ValueAnimator) {
+        mRadiusRatio = animation.animatedValue as Float
+        invalidate()
+    }
+
+    companion object {
+        private const val RADIUS_BASE = 0.6f
+
+        private const val RADIUS_RING = 0.9f
+
+        private const val RADIUS_BALL = 0.72f
     }
 }
