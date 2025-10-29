@@ -31,12 +31,15 @@ class ImageColorRadio : AppCompatRadioButton, AnimatorUpdateListener {
 
     private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
 
+    constructor(context: Context) : super(context) {
+        initialize(context, null)
+    }
+
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         initialize(context, attrs)
     }
 
-    @JvmOverloads
-    constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : super(context, attrs, defStyleAttr) {
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
         initialize(context, attrs)
     }
 
