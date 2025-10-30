@@ -248,7 +248,7 @@ abstract class BaseImageStickerView(context: Context, attrs: AttributeSet?, defS
         return mStickerHelper.isShowing()
     }
 
-    override fun getFrame(): RectF? {
+    override fun getFrame(): RectF {
         return mStickerHelper.getFrame()
     }
 
@@ -257,11 +257,11 @@ abstract class BaseImageStickerView(context: Context, attrs: AttributeSet?, defS
         mContentView.draw(canvas)
     }
 
-    override fun registerCallback(callback: ImageStickerPortrait.Callback?) {
+    override fun registerCallback(callback: ImageStickerPortrait.Callback) {
         mStickerHelper.registerCallback(callback)
     }
 
-    override fun unregisterCallback(callback: ImageStickerPortrait.Callback?) {
+    override fun unregisterCallback(callback: ImageStickerPortrait.Callback) {
         mStickerHelper.unregisterCallback(callback)
     }
 

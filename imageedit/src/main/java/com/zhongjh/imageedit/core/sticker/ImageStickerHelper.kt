@@ -121,7 +121,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      *
      * @param callback 实现了Callback接口的监听器对象
      */
-    override fun registerCallback(callback: ImageStickerPortrait.Callback?) {
+    override fun registerCallback(callback: ImageStickerPortrait.Callback) {
         mCallback = callback
     }
 
@@ -130,7 +130,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      *
      * @param callback 之前注册的回调监听器
      */
-    override fun unregisterCallback(callback: ImageStickerPortrait.Callback?) {
+    override fun unregisterCallback(callback: ImageStickerPortrait.Callback) {
         mCallback = null
     }
 
@@ -142,7 +142,7 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      * @param <V> 泛型参数，必须同时是View的子类并实现ImageSticker接口
      * @return 如果允许移除贴纸则返回true，否则返回false
     </V> */
-    override fun <V> onRemove(stickerView: V): Boolean where V : View?, V : ImageSticker? {
+    override fun <V> onRemove(stickerView: V): Boolean where V : View, V : ImageSticker {
         return mCallback != null && mCallback!!.onRemove(stickerView)
     }
 
@@ -153,9 +153,9 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      * @param stickerView 贴纸视图对象
      * @param <V> 泛型参数，必须同时是View的子类并实现ImageSticker接口
     </V> */
-    override fun <V> onDismiss(stickerView: V) where V : View?, V : ImageSticker? {
+    override fun <V> onDismiss(stickerView: V) where V : View, V : ImageSticker {
         mFrame = null
-        stickerView?.invalidate()
+        stickerView.invalidate()
         mCallback?.onDismiss(stickerView)
     }
 
@@ -166,8 +166,8 @@ class ImageStickerHelper<StickerView>(private val view: StickerView) : ImageStic
      * @param stickerView 贴纸视图对象
      * @param <V> 泛型参数，必须同时是View的子类并实现ImageSticker接口
     </V> */
-    override fun <V> onShowing(stickerView: V) where V : View?, V : ImageSticker? {
-        stickerView?.invalidate()
+    override fun <V> onShowing(stickerView: V) where V : View, V : ImageSticker {
+        stickerView.invalidate()
         mCallback?.onShowing(stickerView)
     }
 }

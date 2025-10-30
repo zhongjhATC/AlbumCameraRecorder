@@ -49,7 +49,7 @@ interface ImageStickerPortrait {
      * 返回的RectF对象表示贴纸在视图坐标系中的精确位置和尺寸，常用于碰撞检测、布局计算等场景
      * @return 贴纸在视图坐标系中的矩形边界，包含位置、宽度和高度信息
      */
-    fun getFrame(): RectF?
+    fun getFrame(): RectF
 
     /**
      * 绘制贴纸的核心方法
@@ -64,14 +64,14 @@ interface ImageStickerPortrait {
      * 用于建立贴纸与其他组件之间的通信机制，实现事件的传递和响应
      * @param callback 实现了Callback接口的监听器对象，用于接收贴纸的状态变化通知
      */
-    fun registerCallback(callback: Callback?)
+    fun registerCallback(callback: Callback)
 
     /**
      * 注销贴纸事件回调监听器
      * 用于解除贴纸与其他组件之间的通信机制，避免内存泄漏
      * @param callback 之前注册的回调监听器，注销后将不再接收贴纸状态变化通知
      */
-    fun unregisterCallback(callback: Callback?)
+    fun unregisterCallback(callback: Callback)
 
     /**
      * 贴纸状态变化的回调接口
@@ -85,7 +85,7 @@ interface ImageStickerPortrait {
          * 泛型约束确保参数类型同时具备View的UI特性和ImageSticker的贴纸功能
          * @noinspection unused
          */
-        fun <V> onDismiss(stickerView: V) where V : View?, V : ImageSticker?
+        fun <V> onDismiss(stickerView: V) where V : View, V : ImageSticker
 
         /**
          * 贴纸显示时的回调方法
@@ -94,7 +94,7 @@ interface ImageStickerPortrait {
          * 泛型约束确保参数类型同时具备View的UI特性和ImageSticker的贴纸功能
          * @noinspection unused
          */
-        fun <V> onShowing(stickerView: V) where V : View?, V : ImageSticker?
+        fun <V> onShowing(stickerView: V) where V : View, V : ImageSticker
 
         /**
          * 贴纸移除时的回调方法
@@ -104,6 +104,6 @@ interface ImageStickerPortrait {
          * @return 是否允许删除贴纸
          * 返回值用于控制贴纸是否可以被删除，false表示拦截删除操作
          */
-        fun <V> onRemove(stickerView: V): Boolean where V : View?, V : ImageSticker?
+        fun <V> onRemove(stickerView: V): Boolean where V : View, V : ImageSticker
     }
 }
