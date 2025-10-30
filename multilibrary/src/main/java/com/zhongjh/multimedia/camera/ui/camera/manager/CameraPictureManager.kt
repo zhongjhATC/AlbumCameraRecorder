@@ -100,21 +100,19 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      * 如果maxCount>1，则初始化水平RecyclerView显示已拍摄的图片
      */
     override fun initMultiplePhotoAdapter() {
-        fragmentRef.get()?.let { baseCameraFragment ->
-            baseCameraFragment.mainActivity?.let { mainActivity ->
-                // 初始化多图适配器，先判断是不是多图配置
-                photoAdapter = PhotoAdapter(mainActivity, baseCameraFragment.globalSpec, bitmapDataList, this)
-                baseCameraFragment.recyclerViewPhoto?.let {
-                    if (imageMaxCount > 1) {
-                        it.layoutManager = LinearLayoutManager(
-                            baseCameraFragment.myContext, RecyclerView.HORIZONTAL, false
-                        )
-                        it.adapter = photoAdapter
-                        it.visibility = View.VISIBLE
-                    } else {
-                        it.visibility = View.GONE
-                    }
-                }
+        val baseCameraFragment = fragmentRef.get() ?: return
+        val mainActivity = baseCameraFragment.mainActivity ?: return
+        // 初始化多图适配器，先判断是不是多图配置
+        photoAdapter = PhotoAdapter(mainActivity, baseCameraFragment.globalSpec, bitmapDataList, this)
+        baseCameraFragment.recyclerViewPhoto?.let {
+            if (imageMaxCount > 1) {
+                it.layoutManager = LinearLayoutManager(
+                    baseCameraFragment.myContext, RecyclerView.HORIZONTAL, false
+                )
+                it.adapter = photoAdapter
+                it.visibility = View.VISIBLE
+            } else {
+                it.visibility = View.GONE
             }
         }
     }
@@ -124,18 +122,17 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      * 注册从图片编辑界面返回的结果处理器
      */
     override fun initActivityResult() {
-        fragmentRef.get()?.let { baseCameraFragment ->
-            // 从编辑图片界面回来
-            imageEditActivityResult = baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    result.data?.let {
-                        // 编辑图片界面
-                        refreshEditPhoto(
-                            it.getIntExtra(ImageEditActivity.EXTRA_WIDTH, 0), it.getIntExtra(ImageEditActivity.EXTRA_HEIGHT, 0)
-                        )
-                    } ?: let {
-                        return@registerForActivityResult
-                    }
+        val baseCameraFragment = fragmentRef.get() ?: return
+        // 从编辑图片界面回来
+        imageEditActivityResult = baseCameraFragment.registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let {
+                    // 编辑图片界面
+                    refreshEditPhoto(
+                        it.getIntExtra(ImageEditActivity.EXTRA_WIDTH, 0), it.getIntExtra(ImageEditActivity.EXTRA_HEIGHT, 0)
+                    )
+                } ?: let {
+                    return@registerForActivityResult
                 }
             }
         }

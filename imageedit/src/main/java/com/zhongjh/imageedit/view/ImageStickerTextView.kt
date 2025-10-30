@@ -81,12 +81,10 @@ class ImageStickerTextView @JvmOverloads constructor(context: Context, attrs: At
         get() = mText
         set(value) {
             mText = value
-            mTextView?.let { textView ->
-                value?.let {
-                    textView.text = it.text
-                    textView.setTextColor(it.color)
-                }
-            }
+            val textView = mTextView ?: return
+            val imageText = value ?: return
+            textView.text = imageText.text
+            textView.setTextColor(imageText.color)
         }
 
     /**
