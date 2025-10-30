@@ -34,7 +34,6 @@ object ImageUtils {
      * @param frame 要缩放的框架矩形
      * @param padding 四周统一的内边距值
      */
-    @JvmOverloads
     fun fitCenter(win: RectF, frame: RectF, padding: Float = 0f) {
         fitCenter(win, frame, padding, padding, padding, padding)
     }
