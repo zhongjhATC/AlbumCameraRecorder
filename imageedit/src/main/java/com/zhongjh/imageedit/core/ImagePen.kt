@@ -20,9 +20,11 @@ import android.graphics.Path
  * @author zhongjh
  * @date 2025/10/15
  */
-open class ImagePen @JvmOverloads constructor(
-    var path: Path = Path(), var mode: ImageMode = ImageMode.DOODLE, var color: Int = Color.RED, var width: Float = BASE_MOSAIC_WIDTH
+open class ImagePen(
+    var path: Path = Path(), var mode: ImageMode = ImageMode.DOODLE,
+    var color: Int = Color.RED, var width: Float = BASE_MOSAIC_WIDTH
 ) {
+
     /**
      * 默认构造函数，创建一个新的空路径画笔，默认使用涂鸦模式
      * 适用于需要从头开始创建绘制路径的场景

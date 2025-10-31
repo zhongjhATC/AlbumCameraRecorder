@@ -26,7 +26,19 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2018/8/7
  */
-abstract class BaseOperationLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+abstract class BaseOperationLayout : FrameLayout {
+
+    /**
+     * @param context 上下文对象
+     * @param attrs XML属性集合
+     * @param defStyleAttr 默认样式属性
+     */
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+    constructor(context: Context) : this(context, null, 0)
+
     // region 回调事件监听
 
     /**

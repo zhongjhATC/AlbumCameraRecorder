@@ -11,8 +11,23 @@ import android.widget.FrameLayout
  * @author zhongjh
  * @date 2022/1/21
  */
-class ControlTouchFrameLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int = 0, defStyleRes: Int = 0) :
-    FrameLayout(context, attrs, defStyleAttr, defStyleRes) {
+class ControlTouchFrameLayout : FrameLayout {
+
+    /**
+     * @param context 上下文对象
+     * @param attrs XML属性集合
+     * @param defStyleAttr 默认样式属性
+     */
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+    constructor(context: Context) : this(context, null, 0)
+
+
+    /**
+     * 是否启用触摸事件传递给子View
+     */
     private var enabled = true
 
     override fun isEnabled(): Boolean {

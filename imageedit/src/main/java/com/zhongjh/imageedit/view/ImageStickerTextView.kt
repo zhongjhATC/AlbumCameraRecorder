@@ -13,15 +13,21 @@ import com.zhongjh.imageedit.core.ImageText
  * 图像文本贴纸视图组件，用于在图像上显示和编辑文本贴纸
  * 支持文本内容、颜色的设置和编辑
  *
- * @param context 上下文对象
- * @param attrs XML属性集合
- * @param defStyleAttr 默认样式属性
- *
  * @author zhongjh
  * @date 2025/10/28
  */
-class ImageStickerTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
-    BaseImageStickerView(context, attrs, defStyleAttr), ImageTextEditDialog.Callback {
+class ImageStickerTextView : BaseImageStickerView, ImageTextEditDialog.Callback {
+
+    /**
+     * @param context 上下文对象
+     * @param attrs XML属性集合
+     * @param defStyleAttr 默认样式属性
+     */
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+    constructor(context: Context) : this(context, null, 0)
 
     /**
      * 用于显示文本内容的TextView组件

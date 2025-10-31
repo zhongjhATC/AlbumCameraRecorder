@@ -14,7 +14,14 @@ import com.zhongjh.multimedia.widget.BaseOperationLayout
  * @author zhongjh
  * @date 2018/10/16
  */
-open class PhotoVideoLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseOperationLayout(context, attrs, defStyleAttr) {
+open class PhotoVideoLayout : BaseOperationLayout {
+
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+    constructor(context: Context) : this(context, null, 0)
+
     val photoVideoLayoutViewHolder: PhotoVideoLayoutViewHolder
         get() = viewHolder as PhotoVideoLayoutViewHolder
 

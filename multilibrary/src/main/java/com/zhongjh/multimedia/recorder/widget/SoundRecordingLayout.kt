@@ -15,7 +15,19 @@ import com.zhongjh.multimedia.widget.BaseOperationLayout
  * @author zhongjh
  * @date 2018/10/16
  */
-open class SoundRecordingLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : BaseOperationLayout(context, attrs, defStyleAttr) {
+open class SoundRecordingLayout : BaseOperationLayout {
+
+    /**
+     * @param context 上下文对象
+     * @param attrs XML属性集合
+     * @param defStyleAttr 默认样式属性
+     */
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+    constructor(context: Context) : this(context, null, 0)
+
     /**
      * 当前活动状态，默认休闲
      */

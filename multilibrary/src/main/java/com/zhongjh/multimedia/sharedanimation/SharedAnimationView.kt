@@ -24,7 +24,18 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
  * 1. 容器可以添加任何View，目前添加的是viewPager2
  * 2. 还有个SharedAnimationWrapper，是用于模仿上个界面RecyclerView的item的位置、宽高作用域过渡
  */
-class SharedAnimationView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+class SharedAnimationView : FrameLayout {
+
+    /**
+     * @param context 上下文对象
+     * @param attrs XML属性集合
+     * @param defStyleAttr 默认样式属性
+     */
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+
+    constructor(context: Context) : this(context, null, 0)
 
     private val tag: String = this@SharedAnimationView.javaClass.simpleName
 
