@@ -23,7 +23,7 @@ open class CameraVideoManager(baseCameraFragment: BaseCameraFragment<out CameraS
     /**
      * 使用弱引用持有 Fragment
      */
-    val fragmentRef = WeakReference(baseCameraFragment)
+    private val fragmentRef = WeakReference(baseCameraFragment)
 
     /**
      * 从视频预览界面回来
@@ -33,7 +33,6 @@ open class CameraVideoManager(baseCameraFragment: BaseCameraFragment<out CameraS
     /**
      * 当前录制视频的时间
      */
-    @JvmField
     var videoTime: Long = 0L
 
     /**

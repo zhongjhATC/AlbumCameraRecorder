@@ -20,7 +20,6 @@ abstract class StateMode(
     private var cameraStateManager: CameraStateManager
 ) : IState {
 
-    @JvmField
     protected val tag: String = CameraStateManager::class.java.simpleName
 
     /**
