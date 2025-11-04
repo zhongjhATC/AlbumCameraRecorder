@@ -234,16 +234,19 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 when (newState) {
-                    RecyclerView.SCROLL_STATE_SETTLING ->                         // 如果不是人为滑动 并且 不是滑动中状态
+                    RecyclerView.SCROLL_STATE_SETTLING ->
+                        // 如果不是人为滑动 并且 不是滑动中状态
                         if (!isRecyclerViewUserDragging && !isRecyclerViewScrolling) {
                             // 设置滑动中状态
                             isRecyclerViewScrolling = true
                         }
 
-                    RecyclerView.SCROLL_STATE_DRAGGING ->                         // 如果是用户主动滑动recyclerview，则不触发位置计算
+                    RecyclerView.SCROLL_STATE_DRAGGING ->
+                        // 如果是用户主动滑动recyclerview，则不触发位置计算
                         isRecyclerViewUserDragging = true
 
-                    RecyclerView.SCROLL_STATE_IDLE ->                         // 如果不是人为滑动 并且 是滑动中状态变成停止状态
+                    RecyclerView.SCROLL_STATE_IDLE ->
+                        // 如果不是人为滑动 并且 是滑动中状态变成停止状态
                         if (!isRecyclerViewUserDragging && isRecyclerViewScrolling) {
                             isRecyclerViewScrolling = false
                             // 将当前列表的组件宽高数据添加到缓存

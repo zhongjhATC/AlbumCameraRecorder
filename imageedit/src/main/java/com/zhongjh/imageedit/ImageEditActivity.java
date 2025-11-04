@@ -135,7 +135,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
      */
     @Override
     public void onText(ImageText text) {
-        mImageViewCustom.addStickerText(text);
+        getMImageViewCustom().addStickerText(text);
     }
 
     /**
@@ -148,13 +148,13 @@ public class ImageEditActivity extends BaseImageEditActivity {
      */
     @Override
     public void onModeClick(ImageMode mode) {
-        ImageMode cm = mImageViewCustom.getMode();
+        ImageMode cm = getMImageViewCustom().getMode();
         // 如果点击当前激活的模式，则切换到无操作模式
         if (cm == mode) {
             mode = ImageMode.NONE;
         }
         // 设置新的编辑模式
-        mImageViewCustom.setMode(mode);
+        getMImageViewCustom().setMode(mode);
         // 更新模式UI显示
         updateModeUi();
 
@@ -172,13 +172,13 @@ public class ImageEditActivity extends BaseImageEditActivity {
      */
     @Override
     public void onUndoClick() {
-        ImageMode mode = mImageViewCustom.getMode();
+        ImageMode mode = getMImageViewCustom().getMode();
         if (mode == ImageMode.DOODLE) {
             // 撤销涂鸦操作
-            mImageViewCustom.undoDoodle();
+            getMImageViewCustom().undoDoodle();
         } else if (mode == ImageMode.MOSAIC) {
             // 撤销马赛克操作
-            mImageViewCustom.undoMosaic();
+            getMImageViewCustom().undoMosaic();
         }
     }
 
@@ -202,37 +202,35 @@ public class ImageEditActivity extends BaseImageEditActivity {
         String path = getIntent().getStringExtra(EXTRA_IMAGE_SAVE_PATH);
         if (!TextUtils.isEmpty(path)) {
             // 获取编辑后的位图
-            Bitmap bitmap = mImageViewCustom.saveBitmap();
-            if (bitmap != null) {
-                FileOutputStream fileOutputStream = null;
-                try {
-                    // 打开文件输出流
-                    fileOutputStream = new FileOutputStream(path);
-                    // 以JPEG格式保存位图，质量为100
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-                } catch (FileNotFoundException e) {
-                    // 记录文件未找到异常
-                    Log.e(TAG, "onDoneClick" + e.getMessage());
-                } finally {
-                    // 确保关闭文件输出流
-                    if (fileOutputStream != null) {
-                        try {
-                            fileOutputStream.close();
-                        } catch (IOException e) {
-                            // 记录IO异常
-                            Log.e(TAG, "onDoneClick" + e.getMessage());
-                        }
+            Bitmap bitmap = getMImageViewCustom().saveBitmap();
+            FileOutputStream fileOutputStream = null;
+            try {
+                // 打开文件输出流
+                fileOutputStream = new FileOutputStream(path);
+                // 以JPEG格式保存位图，质量为100
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+            } catch (FileNotFoundException e) {
+                // 记录文件未找到异常
+                Log.e(TAG, "onDoneClick" + e.getMessage());
+            } finally {
+                // 确保关闭文件输出流
+                if (fileOutputStream != null) {
+                    try {
+                        fileOutputStream.close();
+                    } catch (IOException e) {
+                        // 记录IO异常
+                        Log.e(TAG, "onDoneClick" + e.getMessage());
                     }
                 }
-                // 创建返回意图，设置结果和图像尺寸信息
-                Intent intent = new Intent();
-                intent.putExtra(EXTRA_WIDTH, bitmap.getWidth());
-                intent.putExtra(EXTRA_HEIGHT, bitmap.getHeight());
-                setResult(RESULT_OK, intent);
-                bitmap.recycle();
-                finish();
-                return;
             }
+            // 创建返回意图，设置结果和图像尺寸信息
+            Intent intent = new Intent();
+            intent.putExtra(EXTRA_WIDTH, bitmap.getWidth());
+            intent.putExtra(EXTRA_HEIGHT, bitmap.getHeight());
+            setResult(RESULT_OK, intent);
+            bitmap.recycle();
+            finish();
+            return;
         }
         // 如果保存路径无效或保存失败，设置结果为取消
         setResult(RESULT_CANCELED);
@@ -246,9 +244,9 @@ public class ImageEditActivity extends BaseImageEditActivity {
     @Override
     public void onCancelClipClick() {
         // 取消裁剪操作
-        mImageViewCustom.cancelClip();
+        getMImageViewCustom().cancelClip();
         // 根据当前模式设置操作界面显示
-        setOpDisplay(mImageViewCustom.getMode() == ImageMode.CLIP ? OP_CLIP : OP_NORMAL);
+        setOpDisplay(getMImageViewCustom().getMode() == ImageMode.CLIP ? OP_CLIP : OP_NORMAL);
     }
 
     /**
@@ -258,9 +256,9 @@ public class ImageEditActivity extends BaseImageEditActivity {
     @Override
     public void onDoneClipClick() {
         // 执行裁剪操作
-        mImageViewCustom.doClip();
+        getMImageViewCustom().doClip();
         // 根据当前模式设置操作界面显示
-        setOpDisplay(mImageViewCustom.getMode() == ImageMode.CLIP ? OP_CLIP : OP_NORMAL);
+        setOpDisplay(getMImageViewCustom().getMode() == ImageMode.CLIP ? OP_CLIP : OP_NORMAL);
     }
 
     /**
@@ -270,7 +268,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
     @Override
     public void onResetClipClick() {
         // 重置裁剪区域
-        mImageViewCustom.resetClip();
+        getMImageViewCustom().resetClip();
     }
 
     /**
@@ -280,7 +278,7 @@ public class ImageEditActivity extends BaseImageEditActivity {
     @Override
     public void onRotateClipClick() {
         // 旋转裁剪区域
-        mImageViewCustom.doRotate();
+        getMImageViewCustom().doRotate();
     }
 
     /**
@@ -293,10 +291,10 @@ public class ImageEditActivity extends BaseImageEditActivity {
     @Override
     public void onColorChanged(int checkedColor) {
         // 如果当前不是涂鸦模式，切换到涂鸦模式
-        if (mImageViewCustom.getMode() != ImageMode.DOODLE) {
+        if (getMImageViewCustom().getMode() != ImageMode.DOODLE) {
             onModeClick(ImageMode.DOODLE);
         }
         // 设置画笔颜色
-        mImageViewCustom.setPenColor(checkedColor);
+        getMImageViewCustom().setPenColor(checkedColor);
     }
 }
