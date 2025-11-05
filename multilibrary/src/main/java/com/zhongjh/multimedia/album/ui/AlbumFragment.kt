@@ -1,10 +1,14 @@
 package com.zhongjh.multimedia.album.ui
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -19,15 +23,21 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.Group
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType.Companion.ofImage
+import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
 import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
@@ -46,6 +56,7 @@ import com.zhongjh.multimedia.album.widget.CheckRadioView
 import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner
 import com.zhongjh.multimedia.album.widget.albumspinner.OnAlbumItemClickListener
 import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView
+import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
 import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
@@ -54,6 +65,7 @@ import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewActi
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewFragmentByAlbum
 import com.zhongjh.multimedia.settings.AlbumSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.settings.GlobalSpec.getMimeTypeSet
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
@@ -71,6 +83,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private val tag: String = this@AlbumFragment.javaClass.simpleName
 
     private lateinit var mApplicationContext: Context
+    private lateinit var mAlbumModel: AlbumModel
     private lateinit var mMainModel: MainModel
     private lateinit var mSelectedModel: SelectedModel
 
@@ -151,6 +164,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.mApplicationContext = requireActivity().applicationContext
+        this.mAlbumModel = ViewModelProvider(requireActivity())[AlbumModel::class.java]
         this.mMainModel = ViewModelProvider(requireActivity())[MainModel::class.java]
         this.mSelectedModel = ViewModelProvider(requireActivity())[SelectedModel::class.java]
         if (mAlbumSpec.SelectedData.isNotEmpty()) {
@@ -169,6 +183,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         initView(savedInstanceState)
         initActivityResult()
         initListener()
+        // 初始化时检查权限
+        checkAlbumPermission()
         initMediaViewUtil()
         initObserveData()
         return view
@@ -605,6 +621,40 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
     }
 
+    /**
+     * 检查相册权限状态，控制提示浮窗显示
+     * @param needRefresh 是否需要刷新数据（从设置返回时）
+     */
+    private fun checkAlbumPermission(needRefresh: Boolean = false) {
+        // 1. 触发权限检查（异步更新 permissionState）
+        mAlbumModel.checkAlbumPermissions(needRefresh)
+
+        // 需要请求的权限列表
+        val permissions = ArrayList<String>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            addPermissionImagesAndVideo(permissions)
+        }
+
+        // 通过 AlbumModel 获取当前权限状态，判断是否为有限访问
+        val hasPartialPermission = mAlbumModel.permissionState.value is PermissionState.LimitedAccess
+
+        // 实现具体权限检查逻辑
+        if (!hasPartialPermission) {
+            mViewHolder.tvAlbumPermission.visibility = View.VISIBLE
+            mViewHolder.tvAlbumPermission.setOnClickListener {
+                // 打开应用设置页面
+                openAppSettings()
+            }
+        } else {
+            mViewHolder.tvAlbumPermission.visibility = View.GONE
+            // 权限已变更为完全访问，刷新相册数据
+            if (needRefresh) {
+                // 重新加载相册数据
+                mMainModel.loadAllAlbum()
+            }
+        }
+    }
+
     class ViewHolder(rootView: View) {
         val tvAlbumTitle: TextView = rootView.findViewById(R.id.tvAlbumTitle)
         val imgArrow: ImageView = rootView.findViewById(R.id.imgArrow)
@@ -620,6 +670,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         val imgClose: ImageView = rootView.findViewById(R.id.imgClose)
         val pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
         val recyclerview: RecyclerLoadMoreView = rootView.findViewById(R.id.recyclerview)
+        val tvAlbumPermission: TextView = rootView.findViewById(R.id.tvAlbumPermission)
     }
 
     companion object {

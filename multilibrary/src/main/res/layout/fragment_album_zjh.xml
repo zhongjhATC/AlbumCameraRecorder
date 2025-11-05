@@ -9,34 +9,35 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp">
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:background="?android:attr/colorPrimary"
             android:elevation="1dp"
             android:theme="?attr/toolbar.zhongjh"
             app:layout_scrollFlags="scroll|enterAlways"
-            tools:layout_height="48dp">
+            tools:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/imgClose"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="48dp"
                     android:contentDescription="@string/z_multi_library_delete_button"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:srcCompat="@drawable/ic_close_white_24dp" />
 
                 <View
                     android:id="@+id/selectedAlbum"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
+                    android:layout_height="48dp"
                     android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/imgArrow"
@@ -44,9 +45,10 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:layout_height="48dp"
                     android:id="@+id/tvAlbumTitle"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:layout_centerVertical="true"
                     android:ellipsize="end"
                     android:gravity="center"
@@ -65,14 +67,26 @@
                 <ImageView
                     android:id="@+id/imgArrow"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="48dp"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="8dp"
                     android:scaleType="centerInside"
                     app:layout_constraintEnd_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/tvAlbumTitle"
                     tools:ignore="ContentDescription,RtlSymmetry" />
+
+                <TextView
+                    android:id="@+id/tvAlbumPermission"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="当前仅能访问部分照片，点击修改权限"
+                    android:textColor="#FF9800"
+                    android:textSize="14sp"
+                    app:layout_constraintTop_toBottomOf="@+id/selectedAlbum"
+                    tools:text="test" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
