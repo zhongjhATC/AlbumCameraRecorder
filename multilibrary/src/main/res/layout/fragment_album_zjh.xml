@@ -83,10 +83,24 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="当前仅能访问部分照片，点击修改权限"
-                    android:textColor="#FF9800"
+                    android:padding="16dp"
+                    android:textColor="?attr/album.element.color"
                     android:textSize="14sp"
                     app:layout_constraintTop_toBottomOf="@+id/selectedAlbum"
                     tools:text="test" />
+
+                <!-- 右侧圆弧按钮 -->
+                <Button
+                    android:id="@+id/btnModifyPermission"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_circle_blue_zhongjh"
+                    android:text=">"
+                    android:textColor="?attr/album.element.color"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tvAlbumPermission"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tvAlbumPermission" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -3,6 +3,7 @@ package com.zhongjh.multimedia
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.TargetApi
+import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -19,7 +20,8 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -50,6 +52,7 @@ import com.zhongjh.multimedia.utils.SelectableUtils.albumValid
 import com.zhongjh.multimedia.utils.SelectableUtils.cameraValid
 import com.zhongjh.multimedia.utils.SelectableUtils.recorderValid
 import com.zhongjh.multimedia.utils.SelectableUtils.videoValid
+import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import kotlin.math.abs
 
 /**
@@ -66,9 +69,16 @@ open class MainActivity : AppCompatActivity() {
         ActivityMainZjhBinding.inflate(layoutInflater)
     }
 
-    private val mStartActivityLauncher = registerForActivityResult(StartActivityForResult()) { _ ->
-        // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-        requestPermissions(null)
+    /**
+     * 跳转系统设置界面后的回调
+     */
+    private val mAppSettingsLauncher: ActivityResultLauncher<Intent> by lazy {
+        this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
+                requestPermissions(null)
+            }
+        }
     }
 
     private val mAdapterViewPager by lazy {
@@ -155,10 +165,8 @@ open class MainActivity : AppCompatActivity() {
             if (isRejectWithoutReminderPermissions(permissions, grantResults)) {
                 val builder = AlertDialog.Builder(this@MainActivity, R.style.MyAlertDialogStyle)
                 builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { _: DialogInterface?, _: Int ->
-                    val intent = Intent()
-                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    intent.data = Uri.fromParts("package", packageName, null)
-                    mStartActivityLauncher.launch(intent)
+                    val settingsIntent = SettingsPermissionUtils.createAppSettingsIntent(packageName)
+                    mAppSettingsLauncher.launch(settingsIntent)
                     mIsShowDialog = false
                 }
                 builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->

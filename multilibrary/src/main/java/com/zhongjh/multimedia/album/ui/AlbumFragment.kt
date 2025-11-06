@@ -1,14 +1,10 @@
 package com.zhongjh.multimedia.album.ui
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -23,21 +19,15 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.Group
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType.Companion.ofImage
-import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
 import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
@@ -56,7 +46,6 @@ import com.zhongjh.multimedia.album.widget.CheckRadioView
 import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner
 import com.zhongjh.multimedia.album.widget.albumspinner.OnAlbumItemClickListener
 import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView
-import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
 import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
@@ -65,9 +54,9 @@ import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewActi
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewFragmentByAlbum
 import com.zhongjh.multimedia.settings.AlbumSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
-import com.zhongjh.multimedia.settings.GlobalSpec.getMimeTypeSet
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
+import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
 
@@ -91,6 +80,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 从预览界面回来
      */
     private lateinit var mPreviewActivityResult: ActivityResultLauncher<Intent>
+
+    /**
+     * 跳转系统设置界面后的回调
+     */
+    private lateinit var mAppSettingsLauncher: ActivityResultLauncher<Intent>
 
     /**
      * 公共配置
@@ -193,6 +187,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     override fun onResume() {
         super.onResume()
         updateBottomToolbar()
+        if (mAlbumModel.isEditPermission) {
+            // 刷新相册数据
+            mMainModel.loadAllAlbum()
+            mAlbumModel.isEditPermission = false
+        }
     }
 
     /**
@@ -384,7 +383,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      */
     private fun initActivityResult() {
         // 将PreviewActivity传递的数据继续传给上一个Activity
-        mPreviewActivityResult = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        mPreviewActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode != Activity.RESULT_OK) {
                 return@registerForActivityResult
             }
@@ -392,6 +391,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 requireActivity().setResult(Activity.RESULT_OK, result.data)
             }
             requireActivity().finish()
+        }
+
+        // 设置界面,没有回调所以不处理
+        mAppSettingsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+
         }
     }
 
@@ -623,35 +627,24 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
 
     /**
      * 检查相册权限状态，控制提示浮窗显示
-     * @param needRefresh 是否需要刷新数据（从设置返回时）
      */
-    private fun checkAlbumPermission(needRefresh: Boolean = false) {
-        // 1. 触发权限检查（异步更新 permissionState）
-        mAlbumModel.checkAlbumPermissions(needRefresh)
+    private fun checkAlbumPermission() {
 
-        // 需要请求的权限列表
-        val permissions = ArrayList<String>()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            addPermissionImagesAndVideo(permissions)
-        }
+        // 1. 直接获取当前权限状态（同步方法，无需协程等待）
+        val currentPermissionState = mAlbumModel.isLimitedAccessPermission()
 
-        // 通过 AlbumModel 获取当前权限状态，判断是否为有限访问
-        val hasPartialPermission = mAlbumModel.permissionState.value is PermissionState.LimitedAccess
-
+        mViewHolder.tvAlbumPermission.visibility = View.VISIBLE
         // 实现具体权限检查逻辑
-        if (!hasPartialPermission) {
+        if (currentPermissionState == PermissionState.LimitedAccess) {
             mViewHolder.tvAlbumPermission.visibility = View.VISIBLE
             mViewHolder.tvAlbumPermission.setOnClickListener {
                 // 打开应用设置页面
-                openAppSettings()
+                val settingsIntent = SettingsPermissionUtils.createAppSettingsIntent(requireActivity().packageName)
+                mAppSettingsLauncher.launch(settingsIntent)
+                mAlbumModel.isEditPermission = true
             }
         } else {
             mViewHolder.tvAlbumPermission.visibility = View.GONE
-            // 权限已变更为完全访问，刷新相册数据
-            if (needRefresh) {
-                // 重新加载相册数据
-                mMainModel.loadAllAlbum()
-            }
         }
     }
 
