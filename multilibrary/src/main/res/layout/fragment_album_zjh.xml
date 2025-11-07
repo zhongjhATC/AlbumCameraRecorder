@@ -9,12 +9,12 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="80dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:background="?android:attr/colorPrimary"
             android:elevation="1dp"
             android:theme="?attr/toolbar.zhongjh"
@@ -23,7 +23,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="80dp">
 
                 <ImageView
                     android:id="@+id/imgClose"
@@ -39,7 +39,6 @@
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:gravity="center"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/imgArrow"
                     app:layout_constraintStart_toStartOf="@+id/tvAlbumTitle"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -79,28 +78,15 @@
 
                 <TextView
                     android:id="@+id/tvAlbumPermission"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="当前仅能访问部分照片，点击修改权限"
-                    android:padding="16dp"
-                    android:textColor="?attr/album.element.color"
-                    android:textSize="14sp"
-                    app:layout_constraintTop_toBottomOf="@+id/selectedAlbum"
-                    tools:text="test" />
-
-                <!-- 右侧圆弧按钮 -->
-                <Button
-                    android:id="@+id/btnModifyPermission"
-                    android:layout_width="32dp"
+                    android:layout_width="0dp"
                     android:layout_height="32dp"
-                    android:background="@drawable/shape_circle_blue_zhongjh"
-                    android:text=">"
+                    android:gravity="center"
+                    tools:text="您设置了仅访问部分多媒体【点击可修改访问权限】"
                     android:textColor="?attr/album.element.color"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/tvAlbumPermission"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/tvAlbumPermission" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/selectedAlbum"
+                    tools:textColor="@color/black" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
