@@ -31,11 +31,6 @@ sealed class PermissionState {
 class AlbumModel(application: Application) : AndroidViewModel(application) {
 
     /**
-     * 标记是否有编辑权限，如果有编辑，那么在onResume中会处理
-     */
-    var isEditPermission: Boolean = false
-
-    /**
      * 是否有限访问的权限
      */
     fun isLimitedAccessPermission(): PermissionState {

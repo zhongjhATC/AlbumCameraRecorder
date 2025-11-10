@@ -3,15 +3,8 @@ package com.zhongjh.multimedia.album.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.TextPaint
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.text.style.UnderlineSpan
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -46,6 +39,7 @@ import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle
+import com.zhongjh.multimedia.album.ui.manager.TvAlbumPermissionManager
 import com.zhongjh.multimedia.album.ui.mediaselection.MediaViewUtil
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
 import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask
@@ -89,11 +83,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private lateinit var mPreviewActivityResult: ActivityResultLauncher<Intent>
 
     /**
-     * 跳转系统设置界面后的回调
-     */
-    private lateinit var mAppSettingsLauncher: ActivityResultLauncher<Intent>
-
-    /**
      * 公共配置
      */
     private val mGlobalSpec = GlobalSpec
@@ -102,6 +91,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 相册配置
      */
     private val mAlbumSpec = AlbumSpec
+
+    /**
+     * 声明 TvAlbumPermissionManager 实例
+     */
+    private lateinit var mTvAlbumPermissionManager: TvAlbumPermissionManager
 
     /**
      * 统一管理原图有关功能模块
@@ -181,11 +175,9 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
 
         mViewHolder = ViewHolder(view)
         initConfig()
-        initView(savedInstanceState)
+        initView()
         initActivityResult()
         initListener()
-        // 初始化时检查权限
-        checkAlbumPermission()
         initMediaViewUtil()
         initObserveData()
         return view
@@ -194,11 +186,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     override fun onResume() {
         super.onResume()
         updateBottomToolbar()
-        if (mAlbumModel.isEditPermission) {
-            // 刷新相册数据
-            mMainModel.loadAllAlbum()
-            mAlbumModel.isEditPermission = false
-        }
+        // 委托给 TvAlbumPermissionManager 处理编辑权限逻辑（移除原 mAlbumModel.isEditPermission 相关代码）
+        mTvAlbumPermissionManager.onResume()
     }
 
     /**
@@ -211,7 +200,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     /**
      * 初始化view
      */
-    private fun initView(savedInstanceState: Bundle?) {
+    private fun initView() {
         // 兼容沉倾状态栏
         val statusBarHeight = getStatusBarHeight(requireActivity())
         mViewHolder.root.setPadding(
@@ -402,11 +391,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             }
             requireActivity().finish()
         }
-
-        // 设置界面,没有回调所以不处理
-        mAppSettingsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-
-        }
     }
 
     /**
@@ -440,45 +424,19 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 为 tvAlbumPermission 设置富文本(下划线+点击事件)
      */
     private fun initTvAlbumPermission() {
-        val fullText = "您设置了仅访问部分多媒体【点击可修改访问权限】"
-        val clickableText = "【点击可修改访问权限】"
-        val startIndex = fullText.indexOf(clickableText)
-        val endIndex = startIndex + clickableText.length
-        val spannable = SpannableString(fullText).apply {
-            // 添加下划线
-            setSpan(UnderlineSpan(), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            // 添加点击事件
-            setSpan(object : ClickableSpan() {
-                override fun onClick(widget: View) {
-                    // 触发权限修改逻辑(打开设置页面)
-                    val settingsIntent = SettingsPermissionUtils.createAppSettingsIntent(requireActivity().packageName)
-                    mAppSettingsLauncher.launch(settingsIntent)
-                }
-
-                // 移除点击后的高亮背景
-                override fun updateDrawState(ds: TextPaint) {
-                    super.updateDrawState(ds)
-                    // 确保下划线生效
-                    ds.isUnderlineText = true
-                    // 去除点击背景
-                    ds.bgColor = Color.TRANSPARENT
-                    // 从主题属性获取颜色
-                    val ta = mApplicationContext.theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
-                    // 第二个参数为默认颜色
-                    ds.color = ta.getColor(0, Color.WHITE)
-                    // 回收 TypedArray
-                    ta.recycle()
-                }
-            }, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-
-        // 设置富文本并启用点击事件
-        mViewHolder.tvAlbumPermission.apply {
-            text = spannable
-            // 必须设置，否则点击无效
-            movementMethod = LinkMovementMethod.getInstance()
-            // 去除长按高亮
-            highlightColor = Color.TRANSPARENT
+        // 初始化 tvAlbumPermission 逻辑（替换原 initTvAlbumPermission() 调用）
+        mTvAlbumPermissionManager = TvAlbumPermissionManager(
+            context = mApplicationContext,
+            viewHolder = mViewHolder,
+            albumModel = mAlbumModel,
+            mainModel = mMainModel
+        ).apply {
+            // 注册权限设置页启动器并传入管理器
+            val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                // 设置界面无回调，无需处理
+            }
+            // 调用管理器初始化方法，传入启动器
+            init(launcher)
         }
     }
 
@@ -678,21 +636,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mViewHolder.pbLoading.visibility = View.GONE
             mViewHolder.buttonApply.visibility = View.VISIBLE
             mViewHolder.buttonPreview.isEnabled = true
-        }
-    }
-
-    /**
-     * 检查相册权限状态，控制提示浮窗显示
-     */
-    private fun checkAlbumPermission() {
-        // 1. 直接获取当前权限状态（同步方法，无需协程等待）
-        val currentPermissionState = mAlbumModel.isLimitedAccessPermission()
-
-        // 实现具体权限检查逻辑
-        if (currentPermissionState == PermissionState.LimitedAccess) {
-            mViewHolder.tvAlbumPermission.visibility = View.VISIBLE
-        } else {
-            mViewHolder.tvAlbumPermission.visibility = View.GONE
         }
     }
 
