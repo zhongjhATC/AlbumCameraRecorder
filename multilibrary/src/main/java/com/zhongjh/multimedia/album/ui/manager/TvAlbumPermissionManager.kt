@@ -57,7 +57,7 @@ class TvAlbumPermissionManager(
     fun onResume() {
         if (isEditPermission) {
             // 刷新相册数据（原 AlbumFragment 的逻辑）
-            mainModel.loadAllAlbum()
+            mainModel.loadAlbums()
             // 刷新顶部view
             observePermissionState()
             // 重置标记

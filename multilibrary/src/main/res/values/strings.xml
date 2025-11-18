@@ -59,6 +59,10 @@
 
     <string name="z_multi_library_album_num">%1$s (%2$d)</string>
 
+    <string name="z_load_album_failed">Load album failed</string>
+    <string name="z_load_media_failed">Load media data failed</string>
+    <string name="z_load_more_failed">Load more failed</string>
+
     <!-- endregion -->
 
     <string name="z_multi_library_light_touch_take_long_press_camera">Tap the camera, long press the camera</string>

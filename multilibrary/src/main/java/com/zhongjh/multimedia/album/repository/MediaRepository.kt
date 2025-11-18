@@ -18,7 +18,6 @@ class MediaRepository(private val mediaLoader: MediaLoader) {
      * 分页加载媒体数据（返回 Flow，支持响应式数据流）
      */
     fun loadMediaPage(bucketId: Long, page: Int, pageSize: Int): Flow<List<LocalMedia>> = flow {
-        // Convert immutable List to MutableList using toMutableList()
         emit(mediaLoader.loadMediaMore(bucketId, page, pageSize))
     }.catch { e ->
         // 统一错误处理
@@ -30,7 +29,6 @@ class MediaRepository(private val mediaLoader: MediaLoader) {
      * 加载相册列表
      */
     fun loadAlbums(): Flow<List<Album>> = flow {
-        // Convert immutable List to MutableList using toMutableList()
         emit(mediaLoader.loadMediaAlbum())
     }.catch { e ->
         emit(emptyList<Album>().toMutableList())

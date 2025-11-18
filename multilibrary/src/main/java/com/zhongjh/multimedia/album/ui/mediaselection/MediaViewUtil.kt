@@ -88,8 +88,8 @@ class MediaViewUtil(
                 // 监听到新的相册数据
                 is MainModel.MediaPageState.RefreshSuccess -> {
                     // 如果没有数据，则关闭下拉加载
-                    recyclerView.setEnabledLoadMore(state.reloadPageMediaData.data.isNotEmpty())
-                    mAdapter?.setReloadPageMediaData(state.reloadPageMediaData)
+                    recyclerView.setEnabledLoadMore(state.refreshMediaData.data.isNotEmpty())
+                    mAdapter?.setReloadPageMediaData(state.refreshMediaData)
                     recyclerView.scrollToPosition(0)
                 }
 

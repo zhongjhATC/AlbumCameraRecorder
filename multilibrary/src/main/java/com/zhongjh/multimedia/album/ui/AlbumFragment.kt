@@ -224,7 +224,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         initAlbumSpinner()
 
         // 获取专辑数据
-        mMainModel.loadAllAlbum()
+        mMainModel.loadAlbums()
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.slidingHiddenEnable) {

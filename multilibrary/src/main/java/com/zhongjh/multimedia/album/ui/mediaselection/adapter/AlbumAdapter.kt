@@ -14,7 +14,7 @@ import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
-import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
+import com.zhongjh.multimedia.album.entity.RefreshMediaData
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid
 import com.zhongjh.multimedia.album.widget.CheckView
 import com.zhongjh.multimedia.model.SelectedModel
@@ -46,11 +46,11 @@ class AlbumAdapter(
     /**
      * 重新赋值数据
      *
-     * @param reloadPageMediaData 数据源和比较数据
+     * @param refreshMediaData 数据源和比较数据
      */
-    fun setReloadPageMediaData(reloadPageMediaData: ReloadPageMediaData) {
-            this@AlbumAdapter.data = reloadPageMediaData.data
-            reloadPageMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
+    fun setReloadPageMediaData(refreshMediaData: RefreshMediaData) {
+            this@AlbumAdapter.data = refreshMediaData.data
+            refreshMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
     }
 
     /**

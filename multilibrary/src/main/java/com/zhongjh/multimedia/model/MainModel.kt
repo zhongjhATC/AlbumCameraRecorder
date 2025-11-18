@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.album.entity.Album
-import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
+import com.zhongjh.multimedia.album.entity.RefreshMediaData
 import com.zhongjh.multimedia.album.loader.MediaLoader
 import com.zhongjh.multimedia.album.repository.MediaRepository
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.LocalMediaCallback
@@ -21,14 +21,15 @@ import kotlinx.coroutines.withContext
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
  *
+ * @param mediaRepository 数据仓库类，统一管理数据加载
+ *
  * @author zhongjh
  * @date 2025/11/18
  */
-class MainModel(application: Application) : AndroidViewModel(application) {
-    /**
-     * 数据仓库（统一数据访问层）
-     * */
-    private val mediaRepository = MediaRepository(MediaLoader(application))
+class MainModel(
+    application: Application,
+    private val mediaRepository: MediaRepository = MediaRepository(MediaLoader(application))
+) : AndroidViewModel(application) {
 
     /**
      * 专辑列表状态流（不可变数据 + 状态封装）
@@ -41,7 +42,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 分页媒体数据状态流（密封类统一管理多状态）
      * - 整合加载中/成功/空/错误状态
-     * - 替代原 LiveData：_reloadPageMediaData、_addAllPageMediaData、_onFail
+     * - 替代原 LiveData：_refreshMediaData、_addAllPageMediaData、_onFail
      */
     private val _mediaPageState = MutableStateFlow<MediaPageState>(MediaPageState.Empty())
     val mediaPageState: StateFlow<MediaPageState> = _mediaPageState.asStateFlow()
@@ -87,7 +88,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 加载所有专辑（通过 Repository 获取数据 + 错误处理）
      */
-    fun loadAllAlbum() {
+    fun loadAlbums() {
         viewModelScope.launch {
             try {
                 // 从 Repository 收集数据流（自动在 IO 线程执行）
@@ -128,10 +129,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                     _mediaPageState.value = MediaPageState.Empty("暂无媒体文件")
                 } else {
                     // 发送 DiffResult 用于列表刷新
-                    val reloadPageMediaData = ReloadPageMediaData()
-                    reloadPageMediaData.data = localMedias.toList()
-                    reloadPageMediaData.diffResult = diffResult
-                    _mediaPageState.value = MediaPageState.RefreshSuccess(reloadPageMediaData)
+                    val refreshMediaData = RefreshMediaData()
+                    refreshMediaData.data = localMedias.toList()
+                    refreshMediaData.diffResult = diffResult
+                    _mediaPageState.value = MediaPageState.RefreshSuccess(refreshMediaData)
                 }
             } catch (e: Exception) {
                 // 发送错误状态
@@ -210,9 +211,9 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
         /**
          * 刷新事件 也用于初次加载
-         * @param reloadPageMediaData 刷新数据
+         * @param refreshMediaData 刷新数据
          */
-        data class RefreshSuccess(val reloadPageMediaData: ReloadPageMediaData) : MediaPageState()
+        data class RefreshSuccess(val refreshMediaData: RefreshMediaData) : MediaPageState()
 
         /**
          * 加载更多局部刷新事件（复用原 addAllPageMediaData 逻辑）
