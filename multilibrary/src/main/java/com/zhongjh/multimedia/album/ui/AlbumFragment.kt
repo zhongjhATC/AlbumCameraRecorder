@@ -11,19 +11,13 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.Toolbar
-import androidx.constraintlayout.widget.Group
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
@@ -39,14 +33,14 @@ import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle
+import com.zhongjh.multimedia.album.ui.manager.BottomToolbarManager
 import com.zhongjh.multimedia.album.ui.manager.TvAlbumPermissionManager
 import com.zhongjh.multimedia.album.ui.mediaselection.MediaViewUtil
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
 import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask
-import com.zhongjh.multimedia.album.widget.CheckRadioView
 import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner
 import com.zhongjh.multimedia.album.widget.albumspinner.OnAlbumItemClickListener
-import com.zhongjh.multimedia.album.widget.recyclerview.RecyclerLoadMoreView
+import com.zhongjh.multimedia.databinding.FragmentAlbumZjhBinding
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
 import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
@@ -57,9 +51,10 @@ import com.zhongjh.multimedia.settings.AlbumSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
-import com.zhongjh.multimedia.utils.SettingsPermissionUtils
+import com.zhongjh.multimedia.utils.LifecycleFlowCollector
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -73,9 +68,14 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private val tag: String = this@AlbumFragment.javaClass.simpleName
 
     private lateinit var mApplicationContext: Context
-    private lateinit var mAlbumModel: AlbumModel
-    private lateinit var mMainModel: MainModel
-    private lateinit var mSelectedModel: SelectedModel
+    private val mAlbumModel: AlbumModel by activityViewModels()
+    private val mMainModel: MainModel by activityViewModels()
+    private val mSelectedModel: SelectedModel by activityViewModels()
+
+    /**
+     * View Binding
+     */
+    private lateinit var mBinding: FragmentAlbumZjhBinding
 
     /**
      * 从预览界面回来
@@ -96,6 +96,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 声明 TvAlbumPermissionManager 实例
      */
     private lateinit var mTvAlbumPermissionManager: TvAlbumPermissionManager
+
+    private lateinit var mBottomToolbarManager: BottomToolbarManager
 
     /**
      * 统一管理原图有关功能模块
@@ -129,8 +131,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         AlbumCompressFileTask(requireActivity(), tag, AlbumFragment::class.java, mGlobalSpec)
     }
 
-    private lateinit var mViewHolder: ViewHolder
-
     /**
      * 当前点击item的索引
      */
@@ -159,9 +159,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.mApplicationContext = requireActivity().applicationContext
-        this.mAlbumModel = ViewModelProvider(requireActivity())[AlbumModel::class.java]
-        this.mMainModel = ViewModelProvider(requireActivity())[MainModel::class.java]
-        this.mSelectedModel = ViewModelProvider(requireActivity())[SelectedModel::class.java]
         if (mAlbumSpec.SelectedData.isNotEmpty()) {
             mSelectedModel.selectedData.addAll(mAlbumSpec.SelectedData)
         }
@@ -170,17 +167,15 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_album_zjh, container, false)
-
-        mViewHolder = ViewHolder(view)
+    ): View {
+        mBinding = FragmentAlbumZjhBinding.inflate(inflater, container, false)
         initConfig()
         initView()
         initActivityResult()
         initListener()
         initMediaViewUtil()
         initObserveData()
-        return view
+        return mBinding.root
     }
 
     override fun onResume() {
@@ -203,12 +198,12 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private fun initView() {
         // 兼容沉倾状态栏
         val statusBarHeight = getStatusBarHeight(requireActivity())
-        mViewHolder.root.setPadding(
-            mViewHolder.root.paddingLeft, statusBarHeight,
-            mViewHolder.root.paddingRight, mViewHolder.root.paddingBottom
+        mBinding.root.setPadding(
+            mBinding.root.paddingLeft, statusBarHeight,
+            mBinding.root.paddingRight, mBinding.root.paddingBottom
         )
         // 修改颜色
-        val navigationIcon = mViewHolder.toolbar.navigationIcon
+        val navigationIcon = mBinding.toolbar.navigationIcon
         val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
         val color = ta.getColor(0, 0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -219,6 +214,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         navigationIcon?.let {
             setColorFilterSrcIn(navigationIcon, color)
         }
+
+        // 为 tvAlbumPermission 设置富文本(下划线+点击事件)
+        initTvAlbumPermission()
+        initBottomToolbar()
+
         updateBottomToolbar()
 
         initAlbumSpinner()
@@ -228,15 +228,12 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
 
         // 关闭滑动隐藏布局功能
         if (!mAlbumSpec.slidingHiddenEnable) {
-            mViewHolder.recyclerview.isNestedScrollingEnabled = false
-            val params = mViewHolder.toolbar.layoutParams as AppBarLayout.LayoutParams
+            mBinding.recyclerview.isNestedScrollingEnabled = false
+            val params = mBinding.toolbar.layoutParams as AppBarLayout.LayoutParams
             params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-            mViewHolder.emptyView.setPadding(0, 0, 0, dip2px(50f))
-            mViewHolder.recyclerview.setPadding(0, 0, 0, dip2px(50f))
+            mBinding.emptyView.setPadding(0, 0, 0, dip2px(50f))
+            mBinding.recyclerview.setPadding(0, 0, 0, dip2px(50f))
         }
-
-        // 为 tvAlbumPermission 设置富文本(下划线+点击事件)
-        initTvAlbumPermission()
     }
 
     /**
@@ -244,7 +241,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      */
     private fun initListener() {
         // 滑动回调事件主要是处理共享动画的参数设置
-        mViewHolder.recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        mBinding.recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 when (newState) {
@@ -264,7 +261,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                         if (!isRecyclerViewUserDragging && isRecyclerViewScrolling) {
                             isRecyclerViewScrolling = false
                             // 将当前列表的组件宽高数据添加到缓存
-                            add(mViewHolder.recyclerview, 0)
+                            add(mBinding.recyclerview, 0)
                             mMainModel.onScrollToPositionComplete(smoothScrollPosition)
                         }
                 }
@@ -273,7 +270,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         })
 
         // 关闭事件
-        mViewHolder.imgClose.setOnClickListener { requireActivity().finish() }
+        mBinding.imgClose.setOnClickListener { requireActivity().finish() }
 
         // 下拉框选择的时候
         mAlbumSpinner?.setOnAlbumItemClickListener(object : OnAlbumItemClickListener {
@@ -286,14 +283,14 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         })
 
         // 预览事件
-        mViewHolder.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
+        mBinding.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.selectedData.localMedias)
             }
         })
 
         // 确认当前选择的图片
-        mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
+        mBinding.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 val localMediaArrayList = mSelectedModel.selectedData.localMedias
                 // 设置是否原图状态
@@ -305,10 +302,10 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         })
 
         // 点击原图
-        mViewHolder.originalLayout.setOnClickListener { mOriginalManage.originalClick() }
+        mBinding.originalLayout.setOnClickListener { mOriginalManage.originalClick() }
 
         // 点击Loading停止
-        mViewHolder.pbLoading.setOnClickListener {
+        mBinding.pbLoading.setOnClickListener {
             // 中断线程
             mCompressFileJob?.cancel()
             // 恢复界面可用
@@ -316,7 +313,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
 
         // 触发滑动事件
-        mViewHolder.bottomToolbar.onListener = ConstraintLayoutBehavior.Listener { translationY: Float -> (requireActivity() as MainActivity).onDependentViewChanged(translationY) }
+        mBinding.bottomToolbar.onListener = ConstraintLayoutBehavior.Listener { translationY: Float -> (requireActivity() as MainActivity).onDependentViewChanged(translationY) }
     }
 
     /**
@@ -331,7 +328,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         } else {
             ta.recycle()
         }
-        mMediaViewUtil = MediaViewUtil(this.mApplicationContext, this, mMainModel, mSelectedModel, mViewHolder.recyclerview, placeholder, this, this)
+        mMediaViewUtil = MediaViewUtil(this.mApplicationContext, this, mMainModel, mSelectedModel, mBinding.recyclerview, placeholder, this, this)
     }
 
     /**
@@ -339,41 +336,29 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      */
     private fun initObserveData() {
         // 专辑加载完毕
-        mMainModel.albums.observe(viewLifecycleOwner) { data: List<Album> ->
-            if (data.isNotEmpty()) {
+        LifecycleFlowCollector.collect(this, mMainModel.albums) { albums ->
+            if (albums.isNotEmpty()) {
                 // 更新专辑列表
-                mAlbumSpinner?.bindFolder(data)
-                // 可能因为别的原因销毁当前界面，回到当前选择的位置
-                val album = data[mMainModel.currentSelection]
-                val albumChecks = ArrayList<Album>()
-                albumChecks.add(album)
-                mAlbumSpinner?.updateCheckStatus(albumChecks)
-                val displayName = album.name
-                if (mViewHolder.tvAlbumTitle.visibility == View.VISIBLE) {
-                    mViewHolder.tvAlbumTitle.text = displayName
-                } else {
-                    mViewHolder.tvAlbumTitle.alpha = 0.0f
-                    mViewHolder.tvAlbumTitle.visibility = View.VISIBLE
-                    mViewHolder.tvAlbumTitle.text = displayName
-                    mViewHolder.tvAlbumTitle.animate().alpha(1.0f).setDuration(
-                        mApplicationContext.resources.getInteger(
-                            android.R.integer.config_longAnimTime
-                        ).toLong()
-                    ).start()
-                }
-                onAlbumSelected(album)
+                mAlbumSpinner?.bindFolder(albums)
+                // 默认选中第一个专辑
+                mMainModel.currentSelection = 0
+                onAlbumSelected(albums[0]) // 加载默认专辑数据
+                // 更新专辑标题（保留原动画逻辑）
+                updateAlbumTitle(albums)
             }
         }
         // 选择数据改变
         mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { mMediaViewUtil?.notifyItemByLocalMedia() }
         // 原图选项改变
-        mMainModel.getOriginalEnableObserve().observe(viewLifecycleOwner) { value: Boolean -> mViewHolder.original.setChecked(value) }
+        LifecycleFlowCollector.collect(this, mMainModel.originalEnable) { value: Boolean ->
+            mBinding.original.setChecked(value)
+        }
         // 预览界面的viewPage滑动时触发
-        mMainModel.onViewPageSelected.observe(viewLifecycleOwner) { value: Int ->
+        LifecycleFlowCollector.collect(this, mMainModel.onViewPageSelected) { value: Int ->
             smoothScrollPosition = value
             // 滑动到viewPage的一样position
             isRecyclerViewUserDragging = false
-            mViewHolder.recyclerview.smoothScrollToPosition(smoothScrollPosition)
+            mBinding.recyclerview.smoothScrollToPosition(smoothScrollPosition)
         }
     }
 
@@ -416,8 +401,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
 
         mAlbumSpinner = AlbumSpinner(mApplicationContext, albumSpinnerStyle)
-        mAlbumSpinner?.setArrowImageView(mViewHolder.imgArrow)
-        mAlbumSpinner?.setTitleTextView(mViewHolder.tvAlbumTitle)
+        mAlbumSpinner?.setArrowImageView(mBinding.imgArrow)
+        mAlbumSpinner?.setTitleTextView(mBinding.tvAlbumTitle)
     }
 
     /**
@@ -427,7 +412,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 初始化 tvAlbumPermission 逻辑（替换原 initTvAlbumPermission() 调用）
         mTvAlbumPermissionManager = TvAlbumPermissionManager(
             context = mApplicationContext,
-            viewHolder = mViewHolder,
+            fragmentAlbumZjhBinding = mBinding,
             albumModel = mAlbumModel,
             mainModel = mMainModel
         ).apply {
@@ -440,14 +425,36 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
     }
 
+    private fun initBottomToolbar() {
+        mBottomToolbarManager = BottomToolbarManager(
+            binding = mBinding,
+            albumSpec = mAlbumSpec,
+            originalManage = mOriginalManage
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // 1. 取消视图相关协程（如 UI 动画、延迟任务）
+        lifecycleScope.cancel()
+
+        // 2. 清理视图监听器（避免匿名类持有 Fragment 引用）
+        mAlbumSpinner?.setOnAlbumItemClickListener(null)
+        mBinding.recyclerview.clearOnScrollListeners()
+        mBinding.recyclerview.adapter = null
+
+        // 4. 释放视图工具类（如 MediaViewUtil 包含视图引用）
+        mMediaViewUtil?.onDestroyView()
+        mMediaViewUtil = null
+    }
+
     override fun onDestroy() {
         Log.d(tag, "AlbumFragment onDestroy")
-        mGlobalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
-            videoCompressCoordinator.onCompressDestroy(this@AlbumFragment.javaClass)
+        // 1. 释放全局静态资源（如 VideoCompressCoordinator）
+        mGlobalSpec.videoCompressCoordinator?.let {
+            it.onCompressDestroy(this@AlbumFragment.javaClass)
             mGlobalSpec.videoCompressCoordinator = null
         }
-        mMediaViewUtil?.onDestroyView()
-        mAlbumSpinner?.setOnAlbumItemClickListener(null)
         super.onDestroy()
     }
 
@@ -456,36 +463,38 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     }
 
     /**
+     * 更新专辑标题
+     *
+     * @param albums 专辑列表
+     */
+    private fun updateAlbumTitle(albums: List<Album>) {
+        // 可能因为别的原因销毁当前界面，回到当前选择的位置
+        val album = albums[mMainModel.currentSelection]
+        val albumChecks = ArrayList<Album>()
+        albumChecks.add(album)
+        mAlbumSpinner?.updateCheckStatus(albumChecks)
+        val displayName = album.name
+        if (mBinding.tvAlbumTitle.visibility == View.VISIBLE) {
+            mBinding.tvAlbumTitle.text = displayName
+        } else {
+            mBinding.tvAlbumTitle.alpha = 0.0f
+            mBinding.tvAlbumTitle.visibility = View.VISIBLE
+            mBinding.tvAlbumTitle.text = displayName
+            mBinding.tvAlbumTitle.animate().alpha(1.0f).setDuration(
+                mApplicationContext.resources.getInteger(
+                    android.R.integer.config_longAnimTime
+                ).toLong()
+            ).start()
+        }
+    }
+
+    /**
      * 更新底部数据
      */
     private fun updateBottomToolbar() {
         val selectedCount = mSelectedModel.selectedData.count()
-
-        if (selectedCount == 0) {
-            // 如果没有数据，则设置不可点击
-            mViewHolder.buttonPreview.isEnabled = false
-            mViewHolder.buttonApply.isEnabled = false
-            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure_default)
-        } else if (selectedCount == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
-            // 不显示选择的数字
-            mViewHolder.buttonPreview.isEnabled = true
-            mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
-            mViewHolder.buttonApply.isEnabled = true
-        } else {
-            // 显示选择的数字
-            mViewHolder.buttonPreview.isEnabled = true
-            mViewHolder.buttonApply.isEnabled = true
-            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure, selectedCount)
-        }
-
-        // 是否显示原图控件
-        if (mAlbumSpec.originalEnable) {
-            mViewHolder.groupOriginal.visibility = View.VISIBLE
-            updateOriginalState()
-        } else {
-            mViewHolder.groupOriginal.visibility = View.INVISIBLE
-        }
-
+        mBottomToolbarManager.updateSelectedState(selectedCount)
+        mBottomToolbarManager.updateOriginalState(mMainModel.getOriginalEnable())
         showBottomView(selectedCount)
     }
 
@@ -494,7 +503,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      */
     private fun updateOriginalState() {
         // 设置选择状态
-        mViewHolder.original.setChecked(mMainModel.getOriginalEnable())
+        mBinding.original.setChecked(mMainModel.getOriginalEnable())
         mOriginalManage.updateOriginalState()
     }
 
@@ -506,15 +515,15 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private fun onAlbumSelected(album: Album) {
         if (album.isAll && album.isEmpty) {
             // 如果是选择全部并且没有数据的话，显示空的view
-            mViewHolder.recyclerview.visibility = View.GONE
-            mViewHolder.emptyView.visibility = View.VISIBLE
+            mBinding.recyclerview.visibility = View.GONE
+            mBinding.emptyView.visibility = View.VISIBLE
         } else {
             // 如果有数据，显示相应相关照片
-            mViewHolder.recyclerview.visibility = View.VISIBLE
-            mViewHolder.emptyView.visibility = View.GONE
+            mBinding.recyclerview.visibility = View.VISIBLE
+            mBinding.emptyView.visibility = View.GONE
             if (!mIsRefresh) {
                 mMediaViewUtil?.load(album)
-                mViewHolder.tvAlbumTitle.text = album.name
+                mBinding.tvAlbumTitle.text = album.name
             }
         }
     }
@@ -539,7 +548,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             return
         }
         // 将当前列表的组件宽高数据添加到缓存
-        add(mViewHolder.recyclerview, 0)
+        add(mBinding.recyclerview, 0)
 
         currentPosition = adapterPosition
         // 设置position
@@ -560,12 +569,12 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         if ((requireActivity() as MainActivity).mActivityMainZjhBinding.tableLayout.currentTab == 0) {
             if (count > 0) {
                 // 显示底部
-                mViewHolder.bottomToolbar.visibility = View.VISIBLE
+                mBinding.bottomToolbar.visibility = View.VISIBLE
                 // 隐藏母窗体的table
                 (requireActivity() as MainActivity).showHideTableLayout(false)
             } else {
                 // 隐藏底部
-                mViewHolder.bottomToolbar.visibility = View.GONE
+                mBinding.bottomToolbar.visibility = View.GONE
                 // 显示母窗体的table
                 (requireActivity() as MainActivity).showHideTableLayout(true)
             }
@@ -626,35 +635,17 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 设置是否启用界面触摸，不可禁止中断、退出
      */
     private fun setControlTouchEnable(enable: Boolean) {
-        mViewHolder.recyclerview.isEnabled = enable
+        mBinding.recyclerview.isEnabled = enable
         // 如果不可用就显示 加载中 view,否则隐藏
         if (!enable) {
-            mViewHolder.pbLoading.visibility = View.VISIBLE
-            mViewHolder.buttonApply.visibility = View.GONE
-            mViewHolder.buttonPreview.isEnabled = false
+            mBinding.pbLoading.visibility = View.VISIBLE
+            mBinding.buttonApply.visibility = View.GONE
+            mBinding.buttonPreview.isEnabled = false
         } else {
-            mViewHolder.pbLoading.visibility = View.GONE
-            mViewHolder.buttonApply.visibility = View.VISIBLE
-            mViewHolder.buttonPreview.isEnabled = true
+            mBinding.pbLoading.visibility = View.GONE
+            mBinding.buttonApply.visibility = View.VISIBLE
+            mBinding.buttonPreview.isEnabled = true
         }
-    }
-
-    class ViewHolder(rootView: View) {
-        val tvAlbumTitle: TextView = rootView.findViewById(R.id.tvAlbumTitle)
-        val imgArrow: ImageView = rootView.findViewById(R.id.imgArrow)
-        val toolbar: Toolbar = rootView.findViewById(R.id.toolbar)
-        val buttonPreview: TextView = rootView.findViewById(R.id.buttonPreview)
-        val original: CheckRadioView = rootView.findViewById(R.id.original)
-        val originalLayout: View = rootView.findViewById(R.id.originalLayout)
-        val groupOriginal: Group = rootView.findViewById(R.id.groupOriginal)
-        val buttonApply: TextView = rootView.findViewById(R.id.buttonApply)
-        val bottomToolbar: ConstraintLayoutBehavior = rootView.findViewById(R.id.bottomToolbar)
-        val emptyView: FrameLayout = rootView.findViewById(R.id.emptyView)
-        val root: CoordinatorLayout = rootView.findViewById(R.id.root)
-        val imgClose: ImageView = rootView.findViewById(R.id.imgClose)
-        val pbLoading: ProgressBar = rootView.findViewById(R.id.pbLoading)
-        val recyclerview: RecyclerLoadMoreView = rootView.findViewById(R.id.recyclerview)
-        val tvAlbumPermission: TextView = rootView.findViewById(R.id.tvAlbumPermission)
     }
 
     companion object {

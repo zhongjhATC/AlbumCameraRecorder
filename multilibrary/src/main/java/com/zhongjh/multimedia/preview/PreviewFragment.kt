@@ -60,6 +60,7 @@ import com.zhongjh.multimedia.sharedanimation.OnSharedAnimationViewListener
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams
 import com.zhongjh.multimedia.sharedanimation.SharedAnimationView
 import com.zhongjh.multimedia.utils.FileMediaUtil
+import com.zhongjh.multimedia.utils.LifecycleFlowCollector
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -143,6 +144,11 @@ class PreviewFragment : BaseFragment() {
     private val mAlbumCompressFileTask by lazy {
         AlbumCompressFileTask(mContext, TAG, PreviewFragment::class.java, mGlobalSpec)
     }
+
+    /**
+     * 媒体数据
+     * */
+    private val mLocalMedias = ArrayList<LocalMedia>()
 
     /**
      * 当前编辑完的图片文件
@@ -291,7 +297,7 @@ class PreviewFragment : BaseFragment() {
                 // 数据源
                 it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
-                    mMainModel.localMedias.addAll(localMedias)
+                    mLocalMedias.addAll(localMedias)
                     mSelectedModel.selectedData.addAll(localMedias)
                     mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
                 }
@@ -346,8 +352,9 @@ class PreviewFragment : BaseFragment() {
      */
     private fun initViewPagerData() {
         mAdapter = PreviewPagerAdapter(mContext, requireActivity())
-        mAdapter.addAll(mMainModel.localMedias)
-        mAdapter.notifyItemRangeChanged(0, mMainModel.localMedias.size)
+        mLocalMedias.addAll(mMainModel.getLocalMedias())
+        mAdapter.addAll(mLocalMedias)
+        mAdapter.notifyItemRangeChanged(0, mLocalMedias.size)
         mViewPager2.adapter = mAdapter
 
         // adapter显示view时的触发事件
@@ -401,7 +408,7 @@ class PreviewFragment : BaseFragment() {
         })
         // 右上角选择事件
         mViewHolder.checkView.setOnClickListener {
-            val media = mMainModel.localMedias[mViewPager2.currentItem]
+            val media = mLocalMedias[mViewPager2.currentItem]
             if (mSelectedModel.selectedData.isSelected(media)) {
                 mSelectedModel.removeSelectedData(media)
                 if (mAlbumSpec.countable) {
@@ -453,11 +460,11 @@ class PreviewFragment : BaseFragment() {
      */
     private fun initObserveData() {
         // 原图选项改变
-        mMainModel.getOriginalEnableObserve().observe(viewLifecycleOwner) { value: Boolean ->
+        LifecycleFlowCollector.collect(viewLifecycleOwner, mMainModel.originalEnable) {value: Boolean ->
             mViewHolder.original.setChecked(value)
         }
         // 相册界面移动完成后触发
-        mMainModel.onScrollToPositionComplete.observe(viewLifecycleOwner) { value: Int ->
+        LifecycleFlowCollector.collect(viewLifecycleOwner, mMainModel.onScrollToPositionComplete) { value: Int ->
             setSharedAnimationViewParams(value)
         }
     }
@@ -724,7 +731,7 @@ class PreviewFragment : BaseFragment() {
             return
         }
         if (isSharedAnimation()) {
-            setImageViewScaleType(holder, mMainModel.localMedias[mMainModel.previewPosition])
+            setImageViewScaleType(holder, mLocalMedias[mMainModel.previewPosition])
         }
     }
 
@@ -753,7 +760,7 @@ class PreviewFragment : BaseFragment() {
         // 先隐藏viewPager,等共享动画结束后，再显示viewPager
         mViewPager2.alpha = 0F
         mMainModel.viewModelScope.launch {
-            val media = mMainModel.localMedias[position]
+            val media = mLocalMedias[position]
             val mediaRealSize = getMediaRealSizeFromMedia(media)
             val width = mediaRealSize[0]
             val height = mediaRealSize[1]
@@ -783,7 +790,7 @@ class PreviewFragment : BaseFragment() {
      */
     private fun setSharedAnimationViewParams(position: Int) {
         mMainModel.viewModelScope.launch {
-            val media = mMainModel.localMedias[position]
+            val media = mLocalMedias[position]
             val mediaSize = getMediaRealSizeFromMedia(media)
             val width = mediaSize[0]
             val height = mediaSize[1]
@@ -836,7 +843,7 @@ class PreviewFragment : BaseFragment() {
      */
     private fun onSharedBeginAnimComplete(sharedAnimationView: SharedAnimationView?, showImmediately: Boolean) {
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
-        val media = mMainModel.localMedias[mViewPager2.currentItem]
+        val media = mLocalMedias[mViewPager2.currentItem]
 //        val isResetSize = (media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0
 //        val realWidth = if (isResetSize) media.cropWidth else media.width
 //        val realHeight = if (isResetSize) media.cropHeight else media.height

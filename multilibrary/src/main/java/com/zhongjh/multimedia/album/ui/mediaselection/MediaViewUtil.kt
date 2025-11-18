@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
-import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGridInset
 import com.zhongjh.multimedia.album.utils.UiUtils.spanCount
@@ -21,6 +20,7 @@ import com.zhongjh.multimedia.settings.AlbumSpec
 import com.zhongjh.multimedia.settings.AlbumSpec.thumbnailScale
 import com.zhongjh.multimedia.settings.GlobalSpec.imageEngine
 import com.zhongjh.multimedia.settings.GlobalSpec.onLogListener
+import com.zhongjh.multimedia.utils.LifecycleFlowCollector
 
 /**
  * 以前是MediaSelectionFragment,现在为了能滑动影响上下布局，放弃Fragment布局，直接使用RecyclerView
@@ -28,7 +28,6 @@ import com.zhongjh.multimedia.settings.GlobalSpec.onLogListener
  *
  * @param checkStateListener 单选事件
  * @param onMediaClickListener 点击事件
- *
  *
  * @author zhongjh
  * @date 2022/9/19
@@ -84,24 +83,31 @@ class MediaViewUtil(
             }
         })
 
-        // 监听到新的相册数据
-        mainModel.reloadPageMediaData.observe(owner) { reloadPageMediaData: ReloadPageMediaData ->
-            // 如果没有数据，则关闭下拉加载
-            recyclerView.setEnabledLoadMore(reloadPageMediaData.data.isNotEmpty())
-            mAdapter?.setData(reloadPageMediaData)
-            recyclerView.scrollToPosition(0)
-        }
+        LifecycleFlowCollector.collect(owner, mainModel.mediaPageState) { state ->
+            when (state) {
+                // 监听到新的相册数据
+                is MainModel.MediaPageState.RefreshSuccess -> {
+                    // 如果没有数据，则关闭下拉加载
+                    recyclerView.setEnabledLoadMore(state.reloadPageMediaData.data.isNotEmpty())
+                    mAdapter?.setReloadPageMediaData(state.reloadPageMediaData)
+                    recyclerView.scrollToPosition(0)
+                }
 
-        // 监听到下拉相册数据
-        mainModel.addAllPageMediaData.observe(owner) { size: Int ->
-            // 如果没有数据，则关闭下拉加载
-            recyclerView.setEnabledLoadMore(size != -1)
-            mAdapter?.addData(size)
-        }
+                // 监听到下拉相册数据
+                is MainModel.MediaPageState.LoadMoreSuccess -> {
+                    // 如果没有数据，则关闭下拉加载
+                    recyclerView.setEnabledLoadMore(state.startPosition != -1)
+                    mAdapter?.setData(state.data)
+                    mAdapter?.notifyItemInserted(state.startPosition)
+                }
 
-        // 输出失败信息
-        mainModel.onFail.observe(owner) { throwable: Throwable ->
-            onLogListener?.logError(throwable)
+                // 输出失败信息
+                is MainModel.MediaPageState.Error -> {
+                    onLogListener?.logError(state.cause)
+                }
+
+                else -> {}
+            }
         }
     }
 

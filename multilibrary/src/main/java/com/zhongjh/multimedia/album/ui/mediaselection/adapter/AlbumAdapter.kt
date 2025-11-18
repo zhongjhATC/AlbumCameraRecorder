@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
 import com.zhongjh.common.entity.LocalMedia
@@ -20,7 +19,6 @@ import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid
 import com.zhongjh.multimedia.album.widget.CheckView
 import com.zhongjh.multimedia.model.SelectedModel
 import com.zhongjh.multimedia.settings.AlbumSpec
-import kotlinx.coroutines.launch
 
 /**
  * 相册适配器
@@ -35,7 +33,7 @@ class AlbumAdapter(
     private val tag: String = this@AlbumAdapter.javaClass.simpleName
 
     private val mAlbumSpec = AlbumSpec
-    private var data: MutableList<LocalMedia> = ArrayList()
+    private var data: List<LocalMedia> = ArrayList()
     private var mCheckStateListener: CheckStateListener? = null
     private var mOnMediaClickListener: OnMediaClickListener? = null
     private val mImageResize: Int
@@ -50,22 +48,16 @@ class AlbumAdapter(
      *
      * @param reloadPageMediaData 数据源和比较数据
      */
-    fun setData(reloadPageMediaData: ReloadPageMediaData) {
-        // 使用协程作用域启动后台任务
-        lifecycleOwner.lifecycleScope.launch {
-            // 结果自动回到主线程，更新UI
+    fun setReloadPageMediaData(reloadPageMediaData: ReloadPageMediaData) {
             this@AlbumAdapter.data = reloadPageMediaData.data
             reloadPageMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
-        }
     }
 
     /**
-     * 添加数据
-     *
-     * @param positionStart 用于notifyItemInserted
+     * 设置数据
      */
-    fun addData(positionStart: Int) {
-        notifyItemInserted(positionStart)
+    fun setData(data: List<LocalMedia>) {
+        this@AlbumAdapter.data = data
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

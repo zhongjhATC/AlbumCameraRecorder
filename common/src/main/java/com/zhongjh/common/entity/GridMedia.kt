@@ -12,11 +12,6 @@ import android.os.Parcelable
 class GridMedia : LocalMedia, Parcelable {
 
     /**
-     * 在线网址
-     */
-    var url: String? = null
-
-    /**
      * 是否进行上传动作
      */
     var isUploading = false
@@ -34,7 +29,6 @@ class GridMedia : LocalMedia, Parcelable {
     constructor() : super()
 
     constructor(parcel: Parcel) : super(parcel) {
-        url = parcel.readString()
         isUploading = parcel.readByte() != 0.toByte()
         progress = parcel.readInt()
     }
@@ -47,7 +41,6 @@ class GridMedia : LocalMedia, Parcelable {
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         super.writeToParcel(parcel, flags)
-        parcel.writeString(url)
         parcel.writeByte(if (isUploading) 1 else 0)
         parcel.writeInt(progress)
         parcel.writeByte(if (isAdd) 1 else 0)
@@ -73,7 +66,6 @@ class GridMedia : LocalMedia, Parcelable {
      */
     fun copyGridMedia(gridMedia: GridMedia) {
         super.copyLocalMedia(gridMedia)
-        url = gridMedia.url
         isUploading = gridMedia.isUploading
         progress = gridMedia.progress
         isAdd = gridMedia.isAdd

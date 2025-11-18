@@ -2,188 +2,238 @@ package com.zhongjh.multimedia.model
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.entity.ReloadPageMediaData
 import com.zhongjh.multimedia.album.loader.MediaLoader
+import com.zhongjh.multimedia.album.repository.MediaRepository
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.LocalMediaCallback
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
- * https://juejin.cn/post/7031125139227951112
  *
  * @author zhongjh
- * @date 2022/9/7
+ * @date 2025/11/18
  */
 class MainModel(application: Application) : AndroidViewModel(application) {
+    /**
+     * 数据仓库（统一数据访问层）
+     * */
+    private val mediaRepository = MediaRepository(MediaLoader(application))
 
     /**
-     * 数据库操作文件类
+     * 专辑列表状态流（不可变数据 + 状态封装）
+     * - 私有可变流：_albums（仅内部修改）
+     * - 公开只读流：albums（外部仅观察）
      */
-    private var mediaLoader: MediaLoader = MediaLoader(application)
+    private val _albums = MutableStateFlow<List<Album>>(emptyList())
+    val albums: StateFlow<List<Album>> = _albums.asStateFlow()
 
     /**
-     * 输送失败信息
+     * 分页媒体数据状态流（密封类统一管理多状态）
+     * - 整合加载中/成功/空/错误状态
+     * - 替代原 LiveData：_reloadPageMediaData、_addAllPageMediaData、_onFail
      */
-    private val _onFail = MutableLiveData<Throwable>()
-    val onFail: LiveData<Throwable> get() = _onFail
+    private val _mediaPageState = MutableStateFlow<MediaPageState>(MediaPageState.Empty())
+    val mediaPageState: StateFlow<MediaPageState> = _mediaPageState.asStateFlow()
 
     /**
-     *  文件夹数据集
+     * 原图状态流（替代原 _originalEnable LiveData）
      */
-    private val _albums = MutableLiveData<MutableList<Album>>()
-    val albums: LiveData<MutableList<Album>> get() = _albums
+    private val _originalEnable = MutableStateFlow(false)
+    val originalEnable: StateFlow<Boolean> = _originalEnable.asStateFlow()
 
     /**
-     * 重新获取数据事件,一般是选择专辑重新获取
+     * 预览界面滑动位置流（替代原 _onViewPageSelected LiveData）
      */
-    private val _reloadPageMediaData = MutableLiveData<ReloadPageMediaData>()
-    val reloadPageMediaData: LiveData<ReloadPageMediaData> get() = _reloadPageMediaData
+    private val _onViewPageSelected = MutableStateFlow(0)
+    val onViewPageSelected: StateFlow<Int> = _onViewPageSelected.asStateFlow()
 
     /**
-     * 添加数据事件,一般是下拉数据
+     * 相册列表滑动完成流（替代原 _onScrollToPositionComplete LiveData）
      */
-    private val _addAllPageMediaData = MutableLiveData<Int>()
-    val addAllPageMediaData: LiveData<Int> get() = _addAllPageMediaData
+    private val _onScrollToPositionComplete = MutableStateFlow(0)
+    val onScrollToPositionComplete: StateFlow<Int> = _onScrollToPositionComplete.asStateFlow()
 
     /**
-     * 预览界面的viewPage滑动时触发
-     */
-    private val _onViewPageSelected = MutableLiveData<Int>()
-    val onViewPageSelected: LiveData<Int> get() = _onViewPageSelected
+     * 媒体数据缓存
+     * */
+    private val localMedias = ArrayList<LocalMedia>()
 
     /**
-     * 相册界面的列表移动完成
+     * 提供 localMedias 的只读访问接口（返回不可变副本）
      */
-    private val _onScrollToPositionComplete = MutableLiveData<Int>()
-    val onScrollToPositionComplete: LiveData<Int> get() = _onScrollToPositionComplete
+    fun getLocalMedias(): List<LocalMedia> = localMedias.toList()
 
-    /**
-     * 是否原图
-     */
-    private val _originalEnable = MutableLiveData<Boolean>()
-
-    fun setOriginalEnable(boolean: Boolean) {
-        _originalEnable.postValue(boolean)
-    }
-
-    fun getOriginalEnable(): Boolean {
-        return _originalEnable.value == true
-    }
-
-    fun getOriginalEnableObserve(): LiveData<Boolean> {
-        return _originalEnable
-    }
-
-    /**
-     * 多媒体文件数据集的缓存，相册和预览都会用到,所有界面,都共用该数据
-     */
-    val localMedias = ArrayList<LocalMedia>()
-
-    /**
-     * 分页相册的当前页码
-     */
+    /** 分页页码（内部状态管理） */
     private var page = 1
 
-    /**
-     * 当前所选择的文件夹
-     */
+    /** 当前选择的专辑索引 */
     var currentSelection = 0
 
-    /**
-     * 当前预览的图片的索引,默认无
-     */
+    /** 当前预览图片索引 */
     var previewPosition = -1
 
-    /**
-     * 重新获取数据
-     *
-     * @param bucketId 专辑id
-     * @param pageSize 每页多少个
-     */
-    fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
-        viewModelScope.launch {
-            try {
-                // 在IO调度器上执行耗时操作（计算差异）
-                val reloadPageMediaData = withContext(Dispatchers.IO) {
-                    page = 1
-                    val localMediaMutableList = mediaLoader.loadMediaMore(bucketId, page, pageSize)
-                    val diffResult = DiffUtil.calculateDiff(LocalMediaCallback(localMedias, localMediaMutableList))
-                    // 添加进缓存数据
-                    localMedias.clear()
-                    localMedias.addAll(localMediaMutableList)
-                    val reloadPageMediaData = ReloadPageMediaData()
-                    reloadPageMediaData.data = localMedias
-                    reloadPageMediaData.diffResult = diffResult
-                    reloadPageMediaData
-                }
-                // 通知UI有新的数据
-                this@MainModel._reloadPageMediaData.postValue(reloadPageMediaData)
-            } catch (ex: Exception) {
-                this@MainModel._onFail.postValue(ex)
-            }
-        }
-    }
 
     /**
-     * 下拉加载数据
-     *
-     * @param bucketId 专辑id
-     * @param pageSize 每页多少个
-     */
-    fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
-        viewModelScope.launch {
-            try {
-                page += 1
-                val localMediaMutableList = mediaLoader.loadMediaMore(bucketId, page, pageSize)
-                var oldSize = localMedias.size
-                if (localMediaMutableList.isEmpty()) {
-                    oldSize = -1
-                }
-                // 添加进缓存数据
-                localMedias.addAll(localMediaMutableList)
-                // 通知UI有新的数据
-                this@MainModel._addAllPageMediaData.postValue(oldSize)
-            } catch (ex: Exception) {
-                this@MainModel._onFail.postValue(ex)
-            }
-        }
-    }
-
-    /**
-     * 获取所有专辑
+     * 加载所有专辑（通过 Repository 获取数据 + 错误处理）
      */
     fun loadAllAlbum() {
         viewModelScope.launch {
             try {
-                this@MainModel._albums.postValue(mediaLoader.loadMediaAlbum())
-            } catch (ex: Exception) {
-                this@MainModel._onFail.postValue(ex)
+                // 从 Repository 收集数据流（自动在 IO 线程执行）
+                mediaRepository.loadAlbums().collect { repoAlbums ->
+                    // 更新专辑列表（转为不可变 List，确保数据安全）
+                    _albums.value = repoAlbums.toList()
+                }
+            } catch (e: Exception) {
+                // 错误状态通过 mediaPageState 传递（统一状态管理）
+                _mediaPageState.value = MediaPageState.Error(
+                    userMessage = "加载专辑失败",
+                    cause = e
+                )
             }
         }
     }
 
     /**
-     * 预览界面的viewPage滑动时触发
-     *
-     * @param position 当前滑动的position
+     * 重新加载媒体数据（分页第一页 + DiffUtil 差异计算）
      */
-    fun onViewPageSelected(position: Int) {
-        this@MainModel._onViewPageSelected.postValue(position)
+    fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
+        viewModelScope.launch {
+            try {
+                // 从 Repository 获取第一页数据
+                val newMedias = mediaRepository.loadMediaPage(bucketId, page = 1, pageSize).first()
+                // 计算数据差异（IO 线程执行耗时操作）
+                val diffResult = withContext(Dispatchers.IO) {
+                    DiffUtil.calculateDiff(LocalMediaCallback(localMedias, newMedias))
+                }
+                // 更新缓存
+                localMedias.clear()
+                localMedias.addAll(newMedias)
+                // 重置页码
+                page = 1
+
+                // 根据数据状态发送对应状态
+                if (newMedias.isEmpty()) {
+                    _mediaPageState.value = MediaPageState.Empty("暂无媒体文件")
+                } else {
+                    // 发送 DiffResult 用于列表刷新
+                    val reloadPageMediaData = ReloadPageMediaData()
+                    reloadPageMediaData.data = localMedias.toList()
+                    reloadPageMediaData.diffResult = diffResult
+                    _mediaPageState.value = MediaPageState.RefreshSuccess(reloadPageMediaData)
+                }
+            } catch (e: Exception) {
+                // 发送错误状态
+                _mediaPageState.value = MediaPageState.Error(
+                    userMessage = "加载媒体数据失败",
+                    cause = e
+                )
+            }
+        }
     }
 
     /**
-     * 相册界面的列表移动完成
+     * 加载更多媒体数据（分页加载）
+     */
+    fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
+        viewModelScope.launch {
+            try {
+                // 页码自增
+                page += 1
+                val newMedias = mediaRepository.loadMediaPage(bucketId, page, pageSize).first()
+
+                if (newMedias.isNotEmpty()) {
+                    // 更新缓存（保留原逻辑）
+                    val oldSize = localMedias.size
+                    localMedias.addAll(newMedias)
+                    // 发送加载更多成功状态（用于局部刷新）
+                    _mediaPageState.value = MediaPageState.LoadMoreSuccess(
+                        data = localMedias.toList(),
+                        startPosition = oldSize,
+                        itemCount = newMedias.size
+                    )
+                }
+            } catch (e: Exception) {
+                // 加载失败回滚页码
+                page -= 1
+                _mediaPageState.value = MediaPageState.Error(
+                    userMessage = "加载更多失败",
+                    cause = e
+                )
+            }
+        }
+    }
+
+    /**
+     * 更新原图状态
+     */
+    fun setOriginalEnable(enable: Boolean) {
+        _originalEnable.value = enable
+    }
+
+    /**
+     * 获取原图状态
+     */
+    fun getOriginalEnable(): Boolean = _originalEnable.value
+
+    /**
+     * 预览界面滑动事件
+     */
+    fun onViewPageSelected(position: Int) {
+        _onViewPageSelected.value = position
+    }
+
+    /**
+     * 列表滑动完成事件
      */
     fun onScrollToPositionComplete(position: Int) {
-        this@MainModel._onScrollToPositionComplete.postValue(position)
+        _onScrollToPositionComplete.value = position
+    }
+
+    /**
+     * 分页状态密封类（统一管理加载/成功/空/错误状态）
+     * - 数据均为不可变类型（List 而非 MutableList）
+     * - 包含错误信息（替代原 onFail LiveData）
+     */
+    sealed class MediaPageState {
+
+        /**
+         * 刷新事件 也用于初次加载
+         * @param reloadPageMediaData 刷新数据
+         */
+        data class RefreshSuccess(val reloadPageMediaData: ReloadPageMediaData) : MediaPageState()
+
+        /**
+         * 加载更多局部刷新事件（复用原 addAllPageMediaData 逻辑）
+         * @param startPosition 刷新起始位置
+         * @param itemCount 新增项数量
+         */
+        data class LoadMoreSuccess(val data: List<LocalMedia>, val startPosition: Int, val itemCount: Int) : MediaPageState()
+
+        /**
+         * 空数据（自定义提示消息）
+         * @param message 提示消息
+         */
+        data class Empty(val message: String = "暂无媒体文件") : MediaPageState()
+
+        /**
+         * 错误状态（用户可见消息+异常详情）
+         * @param userMessage 用户可见消息
+         * @param cause 异常详情（用于调试）
+         */
+        data class Error(val userMessage: String = "加载失败", val cause: Throwable) : MediaPageState()
+
     }
 
 }

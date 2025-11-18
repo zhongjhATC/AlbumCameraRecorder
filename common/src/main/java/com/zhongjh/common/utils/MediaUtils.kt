@@ -12,6 +12,7 @@ import com.zhongjh.common.entity.MediaExtraInfo
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isContent
+import java.io.File
 import java.io.InputStream
 
 /**
@@ -165,8 +166,18 @@ object MediaUtils {
                 // 实例化MediaMetadataRetriever,作用获取视频的属性
                 val retriever = MediaMetadataRetriever()
                 if (isContent(path)) {
+                    // 校验Content URI是否可访问
+                    val uri = Uri.parse(path)
+                    context.contentResolver.openInputStream(uri)?.use {
+                        // 仅检查流是否可打开，无需读取内容，use会自动关闭流
+                    } ?: return localMedia
                     retriever.setDataSource(context, Uri.parse(path))
                 } else {
+                    // 校验文件路径是否存在且可读
+                    val file = File(path)
+                    if (!file.exists() || !file.canRead()) {
+                        return localMedia
+                    }
                     retriever.setDataSource(path)
                 }
                 // 获取视频的时长、角度

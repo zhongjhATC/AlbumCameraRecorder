@@ -12,9 +12,9 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import com.zhongjh.multimedia.R
-import com.zhongjh.multimedia.album.ui.AlbumFragment.ViewHolder
 import com.zhongjh.multimedia.album.ui.AlbumModel
 import com.zhongjh.multimedia.album.ui.PermissionState
+import com.zhongjh.multimedia.databinding.FragmentAlbumZjhBinding
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 
@@ -23,13 +23,12 @@ import com.zhongjh.multimedia.utils.SettingsPermissionUtils
  * 控件定义位置：AlbumFragment.ViewHolder 中的 tvAlbumPermission 字段（可通过 ViewHolder 类直接跳转）
  *
  * @param context 上下文
- * @param viewHolder 视图持有者
+ * @param fragmentAlbumZjhBinding 视图持有者
  * @param albumModel 相册模型
  * @param mainModel 主模型
- * @param appSettingsLauncher 应用设置启动器 （用于打开应用设置界面）
  */
 class TvAlbumPermissionManager(
-    private val context: Context, private val viewHolder: ViewHolder,
+    private val context: Context, private val fragmentAlbumZjhBinding: FragmentAlbumZjhBinding,
     private val albumModel: AlbumModel, private val mainModel: MainModel
 ) {
 
@@ -96,7 +95,7 @@ class TvAlbumPermissionManager(
             }, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
 
-        viewHolder.tvAlbumPermission.apply {
+        fragmentAlbumZjhBinding.tvAlbumPermission.apply {
             text = spannable
             movementMethod = LinkMovementMethod.getInstance()
             highlightColor = Color.TRANSPARENT
@@ -108,7 +107,7 @@ class TvAlbumPermissionManager(
      */
     private fun observePermissionState() {
         val currentPermissionState = albumModel.isLimitedAccessPermission()
-        viewHolder.tvAlbumPermission.visibility = if (currentPermissionState == PermissionState.LimitedAccess) {
+        fragmentAlbumZjhBinding.tvAlbumPermission.visibility = if (currentPermissionState == PermissionState.LimitedAccess) {
             View.VISIBLE
         } else {
             View.GONE

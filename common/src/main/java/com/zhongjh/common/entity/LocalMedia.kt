@@ -63,6 +63,11 @@ open class LocalMedia() : Parcelable {
     var editorPath: String? = null
 
     /**
+     * 在线网址,该属性是特殊的，只有在九宫列表时并且图片数据源是网络图片时才会有值
+     */
+    var url: String? = null
+
+    /**
      * 视频的持续时间
      */
     var duration: Long = 0
@@ -147,6 +152,7 @@ open class LocalMedia() : Parcelable {
             parcel.writeLong(fileId)
             parcel.writeString(compressPath)
             parcel.writeString(editorPath)
+            parcel.writeString(url)
             parcel.writeString(uri)
             parcel.writeString(absolutePath)
             parcel.writeLong(duration)
@@ -179,6 +185,7 @@ open class LocalMedia() : Parcelable {
         fileId = parcel.readLong()
         compressPath = parcel.readString()
         editorPath = parcel.readString()
+        url = parcel.readString()
         val parcelPath = parcel.readString()
         uri = parcelPath.let { parcelPath } ?: let { "" }
         val parcelAbsolutePath = parcel.readString()
@@ -231,6 +238,9 @@ open class LocalMedia() : Parcelable {
             return false
         }
         if (editorPath != localMedia.editorPath) {
+            return false
+        }
+        if (url != localMedia.url) {
             return false
         }
         if (uri != localMedia.uri) {
@@ -327,21 +337,30 @@ open class LocalMedia() : Parcelable {
     }
 
     /**
-     * 加载图片
+     * 加载本地图片
      */
-    fun loadImage(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
-        val size = getRealSizeFromMedia(this)
-        val mediaComputeSize = BitmapUtils.getComputeImageSize(size[0], size[1])
-        val width = mediaComputeSize[0]
-        val height = mediaComputeSize[1]
-        imageEngine.loadUrlImage(context, width, height, imageView, editorPath ?: uri)
+    fun loadLocalImage(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
+        imageEngine.loadUriImage(context, imageView, editorPath ?: uri)
     }
 
     /**
      * 加载图片
      */
-    fun loadImage2(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
+    fun loadDrawableImage(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
         imageEngine.loadDrawableImage(context, imageView, R.drawable.baseline_audio_file_24)
+    }
+
+    /**
+     * 加载网络图片
+     */
+    fun loadNetworkImage(context: Context, imageEngine: ImageEngine, imageView: ImageView) {
+        url?.let {
+            val size = getRealSizeFromMedia(this)
+            val mediaComputeSize = BitmapUtils.getComputeImageSize(size[0], size[1])
+            val width = mediaComputeSize[0]
+            val height = mediaComputeSize[1]
+            imageEngine.loadUrlImage(context, width, height, imageView, it)
+        }
     }
 
     /**
@@ -397,6 +416,7 @@ open class LocalMedia() : Parcelable {
         fileId = localMedia.fileId
         compressPath = localMedia.compressPath
         editorPath = localMedia.editorPath
+        url = localMedia.url
         uri = localMedia.uri
         absolutePath = localMedia.absolutePath
         duration = localMedia.duration

@@ -77,17 +77,22 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
                 // 播放视频
                 startSystemPlayerVideo(mContext, item.uri)
             }
-            item.loadImage(mContext, imageEngine, holder.imageView)
+            item.loadLocalImage(mContext, imageEngine, holder.imageView)
         } else if (item.isAudio()) {
             holder.videoPlayButton.visibility = View.VISIBLE
             holder.videoPlayButton.setOnClickListener {
                 // 播放音频
                 startSystemPlayerVideo(mContext, item.uri)
             }
-            item.loadImage2(mContext, imageEngine, holder.imageView)
+            item.loadDrawableImage(mContext, imageEngine, holder.imageView)
         } else {
             holder.videoPlayButton.visibility = View.GONE
-            item.loadImage(mContext, imageEngine, holder.imageView)
+            // 判断本地是否有图片，有则加载本地图片，没有则加载网络图片
+            if (item.uri.isNotEmpty()) {
+                item.loadLocalImage(mContext, imageEngine, holder.imageView)
+            } else {
+                item.loadNetworkImage(mContext, imageEngine, holder.imageView)
+            }
         }
 
     }

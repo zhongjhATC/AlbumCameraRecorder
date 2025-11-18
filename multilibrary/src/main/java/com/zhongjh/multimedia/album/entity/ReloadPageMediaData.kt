@@ -5,6 +5,6 @@ import com.zhongjh.common.entity.LocalMedia
 
 class ReloadPageMediaData {
 
-    lateinit var data: MutableList<LocalMedia>
+    lateinit var data: List<LocalMedia>
     lateinit var diffResult: DiffUtil.DiffResult
 }
