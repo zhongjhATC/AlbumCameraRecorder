@@ -161,6 +161,7 @@ class MediaLoader(private val context: Context) {
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {
                             val media = parse(cursor)
+                            media.position = mediaList.size
                             mediaList += media
                         }
                     }
@@ -172,6 +173,7 @@ class MediaLoader(private val context: Context) {
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {
                             val media = parse(cursor)
+                            media.position = mediaList.size
                             mediaList += media
                         }
                     }

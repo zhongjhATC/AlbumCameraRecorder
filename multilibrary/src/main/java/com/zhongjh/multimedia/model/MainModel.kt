@@ -21,15 +21,15 @@ import kotlinx.coroutines.withContext
 /**
  * Main的ViewModel，缓存相关数据给它的子Fragment共同使用
  *
- * @param mediaRepository 数据仓库类，统一管理数据加载
- *
  * @author zhongjh
  * @date 2025/11/18
  */
-class MainModel(
-    application: Application,
+class MainModel(application: Application) : AndroidViewModel(application) {
+
+    /**
+     * 数据仓库类，统一管理数据加载
+     */
     private val mediaRepository: MediaRepository = MediaRepository(MediaLoader(application))
-) : AndroidViewModel(application) {
 
     /**
      * 专辑列表状态流（不可变数据 + 状态封装）
