@@ -39,7 +39,7 @@ class AlbumAdapter(
     private val mImageResize: Int
 
     init {
-        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " AlbumMediaAdapter")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " AlbumMediaAdapter")
         mImageResize = imageResize
     }
 
@@ -66,7 +66,7 @@ class AlbumAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " onBindViewHolder")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onBindViewHolder")
         // 相片的item
         val mediaViewHolder = holder as MediaViewHolder
 
@@ -100,18 +100,18 @@ class AlbumAdapter(
      * @param mediaGrid holder
      */
     private fun setCheckStatus(item: LocalMedia, mediaGrid: MediaGrid) {
-        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " setCheckStatus")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " setCheckStatus")
         // 是否多选时,显示数字
         if (mAlbumSpec.countable) {
             // 显示数字
-            val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
+            val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
             if (checkedNum > 0) {
                 // 设置启用,设置数量
                 mediaGrid.setCheckEnabled(true)
                 mediaGrid.setCheckedNum(checkedNum)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                if (mSelectedModel.selectedData.maxSelectableReached()) {
+                if (mSelectedModel.getSelectedData().maxSelectableReached()) {
                     mediaGrid.setCheckEnabled(false)
                     mediaGrid.setCheckedNum(CheckView.UNCHECKED)
                 } else {
@@ -121,14 +121,14 @@ class AlbumAdapter(
             }
         } else {
             // 不显示数字
-            val selected = mSelectedModel.selectedData.isSelected(item)
+            val selected = mSelectedModel.getSelectedData().isSelected(item)
             // 如果被选中了，就设置选择
             if (selected) {
                 mediaGrid.setCheckEnabled(true)
                 mediaGrid.setChecked(true)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                mediaGrid.setCheckEnabled(!mSelectedModel.selectedData.maxSelectableReached())
+                mediaGrid.setCheckEnabled(!mSelectedModel.getSelectedData().maxSelectableReached())
                 mediaGrid.setChecked(false)
             }
         }
@@ -141,11 +141,11 @@ class AlbumAdapter(
     }
 
     override fun onCheckViewClicked(checkView: CheckView, item: LocalMedia, holder: RecyclerView.ViewHolder) {
-        Log.d("onSaveInstanceState", mSelectedModel.selectedData.localMedias.size.toString() + " onCheckViewClicked")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
-            val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
+            val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
                 if (assertAddSelection(holder.itemView.context, item)) {
@@ -162,7 +162,7 @@ class AlbumAdapter(
             }
         } else {
             // 不是多选模式
-            if (mSelectedModel.selectedData.isSelected(item)) {
+            if (mSelectedModel.getSelectedData().isSelected(item)) {
                 // 如果当前已经被选中，再次选择就是取消了
                 mSelectedModel.removeSelectedData(item)
                 // 刷新数据源
@@ -194,7 +194,7 @@ class AlbumAdapter(
      * @param item    数据源
      */
     private fun assertAddSelection(context: Context, item: LocalMedia): Boolean {
-        val cause = mSelectedModel.selectedData.isAcceptable(item)
+        val cause = mSelectedModel.getSelectedData().isAcceptable(item)
         handleCause(context, cause)
         return cause == null
     }

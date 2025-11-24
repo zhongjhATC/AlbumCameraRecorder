@@ -160,7 +160,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         super.onAttach(context)
         this.mApplicationContext = requireActivity().applicationContext
         if (mAlbumSpec.SelectedData.isNotEmpty()) {
-            mSelectedModel.selectedData.addAll(mAlbumSpec.SelectedData)
+            mSelectedModel.getSelectedData().addAll(mAlbumSpec.SelectedData)
         }
     }
 
@@ -285,14 +285,14 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 预览事件
         mBinding.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
-                startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.selectedData.localMedias)
+                startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.getSelectedData().localMedias)
             }
         })
 
         // 确认当前选择的图片
         mBinding.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
-                val localMediaArrayList = mSelectedModel.selectedData.localMedias
+                val localMediaArrayList = mSelectedModel.getSelectedData().localMedias
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mMainModel.getOriginalEnable()
@@ -492,7 +492,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 更新底部数据
      */
     private fun updateBottomToolbar() {
-        val selectedCount = mSelectedModel.selectedData.count()
+        val selectedCount = mSelectedModel.getSelectedData().count()
         mBottomToolbarManager.updateSelectedState(selectedCount)
         mBottomToolbarManager.updateOriginalState(mMainModel.getOriginalEnable())
         showBottomView(selectedCount)
@@ -532,7 +532,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // notify bottom toolbar that check state changed.
         updateBottomToolbar()
         // 触发选择的接口事件
-        mAlbumSpec.onSelectedListener?.onSelected(mSelectedModel.selectedData.localMedias)
+        mAlbumSpec.onSelectedListener?.onSelected(mSelectedModel.getSelectedData().localMedias)
     }
 
     /**

@@ -17,7 +17,12 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据操作文件类
      */
-    var selectedData: SelectedData = SelectedData(application)
+    private val selectedData: SelectedData = SelectedData(application)
+
+    /**
+     * 提供 selectedData 的只读访问接口
+     */
+    fun getSelectedData(): SelectedData = selectedData
 
     /**
      * 当前选择的数据更改

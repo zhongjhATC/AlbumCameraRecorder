@@ -298,7 +298,7 @@ class PreviewFragment : BaseFragment() {
                 it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
                     val localMedias = selection as ArrayList<LocalMedia>
                     mLocalMedias.addAll(localMedias)
-                    mSelectedModel.selectedData.addAll(localMedias)
+                    mSelectedModel.getSelectedData().addAll(localMedias)
                     mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
                 }
             }
@@ -398,7 +398,7 @@ class PreviewFragment : BaseFragment() {
         mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 // 确认的一刻赋值
-                val localMediaArrayList: ArrayList<LocalMedia> = mSelectedModel.selectedData.localMedias
+                val localMediaArrayList: ArrayList<LocalMedia> = mSelectedModel.getSelectedData().localMedias
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mMainModel.getOriginalEnable()
@@ -409,7 +409,7 @@ class PreviewFragment : BaseFragment() {
         // 右上角选择事件
         mViewHolder.checkView.setOnClickListener {
             val media = mLocalMedias[mViewPager2.currentItem]
-            if (mSelectedModel.selectedData.isSelected(media)) {
+            if (mSelectedModel.getSelectedData().isSelected(media)) {
                 mSelectedModel.removeSelectedData(media)
                 if (mAlbumSpec.countable) {
                     mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
@@ -425,7 +425,7 @@ class PreviewFragment : BaseFragment() {
                     mSelectedModel.addSelectedData(media)
                     if (mAlbumSpec.countable) {
                         mViewHolder.checkView.setCheckedNum(
-                            mSelectedModel.selectedData.checkedNumOf(
+                            mSelectedModel.getSelectedData().checkedNumOf(
                                 media
                             )
                         )
@@ -438,7 +438,7 @@ class PreviewFragment : BaseFragment() {
             mAlbumSpec.onSelectedListener?.let {
                 if (mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) {
                     // 触发选择的接口事件
-                    it.onSelected(mSelectedModel.selectedData.localMedias)
+                    it.onSelected(mSelectedModel.getSelectedData().localMedias)
                 }
             }
         }
@@ -475,7 +475,7 @@ class PreviewFragment : BaseFragment() {
     private fun setResultOkByIsCompress() {
         if (mPreviewType == PreviewType.CAMERA || mPreviewType == PreviewType.GRID || mPreviewType == PreviewType.THIRD_PARTY) {
             // 直接返回
-            setResultOk(mSelectedModel.selectedData.localMedias)
+            setResultOk(mSelectedModel.getSelectedData().localMedias)
         } else {
             // 其他界面就要先压缩
             compressFile()
@@ -616,18 +616,18 @@ class PreviewFragment : BaseFragment() {
      */
     private fun updateApplyButton() {
         // 获取已选的图片
-        if (mSelectedModel.selectedData.count() == 0) {
+        if (mSelectedModel.getSelectedData().count() == 0) {
             // 禁用
             mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
             mViewHolder.buttonApply.isEnabled = false
-        } else if (mSelectedModel.selectedData.count() == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
+        } else if (mSelectedModel.getSelectedData().count() == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
             // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
             mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
             mViewHolder.buttonApply.isEnabled = true
         } else {
             // 启用，显示数字
             mViewHolder.buttonApply.isEnabled = true
-            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure, mSelectedModel.selectedData.count())
+            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure, mSelectedModel.getSelectedData().count())
         }
 
         // 判断是否启动操作
@@ -663,7 +663,7 @@ class PreviewFragment : BaseFragment() {
             fragment?.let {
                 // 是否只压缩编辑的图片
                 val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
-                return@request fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.selectedData.localMedias, isOnlyCompressEditPicture)
+                return@request fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.getSelectedData().localMedias, isOnlyCompressEditPicture)
             } ?: let {
                 return@request ArrayList()
             }
@@ -696,7 +696,7 @@ class PreviewFragment : BaseFragment() {
      * @return 为true则代表符合规则
      */
     private fun assertAddSelection(item: LocalMedia): Boolean {
-        val cause = mSelectedModel.selectedData.isAcceptable(item)
+        val cause = mSelectedModel.getSelectedData().isAcceptable(item)
         IncapableCause.handleCause(mContext, cause)
         return cause == null
     }
@@ -966,20 +966,20 @@ class PreviewFragment : BaseFragment() {
             val item = adapter.getLocalMedia(position)
             item?.let {
                 if (mAlbumSpec.countable) {
-                    val checkedNum = mSelectedModel.selectedData.checkedNumOf(item)
+                    val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
                     mViewHolder.checkView.setCheckedNum(checkedNum)
                     if (checkedNum > 0) {
                         setCheckViewEnable(true)
                     } else {
-                        setCheckViewEnable(!mSelectedModel.selectedData.maxSelectableReached())
+                        setCheckViewEnable(!mSelectedModel.getSelectedData().maxSelectableReached())
                     }
                 } else {
-                    val checked = mSelectedModel.selectedData.isSelected(item)
+                    val checked = mSelectedModel.getSelectedData().isSelected(item)
                     mViewHolder.checkView.setChecked(checked)
                     if (checked) {
                         setCheckViewEnable(true)
                     } else {
-                        setCheckViewEnable(!mSelectedModel.selectedData.maxSelectableReached())
+                        setCheckViewEnable(!mSelectedModel.getSelectedData().maxSelectableReached())
                     }
                 }
                 updateUi(item)

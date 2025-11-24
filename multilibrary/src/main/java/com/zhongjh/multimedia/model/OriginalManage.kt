@@ -74,9 +74,9 @@ class OriginalManage(
      */
     private fun countOverMaxSize(): Int {
         var count = 0
-        val selectedCount: Int = mSelectedModel.selectedData.count()
+        val selectedCount: Int = mSelectedModel.getSelectedData().count()
         for (i in 0 until selectedCount) {
-            val item: LocalMedia = mSelectedModel.selectedData.localMedias[i]
+            val item: LocalMedia = mSelectedModel.getSelectedData().localMedias[i]
             if (item.isImage()) {
                 val size = PhotoMetadataUtils.getSizeInMb(item.size)
                 if (size > mAlbumSpec.originalMaxSize) {
