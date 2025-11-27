@@ -3,9 +3,13 @@ package com.zhongjh.multimedia.album.ui.mediaselection
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
+import android.view.GestureDetector
+import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
@@ -68,6 +72,9 @@ class MediaViewUtil(
         val spacing = context.resources.getDimensionPixelSize(R.dimen.z_media_grid_spacing)
         recyclerView.addItemDecoration(MediaGridInset(spanCount, spacing, false))
         recyclerView.adapter = mAdapter
+
+        // 添加长按滑动选择功能
+        setupLongPressSlideSelection()
 
         // 加载更多事件
         recyclerView.setOnRecyclerViewLoadMoreListener { mainModel.addAllPageMediaData(mAlbum.id, mAlbumSpec.pageSize) }
@@ -143,6 +150,94 @@ class MediaViewUtil(
      */
     fun notifyItemByLocalMedia() {
         mAdapter?.notifyCheckStateChanged()
+    }
+
+    /**
+     * 设置长按滑动选择功能
+     */
+    private fun setupLongPressSlideSelection() {
+        var isSelecting = false
+        var lastSelectedPosition = -1
+        var initialSelectedPosition = -1
+
+        // 创建手势检测器处理长按事件
+        val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+            override fun onLongPress(e: MotionEvent) {
+                val child = recyclerView.findChildViewUnder(e.x, e.y)
+                if (child != null) {
+                    val position = recyclerView.getChildAdapterPosition(child)
+                    if (position != RecyclerView.NO_POSITION) {
+                        isSelecting = true
+                        Log.d("onLongPress", "position: $position" + "isSelecting: $isSelecting")
+                        initialSelectedPosition = position
+                        lastSelectedPosition = position
+                        toggleSelection(position)
+
+                        // 添加长按激活选择模式的震动反馈
+                        child.performHapticFeedback(
+                            // 长按反馈（较强震动）
+                            HapticFeedbackConstants.LONG_PRESS,
+                            HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING
+                        )
+                    }
+                }
+                super.onLongPress(e)
+            }
+
+            // 添加此方法确保触摸事件能传递到OnItemTouchListener
+            override fun onDown(e: MotionEvent): Boolean {
+                // 允许所有触摸事件传递
+                return true
+            }
+        })
+
+        // 将setOnTouchListener替换为addOnItemTouchListener
+        recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                // 先让GestureDetector处理事件（长按检测）
+                gestureDetector.onTouchEvent(e)
+
+                // 仅在长按激活选择模式后拦截事件
+                if (isSelecting) {
+                    // 拦截所有事件，交由onTouchEvent处理
+                    return true
+                }
+                return false
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                when (e.action) {
+                    MotionEvent.ACTION_MOVE -> {
+                        if (isSelecting) {
+                            val child = recyclerView.findChildViewUnder(e.x, e.y)
+                            if (child != null) {
+                                val position = recyclerView.getChildAdapterPosition(child)
+                                if (position != RecyclerView.NO_POSITION && position != lastSelectedPosition) {
+                                    lastSelectedPosition = position
+                                    toggleSelection(position)
+                                }
+                            }
+                        }
+                    }
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        isSelecting = false
+                        lastSelectedPosition = -1
+                        initialSelectedPosition = -1
+                    }
+                }
+            }
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+        })
+    }
+
+    /**
+     * 切换项目选择状态
+     */
+    private fun toggleSelection(position: Int) {
+        Log.d("MediaViewUtil", "toggleSelection1: $position")
+        val media = mAdapter?.getItem(position) ?: return
+        Log.d("MediaViewUtil", "toggleSelection2: $position")
+        mAdapter?.onCheckViewClicked(media, context)
     }
 
     override fun onUpdate() {

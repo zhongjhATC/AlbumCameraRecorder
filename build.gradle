@@ -1,13 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.7.20'
     repositories {
-//        google {
-//            content {
-//                includeGroupByRegex("com\\.android.*")
-//                includeGroupByRegex("com\\.google.*")
-//                includeGroupByRegex("androidx.*")
-//            }
-//        }
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         gradlePluginPortal()
@@ -28,13 +21,6 @@ buildscript {
 
 allprojects {
     repositories {
-        google {
-            content {
-                includeGroupByRegex("com\\.android.*")
-                includeGroupByRegex("com\\.google.*")
-                includeGroupByRegex("androidx.*")
-            }
-        }
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
         gradlePluginPortal()

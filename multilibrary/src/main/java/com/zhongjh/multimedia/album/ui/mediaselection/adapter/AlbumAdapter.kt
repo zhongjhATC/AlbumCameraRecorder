@@ -1,6 +1,5 @@
 package com.zhongjh.multimedia.album.ui.mediaselection.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.Log
@@ -93,6 +92,10 @@ class AlbumAdapter(
         return data.size
     }
 
+    fun getItem(position: Int): LocalMedia {
+        return data[position]
+    }
+
     /**
      * 设置当前选择状态
      *
@@ -135,12 +138,10 @@ class AlbumAdapter(
     }
 
     override fun onThumbnailClicked(imageView: ImageView, item: LocalMedia, holder: RecyclerView.ViewHolder) {
-        if (mOnMediaClickListener != null) {
-            mOnMediaClickListener!!.onMediaClick(null, imageView, item, holder.bindingAdapterPosition)
-        }
+        mOnMediaClickListener?.onMediaClick(null, imageView, item, holder.bindingAdapterPosition)
     }
 
-    override fun onCheckViewClicked(checkView: CheckView, item: LocalMedia, holder: RecyclerView.ViewHolder) {
+    override fun onCheckViewClicked(item: LocalMedia, context: Context) {
         Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
@@ -148,7 +149,7 @@ class AlbumAdapter(
             val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
-                if (assertAddSelection(holder.itemView.context, item)) {
+                if (assertAddSelection(context, item)) {
                     // 添加选择了当前数据
                     mSelectedModel.addSelectedData(item)
                     // 刷新数据源
@@ -168,7 +169,7 @@ class AlbumAdapter(
                 // 刷新数据源
                 notifyCheckStateChanged()
             } else {
-                if (assertAddSelection(holder.itemView.context, item)) {
+                if (assertAddSelection(context, item)) {
                     mSelectedModel.addSelectedData(item)
                     notifyCheckStateChanged()
                 }
@@ -179,12 +180,9 @@ class AlbumAdapter(
     /**
      * 刷新数据
      */
-    @SuppressLint("NotifyDataSetChanged")
     fun notifyCheckStateChanged() {
         notifyDataSetChanged()
-        if (mCheckStateListener != null) {
-            mCheckStateListener!!.onUpdate()
-        }
+        mCheckStateListener?.onUpdate()
     }
 
     /**

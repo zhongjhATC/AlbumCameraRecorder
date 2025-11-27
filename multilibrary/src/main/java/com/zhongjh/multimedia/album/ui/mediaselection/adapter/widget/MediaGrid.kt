@@ -106,8 +106,8 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
             // 图片的点击事件
             mListener.onThumbnailClicked(mImageView, mMedia, mPreBindInfo.mViewHolder)
         } else if (view === mCheckView) {
-            // 勾选的点击事件
-            mListener.onCheckViewClicked(mCheckView, mMedia, mPreBindInfo.mViewHolder)
+            // 勾选的选择事件
+            mListener.onCheckViewClicked(mMedia, mPreBindInfo.mViewHolder.itemView.context)
         }
     }
 
@@ -228,15 +228,10 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
         /**
          * 选择事件
          *
-         * @param checkView 选择控件
          * @param item      数据
-         * @param holder    控件
+         * @param context    上下文
          */
-        fun onCheckViewClicked(
-            checkView: CheckView,
-            item: LocalMedia,
-            holder: RecyclerView.ViewHolder
-        )
+        fun onCheckViewClicked(item: LocalMedia, context: Context)
     }
 
     class PreBindInfo(
