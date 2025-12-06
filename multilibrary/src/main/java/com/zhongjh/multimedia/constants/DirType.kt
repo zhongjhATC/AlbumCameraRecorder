@@ -9,7 +9,7 @@ import kotlin.annotation.Retention
  * @author zhongjh
  * @date 2024/11/28
  */
-@StringDef(DirType.CACHE, DirType.TEMP, DirType.COMPRESS)
+@StringDef(DirType.CACHE, DirType.TEMP, DirType.TEMP_29, DirType.COMPRESS)
 @Retention(AnnotationRetention.SOURCE)
 annotation class DirType {
     companion object {
@@ -17,10 +17,17 @@ annotation class DirType {
          * 拍照、录制的临时文件夹。提交前创建的文件存放于这里
          */
         const val CACHE = "AlbumCameraRecorderCache"
+
         /**
          * 拍照、录制的临时文件夹。提交后的文件存放于这里 Android Q提交后会把文件复制添加到公共文件夹Pictures,Android Q以下则是刷新或者复制到某个文件夹
          */
         const val TEMP = "AlbumCameraRecorderTemp"
+
+        /**
+         * 操作API29+以上的外部存储公共目录文件时，
+         */
+        const val TEMP_29 = "AlbumCameraRecorderTempAPI29"
+
         /**
          * 存放压缩的文件夹
          */

@@ -1,6 +1,8 @@
 package com.zhongjh.multimedia.album.utils
 
+import android.R
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.VideoEditListener
@@ -20,7 +22,12 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2022/2/9
  */
-class AlbumCompressFileTask(context: Context, private val tag: String, private val clsKey: Class<*>, private val globalSpec: GlobalSpec) {
+class AlbumCompressFileTask(
+    context: Context,
+    private val tag: String,
+    private val clsKey: Class<*>,
+    private val globalSpec: GlobalSpec
+) {
 
     // 用弱引用持有Context，避免内存泄漏
     private val contextRef = WeakReference(context.applicationContext)
@@ -29,7 +36,10 @@ class AlbumCompressFileTask(context: Context, private val tag: String, private v
      * @param localFiles 数据源
      * @param isOnlyCompressEditPicture 是否只压缩编辑的图片
      */
-    fun compressFileTaskDoInBackground(localFiles: ArrayList<LocalMedia>, isOnlyCompressEditPicture: Boolean): ArrayList<LocalMedia> {
+    fun compressFileTaskDoInBackground(
+        localFiles: ArrayList<LocalMedia>,
+        isOnlyCompressEditPicture: Boolean
+    ): ArrayList<LocalMedia> {
         // 将 缓存文件 拷贝到 配置目录
         val newLocalFiles = ArrayList<LocalMedia>()
         // 检查Context是否已释放
@@ -38,7 +48,11 @@ class AlbumCompressFileTask(context: Context, private val tag: String, private v
         }
         for (item in localFiles) {
             // 如果有编辑的图片,则压缩编辑的图片,否则压缩原图
-            val absolutePath = item.editorPath ?: item.absolutePath
+            val absolutePath = item.editorPath ?: this.prepareCompressFile(
+                context,
+                item.fileId.toString(),
+                File(item.absolutePath)
+            ).absolutePath
 
             val isCompressItem = isCompress(item, isOnlyCompressEditPicture)
             if (isCompressItem != null) {
@@ -61,6 +75,10 @@ class AlbumCompressFileTask(context: Context, private val tag: String, private v
                 Log.d(tag, "存在直接使用")
             } else {
                 if (item.isImage()) {
+                    val exists = File(absolutePath).exists()
+                    if (exists) {
+                        val a = 5
+                    }
                     // 处理是否压缩图片
                     val compressionFile = handleImage(absolutePath)
                     // 移动到新的文件夹
@@ -107,9 +125,10 @@ class AlbumCompressFileTask(context: Context, private val tag: String, private v
             return oldFile
         }
         // 根据类型压缩
-        val compressionFile: File = globalSpec.onImageCompressionListener?.compressionFile(context, oldFile) ?: let {
-            oldFile
-        }
+        val compressionFile: File =
+            globalSpec.onImageCompressionListener?.compressionFile(context, oldFile) ?: let {
+                oldFile
+            }
         return compressionFile
     }
 
@@ -147,5 +166,28 @@ class AlbumCompressFileTask(context: Context, private val tag: String, private v
      */
     private fun isOnlyCompressEditPicture(item: LocalMedia): Boolean {
         return null != item.editorPath && null == item.compressPath
+    }
+
+    /**
+     * 检查文件是否可直接操作，不可则复制到应用私有目录（安全区域）
+     * @param context 上下文
+     * @param sourceFile 原始文件（外部存储公共目录）
+     * @return 安全区域的文件
+     */
+    fun prepareCompressFile(context: Context, fileId: String, sourceFile: File): File {
+        // 1. 低版本（API < 29）：直接返回原文件
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return sourceFile
+        }
+
+        // 目标文件（私有目录下同名文件）
+        val newFile = FileMediaUtil.createTempAPI29File(context, sourceFile.name)
+        // 移动到新的文件夹
+        try {
+            FileUtils.copy(sourceFile, newFile)
+        } catch (e: Exception) {
+            val a = 5
+        }
+        return newFile
     }
 }

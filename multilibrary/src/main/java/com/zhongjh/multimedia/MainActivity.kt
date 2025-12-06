@@ -156,7 +156,7 @@ open class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    @TargetApi(23)
+    @RequiresApi(23)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -314,7 +314,7 @@ open class MainActivity : AppCompatActivity() {
     private fun requestPermissions(savedInstanceState: Bundle?) {
         // 判断权限，权限通过才可以初始化相关
         val needPermissions = getNeedPermissions()
-        if (needPermissions.size > 0) {
+        if (needPermissions.isNotEmpty()) {
             // 请求权限
             requestPermissions2(needPermissions)
         } else {

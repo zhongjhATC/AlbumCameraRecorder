@@ -48,7 +48,9 @@ open class LocalMedia() : Parcelable {
     var uri: String = ""
 
     /**
-     * 初始的真实路径，未压缩、未编辑前的，即是原图。如果是相册编辑后的图,那么该值跟editorPath相同
+     * 多个版本不同情况下，比如API29的手机并且图片在其他地方，则会报权限问题，最终还是需要用到uri访问
+     * 初始的真实路径，未压缩、未编辑前的，即是原图。
+     * 如果是相册编辑后的图,那么该值跟editorPath相同
      */
     var absolutePath: String = ""
 

@@ -47,7 +47,25 @@ object FileMediaUtil {
     fun createTempFile(context: Context, fileName: String): File {
         val appContext = context.applicationContext
         val externalFilesDir: File? = appContext.getExternalFilesDir("")
-        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.COMPRESS)
+        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.TEMP)
+        if (!tempCameraFile.exists()) {
+            tempCameraFile.mkdirs()
+        }
+        return File(tempCameraFile.absolutePath, fileName)
+    }
+
+    /**
+     * 根据参数文件名称，在tempAPI29文件夹创建文件
+     *
+     * @param context 上下文
+     * @param fileName 文件名称
+     *
+     * @return file
+     */
+    fun createTempAPI29File(context: Context, fileName: String): File {
+        val appContext = context.applicationContext
+        val externalFilesDir: File? = appContext.getExternalFilesDir("")
+        val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.TEMP_29)
         if (!tempCameraFile.exists()) {
             tempCameraFile.mkdirs()
         }
@@ -117,7 +135,11 @@ object FileMediaUtil {
      * @param dirType 文件夹类型
      * @return
      */
-    private fun createFile(context: Context,@MediaType mediaType: Int,@DirType dirType: String): File {
+    private fun createFile(
+        context: Context,
+        @MediaType mediaType: Int,
+        @DirType dirType: String
+    ): File {
         val appContext = context.applicationContext
         val externalFilesDir: File? = appContext.getExternalFilesDir("")
         val dirFile = File(externalFilesDir!!.absolutePath, dirType)
