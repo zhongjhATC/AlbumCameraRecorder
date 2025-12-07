@@ -1,14 +1,17 @@
 package com.zhongjh.multimedia.camera.ui.camera.manager
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PorterDuff
 import android.hardware.display.DisplayManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -16,6 +19,7 @@ import android.util.Log
 import android.util.Rational
 import android.util.Size
 import android.view.Surface
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -50,6 +54,7 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.common.enums.MediaType
@@ -178,7 +183,9 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                         if (lastStreamState != streamState) {
                             lastStreamState = streamState
                             // 停止输出画面后仍会停留在最后一帧,设置黑色前景遮挡住最后一帧画面
-                            previewView.foreground = ContextCompat.getDrawable(activity, android.R.color.background_dark)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                previewView.foreground = ContextCompat.getDrawable(activity, android.R.color.background_dark)
+                            }
                         }
                     }
 
@@ -186,7 +193,9 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                         if (lastStreamState != streamState) {
                             lastStreamState = streamState
                             // 开始输出画面后清空前景
-                            previewView.foreground = null
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                previewView.foreground = null
+                            }
                         }
                     }
 
@@ -267,52 +276,54 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      */
     @SuppressLint("MissingPermission")
     fun takeVideo() {
-        recording?.resume() ?: return
         val activity = activityRef.get() ?: return
-        val name = "VIDEO_" + SimpleDateFormat(
-            "yyyyMMdd_HHmmssSSS", Locale.US
-        ).format(System.currentTimeMillis()) + ".mp4"
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Video.Media.DISPLAY_NAME, name)
-            put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
-        }
-        val mediaStoreOutput = MediaStoreOutputOptions.Builder(
-            activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        ).setContentValues(contentValues).build()
-        val pendingRecording = videoCapture?.output?.prepareRecording(activity, mediaStoreOutput)
-        if (isAudio) {
-            pendingRecording?.withAudioEnabled()
-        }
-        recording = pendingRecording?.start(ContextCompat.getMainExecutor(activity)) { videoRecordEvent ->
-            Log.d(TAG, "videoRecordEvent: $videoRecordEvent ${videoRecordEvent.recordingStats.recordedDurationNanos}")
-            // 视频录制监控回调
-            when (videoRecordEvent) {
-                is VideoRecordEvent.Start -> {
-                    this.listener?.onRecordStart()
-                }
+        // recording 如果为空则重新创建
+        recording?.resume() ?: run {
+            val name = "VIDEO_" + SimpleDateFormat(
+                "yyyyMMdd_HHmmssSSS", Locale.US
+            ).format(System.currentTimeMillis()) + ".mp4"
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+            }
+            val mediaStoreOutput = MediaStoreOutputOptions.Builder(
+                activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+            ).setContentValues(contentValues).build()
+            val pendingRecording = videoCapture?.output?.prepareRecording(activity, mediaStoreOutput)
+            if (isAudio) {
+                pendingRecording?.withAudioEnabled()
+            }
+            recording = pendingRecording?.start(ContextCompat.getMainExecutor(activity)) { videoRecordEvent ->
+                Log.d(TAG, "videoRecordEvent: $videoRecordEvent ${videoRecordEvent.recordingStats.recordedDurationNanos}")
+                // 视频录制监控回调
+                when (videoRecordEvent) {
+                    is VideoRecordEvent.Start -> {
+                        this.listener?.onRecordStart()
+                    }
 
-                is VideoRecordEvent.Status -> {
+                    is VideoRecordEvent.Status -> {
 //                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
 //                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
 //                        }
-                }
-
-                is VideoRecordEvent.Finalize -> {
-                    if (!isActivityPause) {
-                        // 完成录制
-                        val uri = videoRecordEvent.outputResults.outputUri
-                        UriUtils.uriToFile(activity, uri)?.absolutePath?.let { this.listener?.onRecordSuccess(it) }
                     }
-                    isActivityPause = false
-                }
 
-                is VideoRecordEvent.Pause -> {
-                    // 暂停录制
-                    this.listener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
-                }
+                    is VideoRecordEvent.Finalize -> {
+                        if (!isActivityPause) {
+                            // 完成录制
+                            val uri = videoRecordEvent.outputResults.outputUri
+                            UriUtils.uriToFile(activity, uri)?.absolutePath?.let { this.listener?.onRecordSuccess(it) }
+                        }
+                        isActivityPause = false
+                    }
 
-                is VideoRecordEvent.Resume -> {
-                    // 恢复录制
+                    is VideoRecordEvent.Pause -> {
+                        // 暂停录制
+                        this.listener?.onRecordPause(videoRecordEvent.recordingStats.recordedDurationNanos)
+                    }
+
+                    is VideoRecordEvent.Resume -> {
+                        // 恢复录制
+                    }
                 }
             }
         }
