@@ -75,10 +75,6 @@ class AlbumCompressFileTask(
                 Log.d(tag, "存在直接使用")
             } else {
                 if (item.isImage()) {
-                    val exists = File(absolutePath).exists()
-                    if (exists) {
-                        val a = 5
-                    }
                     // 处理是否压缩图片
                     val compressionFile = handleImage(absolutePath)
                     // 移动到新的文件夹
