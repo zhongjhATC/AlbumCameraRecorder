@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.MediaController
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -144,8 +145,9 @@ class PreviewVideoActivity : AppCompatActivity() {
         mediaController.setAnchorView(mActivityPreviewVideoZjhBinding.vvPreview)
         mediaController.setMediaPlayer(mActivityPreviewVideoZjhBinding.vvPreview)
         mActivityPreviewVideoZjhBinding.vvPreview.setMediaController(mediaController)
-        val uri = Uri.fromFile(file)
-        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(uri)
+        val localMedia = MediaStoreUtils.getMediaDataByPath(this.applicationContext, file.absolutePath)
+        // TODO 优化从上一个界面获取uri，这样就不用重新查询了
+        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(localMedia.uri.toUri())
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
         mActivityPreviewVideoZjhBinding.vvPreview.visibility = View.VISIBLE
         if (!mActivityPreviewVideoZjhBinding.vvPreview.isPlaying) {
@@ -238,14 +240,15 @@ class PreviewVideoActivity : AppCompatActivity() {
      * 扫描
      * 根据真实路径返回LocalMedia
      */
-    private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
-        MediaScannerConnection.scanFile(
-            applicationContext, arrayOf(path), MimeType.ofVideoArray()
-        ) { path, _ ->
-            // 相册刷新完成后的回调
-            ctn.resume(MediaStoreUtils.getMediaDataByPath(applicationContext, path))
+    private suspend fun mediaScanFile(path: String): LocalMedia =
+        suspendCancellableCoroutine { ctn ->
+            MediaScannerConnection.scanFile(
+                applicationContext, arrayOf(path), MimeType.ofVideoArray()
+            ) { path, _ ->
+                // 相册刷新完成后的回调
+                ctn.resume(MediaStoreUtils.getMediaDataByPath(applicationContext, path))
+            }
         }
-    }
 
     companion object {
         private val TAG: String = PreviewVideoActivity::class.java.simpleName
@@ -262,7 +265,12 @@ class PreviewVideoActivity : AppCompatActivity() {
          * @param isCompress 是否需要压缩
          */
         @JvmStatic
-        fun startActivity(fragment: Fragment, previewVideoActivityResult: ActivityResultLauncher<Intent>, path: String, isCompress: Boolean) {
+        fun startActivity(
+            fragment: Fragment,
+            previewVideoActivityResult: ActivityResultLauncher<Intent>,
+            path: String,
+            isCompress: Boolean
+        ) {
             fragment.activity?.let {
                 val intent = Intent()
                 intent.putExtra(PATH, path)
@@ -270,7 +278,11 @@ class PreviewVideoActivity : AppCompatActivity() {
                 intent.setClass(it, PreviewVideoActivity::class.java)
                 previewVideoActivityResult.launch(intent)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    fragment.activity?.overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, R.anim.activity_open_zjh)
+                    fragment.activity?.overrideActivityTransition(
+                        OVERRIDE_TRANSITION_OPEN,
+                        0,
+                        R.anim.activity_open_zjh
+                    )
                 } else {
                     fragment.activity?.overridePendingTransition(R.anim.activity_open_zjh, 0)
                 }
