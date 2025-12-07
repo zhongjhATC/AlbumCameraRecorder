@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
+import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.FileUtils
@@ -410,34 +411,27 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
                 val cacheFile = File(item.absolutePath)
                 Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
                 var localMedia = LocalMedia()
-                // 直接迁移到相册文件夹,刷新
-                val cameraFile = getOutFile(baseCameraFragment.myContext, cacheFile.name, MediaType.TYPE_PICTURE)
-                val isMove = FileUtils.move(cacheFile, cameraFile)
-                // 需要处理的最终文件
-                val newFile = if (isMove) {
-                    runBlocking {
-                        localMedia = mediaScanFile(cameraFile.absolutePath)
-                        Log.d(TAG, "2. 获取相册数据：" + localMedia.fileId)
-                    }
-                    cameraFile
-                } else {
-                    cacheFile
-                }
                 // 压缩图片
                 val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
-                    baseCameraFragment.myContext, newFile
+                    baseCameraFragment.myContext, cacheFile
                 ) ?: let {
-                    newFile
+                    cacheFile
                 }
                 Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
                 localMedia.compressPath = compressionFile.absolutePath
                 localMedia.size = compressionFile.length()
                 val mediaInfo = MediaUtils.getMediaInfo(
-                    baseCameraFragment.myContext, MediaType.TYPE_PICTURE, compressionFile.absolutePath
+                    baseCameraFragment.myContext, TYPE_PICTURE, compressionFile.absolutePath
                 )
                 localMedia.width = mediaInfo.width
                 localMedia.height = mediaInfo.height
                 Log.d(TAG, "4. 补充属性")
+                // 加入相册
+                val uri = MediaStoreUtils.displayToGallery(baseCameraFragment.myContext, cacheFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
+                localMedia.absolutePath = item.absolutePath
+                localMedia.uri = uri.toString()
+                val suffix = cacheFile.name.substring(cacheFile.name.lastIndexOf("."))
+                localMedia.mimeType = MimeType.getMimeType(suffix)
                 newFiles.add(localMedia)
             }
         }
