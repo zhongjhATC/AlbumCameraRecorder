@@ -211,7 +211,11 @@ class PreviewFragment : BaseFragment() {
         mContext = context.applicationContext
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         // 获取样式
         return initStyle(inflater, container)
     }
@@ -223,13 +227,13 @@ class PreviewFragment : BaseFragment() {
         screenHeight = getScreenHeight(requireContext())
         // 初始化回调
         initActivityResult()
-        // 初始化状态栏
-        initStatusBar(requireActivity())
         // 初始化bundle的Value
         initBundleValue(savedInstanceState)
         mMediaController = MediaController(activity)
         mViewHolder = ViewHolder(view)
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
+        // 初始化状态栏
+        initStatusBar(requireActivity(), mViewHolder.constraintLayout)
         // 初始化共享动画view
         initSharedAnimationView()
         initViewPagerData()
@@ -270,12 +274,13 @@ class PreviewFragment : BaseFragment() {
      * 针对回调
      */
     private fun initActivityResult() {
-        mImageEditActivityResult = registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
-            if (result.resultCode == RESULT_OK) {
-                mIsEdit = true
-                refreshMultiMediaItem()
+        mImageEditActivityResult =
+            registerForActivityResult(StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK) {
+                    mIsEdit = true
+                    refreshMultiMediaItem()
+                }
             }
-        }
     }
 
     /**
@@ -298,11 +303,12 @@ class PreviewFragment : BaseFragment() {
                 // 设置是否开启原图
                 mOriginalEnable = it.getBoolean(PreviewSetting.EXTRA_RESULT_ORIGINAL_ENABLE, true)
                 // 数据源
-                it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
-                    mLocalMedias.addAll(selection)
-                    mSelectedModel.getSelectedData().addAll(selection)
-                    mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
-                }
+                it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)
+                    ?.let { selection ->
+                        mLocalMedias.addAll(selection)
+                        mSelectedModel.getSelectedData().addAll(selection)
+                        mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
+                    }
             }
         } else {
             mIsSavedInstanceState = true
@@ -324,7 +330,8 @@ class PreviewFragment : BaseFragment() {
             mViewHolder.sharedAnimationView.setBackgroundAlpha(1.0F)
         }
         mViewHolder.sharedAnimationView.setBackgroundColor(Color.BLACK)
-        mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object : OnSharedAnimationViewListener {
+        mViewHolder.sharedAnimationView.setOnSharedAnimationViewListener(object :
+            OnSharedAnimationViewListener {
             override fun onBeginBackMinAnim() {
                 // 开始 退出共享动画
                 this@PreviewFragment.onSharedBeginBackMinAnim()
@@ -334,7 +341,10 @@ class PreviewFragment : BaseFragment() {
                 this@PreviewFragment.onSharedBeginBackMinFinish(isResetSize)
             }
 
-            override fun onBeginSharedAnimComplete(sharedAnimationView: SharedAnimationView, showImmediately: Boolean) {
+            override fun onBeginSharedAnimComplete(
+                sharedAnimationView: SharedAnimationView,
+                showImmediately: Boolean
+            ) {
                 // 开始共享动画完成后
                 this@PreviewFragment.onSharedBeginAnimComplete(sharedAnimationView, showImmediately)
             }
@@ -400,7 +410,8 @@ class PreviewFragment : BaseFragment() {
         mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 // 确认的一刻赋值
-                val localMediaArrayList: ArrayList<LocalMedia> = mSelectedModel.getSelectedData().localMedias
+                val localMediaArrayList: ArrayList<LocalMedia> =
+                    mSelectedModel.getSelectedData().localMedias
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mMainModel.getOriginalEnable()
@@ -462,11 +473,17 @@ class PreviewFragment : BaseFragment() {
      */
     private fun initObserveData() {
         // 原图选项改变
-        LifecycleFlowCollector.collect(viewLifecycleOwner, mMainModel.originalEnable) {value: Boolean ->
+        LifecycleFlowCollector.collect(
+            viewLifecycleOwner,
+            mMainModel.originalEnable
+        ) { value: Boolean ->
             mViewHolder.original.setChecked(value)
         }
         // 相册界面移动完成后触发
-        LifecycleFlowCollector.collect(viewLifecycleOwner, mMainModel.onScrollToPositionComplete) { value: Int ->
+        LifecycleFlowCollector.collect(
+            viewLifecycleOwner,
+            mMainModel.onScrollToPositionComplete
+        ) { value: Int ->
             setSharedAnimationViewParams(value)
         }
     }
@@ -508,7 +525,10 @@ class PreviewFragment : BaseFragment() {
             mEditImagePath = file.absoluteFile.toString()
             val intent = Intent()
             intent.setClass(requireActivity(), ImageEditActivity::class.java)
-            intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, requireActivity().requestedOrientation)
+            intent.putExtra(
+                ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION,
+                requireActivity().requestedOrientation
+            )
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_URI, item.uri)
             intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SAVE_PATH, file.absolutePath)
             mImageEditActivityResult.launch(intent)
@@ -526,14 +546,22 @@ class PreviewFragment : BaseFragment() {
             editFile?.let {
                 // 加入相册条件：1.相册界面直接打开的预览 2. 编辑过的
                 if ((mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) && mGlobalSpec.isAddAlbumByEdit) {
-                    val uri = MediaStoreUtils.displayToGallery(mContext, editFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
+                    val uri = MediaStoreUtils.displayToGallery(
+                        mContext,
+                        editFile,
+                        TYPE_PICTURE,
+                        localMedia.duration,
+                        localMedia.width,
+                        localMedia.height
+                    )
                     uri?.let {
                         localMedia.absolutePath = localMedia.editorPath as String
                         localMedia.uri = uri.toString()
                         // 从Uri中提取ID（最后一段数字）
                         localMedia.fileId = uri.lastPathSegment?.toLongOrNull() ?: -1
                         // 宽高刷新
-                        val imageWidthAndHeight: IntArray = MediaUtils.getImageWidthAndHeight(localMedia.absolutePath)
+                        val imageWidthAndHeight: IntArray =
+                            MediaUtils.getImageWidthAndHeight(localMedia.absolutePath)
                         localMedia.width = imageWidthAndHeight[0]
                         localMedia.height = imageWidthAndHeight[1]
                         // 大小
@@ -622,14 +650,19 @@ class PreviewFragment : BaseFragment() {
             // 禁用
             mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
             mViewHolder.buttonApply.isEnabled = false
-        } else if (mSelectedModel.getSelectedData().count() == 1 && mAlbumSpec.singleSelectionModeEnabled()) {
+        } else if (mSelectedModel.getSelectedData()
+                .count() == 1 && mAlbumSpec.singleSelectionModeEnabled()
+        ) {
             // 如果只选择一张或者配置只能选一张，或者不显示数字的时候。启用，不显示数字
             mViewHolder.buttonApply.setText(R.string.z_multi_library_button_sure_default)
             mViewHolder.buttonApply.isEnabled = true
         } else {
             // 启用，显示数字
             mViewHolder.buttonApply.isEnabled = true
-            mViewHolder.buttonApply.text = getString(R.string.z_multi_library_button_sure, mSelectedModel.getSelectedData().count())
+            mViewHolder.buttonApply.text = getString(
+                R.string.z_multi_library_button_sure,
+                mSelectedModel.getSelectedData().count()
+            )
         }
 
         // 判断是否启动操作
@@ -664,8 +697,12 @@ class PreviewFragment : BaseFragment() {
             val fragment = weakFragment.get()
             fragment?.let {
                 // 是否只压缩编辑的图片
-                val isOnlyCompressEditPicture = fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
-                return@request fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(fragment.mSelectedModel.getSelectedData().localMedias, isOnlyCompressEditPicture)
+                val isOnlyCompressEditPicture =
+                    fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
+                return@request fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(
+                    fragment.mSelectedModel.getSelectedData().localMedias,
+                    isOnlyCompressEditPicture
+                )
             } ?: let {
                 return@request ArrayList()
             }
@@ -776,7 +813,12 @@ class PreviewFragment : BaseFragment() {
             } else {
                 // 将记录好的RecyclerView的位置大小，进行动画扩大到width,height
                 mViewHolder.sharedAnimationView.setViewParams(
-                    viewParams.left, viewParams.top, viewParams.width, viewParams.height, width, height
+                    viewParams.left,
+                    viewParams.top,
+                    viewParams.width,
+                    viewParams.height,
+                    width,
+                    height
                 )
                 mViewHolder.sharedAnimationView.start(false)
             }
@@ -801,7 +843,12 @@ class PreviewFragment : BaseFragment() {
                 mViewHolder.sharedAnimationView.setViewParams(0, 0, 0, 0, width, height)
             } else {
                 mViewHolder.sharedAnimationView.setViewParams(
-                    viewParams.left, viewParams.top, viewParams.width, viewParams.height, width, height
+                    viewParams.left,
+                    viewParams.top,
+                    viewParams.width,
+                    viewParams.height,
+                    width,
+                    height
                 )
             }
         }
@@ -820,7 +867,8 @@ class PreviewFragment : BaseFragment() {
         // 如果宽高其中一个<=0  重新获取宽高。如果宽度大于高度也要重新获取，因为有可能是横拍，要根据角度判断重新反转宽高
         if ((realWidth <= 0 || realHeight <= 0)) {
             withContext(Dispatchers.IO) {
-                MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), media.uri.toUri()).let {
+                MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), media.uri.toUri())
+                    .let {
                         if (it.width > 0) {
                             realWidth = it.width
                         }
@@ -841,7 +889,10 @@ class PreviewFragment : BaseFragment() {
     /**
      * 开始共享动画完成后
      */
-    private fun onSharedBeginAnimComplete(sharedAnimationView: SharedAnimationView?, showImmediately: Boolean) {
+    private fun onSharedBeginAnimComplete(
+        sharedAnimationView: SharedAnimationView?,
+        showImmediately: Boolean
+    ) {
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         val media = mLocalMedias[mViewPager2.currentItem]
 //        val isResetSize = (media.isCrop() || media.isEditor()) && media.cropWidth > 0 && media.cropHeight > 0
@@ -874,7 +925,8 @@ class PreviewFragment : BaseFragment() {
      * 设置预览 view 跟相册的 view 一样的高度宽度
      */
     private fun onSharedBeginBackMinFinish(isResetSize: Boolean) {
-        val itemViewParams = RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
+        val itemViewParams =
+            RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         val layoutParams = currentHolder.imageView.layoutParams
         layoutParams?.width = itemViewParams.width
@@ -988,7 +1040,8 @@ class PreviewFragment : BaseFragment() {
     }
 
     class ViewHolder internal constructor(rootView: View) {
-        var sharedAnimationView: SharedAnimationView = rootView.findViewById(R.id.sharedAnimationView)
+        var sharedAnimationView: SharedAnimationView =
+            rootView.findViewById(R.id.sharedAnimationView)
         var iBtnBack: ImageButton = rootView.findViewById(R.id.iBtnBack)
         var tvEdit: TextView = rootView.findViewById(R.id.tvEdit)
         var groupOriginal: Group = rootView.findViewById(R.id.groupOriginal)
