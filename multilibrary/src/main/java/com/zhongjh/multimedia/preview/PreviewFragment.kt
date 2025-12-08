@@ -6,7 +6,6 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,6 +24,9 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
+import androidx.core.net.toUri
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -297,9 +299,8 @@ class PreviewFragment : BaseFragment() {
                 mOriginalEnable = it.getBoolean(PreviewSetting.EXTRA_RESULT_ORIGINAL_ENABLE, true)
                 // 数据源
                 it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
-                    val localMedias = selection as ArrayList<LocalMedia>
-                    mLocalMedias.addAll(localMedias)
-                    mSelectedModel.getSelectedData().addAll(localMedias)
+                    mLocalMedias.addAll(selection)
+                    mSelectedModel.getSelectedData().addAll(selection)
                     mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
                 }
             }
@@ -819,7 +820,7 @@ class PreviewFragment : BaseFragment() {
         // 如果宽高其中一个<=0  重新获取宽高。如果宽度大于高度也要重新获取，因为有可能是横拍，要根据角度判断重新反转宽高
         if ((realWidth <= 0 || realHeight <= 0)) {
             withContext(Dispatchers.IO) {
-                MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), Uri.parse(media.uri)).let {
+                MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), media.uri.toUri()).let {
                         if (it.width > 0) {
                             realWidth = it.width
                         }
@@ -860,10 +861,10 @@ class PreviewFragment : BaseFragment() {
      */
     private fun onSharedBeginBackMinAnim() {
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
-        if (currentHolder.imageView.visibility == View.GONE) {
+        if (currentHolder.imageView.isGone) {
             currentHolder.imageView.visibility = View.VISIBLE
         }
-        if (currentHolder.videoPlayButton.visibility == View.VISIBLE) {
+        if (currentHolder.videoPlayButton.isVisible) {
             currentHolder.videoPlayButton.visibility = View.GONE
         }
     }
@@ -924,13 +925,6 @@ class PreviewFragment : BaseFragment() {
      */
     @SuppressLint("SetTextI18n")
     private fun updateUi(item: LocalMedia) {
-        if (item.isGif()) {
-            mViewHolder.tvSize.visibility = View.VISIBLE
-            mViewHolder.tvSize.text = "(${PhotoMetadataUtils.getSizeInMb(item.size)}M)"
-        } else {
-            mViewHolder.tvSize.visibility = View.GONE
-        }
-
         // 判断是否开启原图,并且是从相册界面进来才开启原图，同时原图不支持video
         if (mAlbumSpec.originalEnable && !item.isVideo() && mOriginalEnable) {
             // 显示
@@ -944,6 +938,12 @@ class PreviewFragment : BaseFragment() {
             mViewHolder.tvEdit.visibility = View.VISIBLE
         } else {
             mViewHolder.tvEdit.visibility = View.GONE
+        }
+        if (item.isGif()) {
+            mViewHolder.tvSize.visibility = View.VISIBLE
+            mViewHolder.tvSize.text = "(${PhotoMetadataUtils.getSizeInMb(item.size)}M)"
+        } else {
+            mViewHolder.tvSize.visibility = View.GONE
         }
     }
 
