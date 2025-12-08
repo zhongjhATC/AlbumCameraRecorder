@@ -102,11 +102,11 @@ open class CameraVideoManager(baseCameraFragment: BaseCameraFragment<out CameraS
      * 视频录制成功
      */
     @SuppressLint("LongLogTag")
-    override fun onRecordSuccess(path: String) {
+    override fun onRecordSuccess(path: String, uri: String) {
         val fragment = fragmentRef.get() ?: return
         val previewVideoActivityResult = previewVideoActivityResult ?: return
         fragment.photoVideoLayout.reset()
-        startActivity(fragment, previewVideoActivityResult, path, true)
+        startActivity(fragment, previewVideoActivityResult, path, uri, true)
         fragment.photoVideoLayout.isEnabled = true
     }
 }

@@ -46,8 +46,8 @@ class AlbumCompressFileTask(
         val context = contextRef.get() ?: run {
             return newLocalFiles
         }
+        // 如果有编辑的图片,则压缩编辑的图片,否则压缩原图
         for (item in localFiles) {
-            // 如果有编辑的图片,则压缩编辑的图片,否则压缩原图
             val absolutePath = item.editorPath ?: this.prepareCompressFile(
                 context,
                 item.uri,
@@ -170,7 +170,7 @@ class AlbumCompressFileTask(
      * @param sourceFile 原始文件（外部存储公共目录）
      * @return 安全区域的文件
      */
-    fun prepareCompressFile(context: Context, uriStr: String, sourceFile: File): File {
+    private fun prepareCompressFile(context: Context, uriStr: String, sourceFile: File): File {
         // 1. 低版本（API < 29）：直接返回原文件
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return sourceFile

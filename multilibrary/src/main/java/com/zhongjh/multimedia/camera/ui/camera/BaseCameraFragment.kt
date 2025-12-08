@@ -474,10 +474,10 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 setFlashLamp()
             }
 
-            override fun onRecordSuccess(path: String) {
+            override fun onRecordSuccess(path: String, uri: String) {
                 Log.d(TAG, "onRecordSuccess")
                 // 处理视频文件,最后会解除《禁止点击》
-                this@BaseCameraFragment.cameraVideoManager.onRecordSuccess(path)
+                this@BaseCameraFragment.cameraVideoManager.onRecordSuccess(path, uri)
             }
 
             override fun onRecordPause(recordedDurationNanos: Long) {

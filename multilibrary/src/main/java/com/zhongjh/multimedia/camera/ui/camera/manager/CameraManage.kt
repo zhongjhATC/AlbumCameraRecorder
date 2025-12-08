@@ -1,10 +1,8 @@
 package com.zhongjh.multimedia.camera.ui.camera.manager
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
@@ -19,7 +17,6 @@ import android.util.Log
 import android.util.Rational
 import android.util.Size
 import android.view.Surface
-import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -54,7 +51,6 @@ import androidx.camera.video.VideoCapture
 import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.zhongjh.common.enums.MediaType
@@ -311,7 +307,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                         if (!isActivityPause) {
                             // 完成录制
                             val uri = videoRecordEvent.outputResults.outputUri
-                            UriUtils.uriToFile(activity, uri)?.absolutePath?.let { this.listener?.onRecordSuccess(it) }
+                            UriUtils.uriToFile(activity, uri)?.absolutePath?.let { this.listener?.onRecordSuccess(it, uri.toString()) }
                         }
                         isActivityPause = false
                     }

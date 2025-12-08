@@ -5,12 +5,10 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.MediaController
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -26,7 +24,6 @@ import com.zhongjh.multimedia.utils.FileMediaUtil.createCompressFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 
@@ -64,12 +61,11 @@ class PreviewVideoActivity : AppCompatActivity() {
         initStatusBar(this@PreviewVideoActivity)
         super.onCreate(savedInstanceState)
         setContentView(mActivityPreviewVideoZjhBinding.root)
-        intent.getStringExtra(PATH)?.let {
-            mLocalMedia.absolutePath = it
-            initView()
-            initListener()
-            initData()
-        }
+        mLocalMedia.uri = intent.getStringExtra(URI) ?: ""
+        mLocalMedia.absolutePath = intent.getStringExtra(PATH) ?: ""
+        initView()
+        initListener()
+        initData()
     }
 
     override fun finish() {
@@ -130,24 +126,20 @@ class PreviewVideoActivity : AppCompatActivity() {
      * 初始化数据
      */
     private fun initData() {
-        val file = File(mLocalMedia.absolutePath)
-        Log.d(TAG, "exists:" + file.exists() + " length:" + file.length())
-        playVideo(file)
+        playVideo(mLocalMedia.uri)
     }
 
     /**
      * 播放视频,用于录制后，在是否确认的界面中，播放视频
      */
-    private fun playVideo(file: File) {
+    private fun playVideo(uri: String) {
         mActivityPreviewVideoZjhBinding.vvPreview.pause()
         // mediaController 是底部控制条
         val mediaController = MediaController(this@PreviewVideoActivity)
         mediaController.setAnchorView(mActivityPreviewVideoZjhBinding.vvPreview)
         mediaController.setMediaPlayer(mActivityPreviewVideoZjhBinding.vvPreview)
         mActivityPreviewVideoZjhBinding.vvPreview.setMediaController(mediaController)
-        val localMedia = MediaStoreUtils.getMediaDataByPath(this.applicationContext, file.absolutePath)
-        // TODO 优化从上一个界面获取uri，这样就不用重新查询了
-        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(localMedia.uri.toUri())
+        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(Uri.parse(uri))
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
         mActivityPreviewVideoZjhBinding.vvPreview.visibility = View.VISIBLE
         if (!mActivityPreviewVideoZjhBinding.vvPreview.isPlaying) {
@@ -255,6 +247,7 @@ class PreviewVideoActivity : AppCompatActivity() {
 
         const val LOCAL_FILE: String = "LOCAL_FILE"
         const val PATH: String = "PATH"
+        const val URI: String = "URI"
         const val IS_COMPRESS: String = "isCompress"
 
         /**
@@ -268,12 +261,13 @@ class PreviewVideoActivity : AppCompatActivity() {
         fun startActivity(
             fragment: Fragment,
             previewVideoActivityResult: ActivityResultLauncher<Intent>,
-            path: String,
+            path: String, uri: String,
             isCompress: Boolean
         ) {
             fragment.activity?.let {
                 val intent = Intent()
                 intent.putExtra(PATH, path)
+                intent.putExtra(URI, uri)
                 intent.putExtra(IS_COMPRESS, isCompress)
                 intent.setClass(it, PreviewVideoActivity::class.java)
                 previewVideoActivityResult.launch(intent)

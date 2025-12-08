@@ -34,6 +34,7 @@ interface ICameraVideo {
      * 视频录制成功
      *
      * @param path 视频录制结束后提供的路径
+     * @param uri 视频录制结束后提供的uri
      */
-    fun onRecordSuccess(path: String)
+    fun onRecordSuccess(path: String, uri: String)
 }

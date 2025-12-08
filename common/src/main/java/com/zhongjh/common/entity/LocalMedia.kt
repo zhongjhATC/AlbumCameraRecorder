@@ -376,7 +376,7 @@ open class LocalMedia() : Parcelable {
         if (compressPath != null) {
             return compressPath as String
         }
-        return absolutePath
+        return uri
     }
 
     /**

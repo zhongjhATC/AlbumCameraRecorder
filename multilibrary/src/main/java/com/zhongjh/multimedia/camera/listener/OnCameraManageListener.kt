@@ -13,7 +13,7 @@ interface OnCameraManageListener {
      *
      * @param path 文件地址
      */
-    fun onRecordSuccess(path: String)
+    fun onRecordSuccess(path: String, uri: String)
 
     /**
      * 录像暂停
