@@ -145,7 +145,7 @@ class PreviewVideoActivity : AppCompatActivity() {
         mediaController.setAnchorView(mActivityPreviewVideoZjhBinding.vvPreview)
         mediaController.setMediaPlayer(mActivityPreviewVideoZjhBinding.vvPreview)
         mActivityPreviewVideoZjhBinding.vvPreview.setMediaController(mediaController)
-        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(Uri.parse(uri))
+        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(uri.toUri())
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
         mActivityPreviewVideoZjhBinding.vvPreview.visibility = View.VISIBLE
         if (!mActivityPreviewVideoZjhBinding.vvPreview.isPlaying) {
