@@ -2,7 +2,6 @@ package com.zhongjh.multimedia.camera.ui.camera.manager
 
 import android.app.Activity
 import android.content.Intent
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.util.Log
 import android.view.View
@@ -18,6 +17,7 @@ import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.FileUtils
+import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.request
 import com.zhongjh.imageedit.ImageEditActivity
@@ -30,15 +30,11 @@ import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.util.LogUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
-import com.zhongjh.multimedia.utils.FileMediaUtil.getOutFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import java.lang.ref.WeakReference
-import kotlin.coroutines.resume
 
 
 /**
@@ -420,7 +416,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
                 localMedia.compressPath = compressionFile.absolutePath
                 localMedia.size = compressionFile.length()
                 val mediaInfo = MediaUtils.getMediaInfo(
-                    baseCameraFragment.myContext, TYPE_PICTURE, compressionFile.absolutePath
+                    baseCameraFragment.myContext, TYPE_PICTURE, MediaStoreCompat.getUri(baseCameraFragment.myContext, compressionFile.absolutePath)
                 )
                 localMedia.width = mediaInfo.width
                 localMedia.height = mediaInfo.height

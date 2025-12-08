@@ -6,6 +6,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -816,10 +817,9 @@ class PreviewFragment : BaseFragment() {
             return intArrayOf(screenWidth, screenHeight)
         }
         // 如果宽高其中一个<=0  重新获取宽高。如果宽度大于高度也要重新获取，因为有可能是横拍，要根据角度判断重新反转宽高
-        if ((realWidth <= 0 || realHeight <= 0) || (realWidth > realHeight)) {
+        if ((realWidth <= 0 || realHeight <= 0)) {
             withContext(Dispatchers.IO) {
-                media.absolutePath.let { absolutePath ->
-                    MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), absolutePath).let {
+                MediaUtils.getMediaInfo(requireContext(), media.getMediaType(), Uri.parse(media.uri)).let {
                         if (it.width > 0) {
                             realWidth = it.width
                         }
@@ -827,7 +827,6 @@ class PreviewFragment : BaseFragment() {
                             realHeight = it.height
                         }
                     }
-                }
             }
         }
         // 如果是裁剪后的图片，宽高是会改变的 TODO

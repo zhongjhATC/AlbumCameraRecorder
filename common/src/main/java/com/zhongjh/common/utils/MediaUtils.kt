@@ -4,15 +4,12 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Build
 import android.text.TextUtils
 import androidx.exifinterface.media.ExifInterface
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.entity.MediaExtraInfo
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.enums.MimeType.Companion.isContent
-import java.io.File
 import java.io.InputStream
 
 /**
@@ -114,22 +111,18 @@ object MediaUtils {
     /**
      * 获取文件信息,视频大的话会耗时过大
      */
-    fun getMediaInfo(context: Context, @MediaType mediaType: Int, path: String): LocalMedia {
+    fun getMediaInfo(context: Context, @MediaType mediaType: Int, uri: Uri): LocalMedia {
         val localMedia = LocalMedia()
         // 如果是图片
-        var inputStream: InputStream? = null
+        val inputStream: InputStream?
 
         when (mediaType) {
             MediaType.TYPE_PICTURE -> {
                 // 实例化ExifInterface,作用获取图片的属性
                 var exif: ExifInterface? = null
-                if (isContent(path)) {
-                    inputStream = context.contentResolver.openInputStream(Uri.parse(path))
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && inputStream != null) {
-                        exif = ExifInterface(inputStream)
-                    }
-                } else {
-                    exif = ExifInterface(path)
+                inputStream = context.contentResolver.openInputStream(uri)
+                if (inputStream != null) {
+                    exif = ExifInterface(inputStream)
                 }
                 // 开始获取图片的相关属性
                 exif?.apply {
@@ -165,21 +158,10 @@ object MediaUtils {
             MediaType.TYPE_VIDEO -> {
                 // 实例化MediaMetadataRetriever,作用获取视频的属性
                 val retriever = MediaMetadataRetriever()
-                if (isContent(path)) {
-                    // 校验Content URI是否可访问
-                    val uri = Uri.parse(path)
                     context.contentResolver.openInputStream(uri)?.use {
                         // 仅检查流是否可打开，无需读取内容，use会自动关闭流
                     } ?: return localMedia
-                    retriever.setDataSource(context, Uri.parse(path))
-                } else {
-                    // 校验文件路径是否存在且可读
-                    val file = File(path)
-                    if (!file.exists() || !file.canRead()) {
-                        return localMedia
-                    }
-                    retriever.setDataSource(path)
-                }
+                retriever.setDataSource(context, uri)
                 // 获取视频的时长、角度
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                     ?.toLong()?.let { duration ->
