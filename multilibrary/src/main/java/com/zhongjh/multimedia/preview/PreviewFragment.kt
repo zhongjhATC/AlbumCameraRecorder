@@ -564,7 +564,7 @@ class PreviewFragment : BaseFragment() {
                         localMedia.uri = uri.toString()
                         // 从Uri中提取ID（最后一段数字）
                         localMedia.fileId = uri.lastPathSegment?.toLongOrNull() ?: -1
-                        // 宽高刷新
+                        // 宽高刷新，这里能直接用absolutePath是因为编辑后的图片都是在App应用内存里面的
                         val imageWidthAndHeight: IntArray =
                             MediaUtils.getImageWidthAndHeight(localMedia.absolutePath)
                         localMedia.width = imageWidthAndHeight[0]
