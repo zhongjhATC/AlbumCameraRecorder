@@ -233,7 +233,12 @@ class PreviewFragment : BaseFragment() {
         mViewHolder = ViewHolder(view)
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         // 初始化状态栏
-        initStatusBar(requireActivity(), mViewHolder.constraintLayout)
+        if (requireActivity() is MainActivity) {
+            initStatusBar(requireActivity(), mViewHolder.constraintLayout)
+        } else {
+            initStatusBar(requireActivity())
+        }
+
         // 初始化共享动画view
         initSharedAnimationView()
         initViewPagerData()

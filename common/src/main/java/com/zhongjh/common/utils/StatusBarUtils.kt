@@ -41,17 +41,12 @@ object StatusBarUtils {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         // 设置状态栏透明
         window.statusBarColor = Color.TRANSPARENT
-        // 必须设置高度
-        val layoutParams = constraintLayout.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.apply {
-            // 补全顶部约束（解决 XML 中 MissingConstraints 警告，同时让 topMargin 生效）
-            topToTop = ConstraintLayout.LayoutParams.PARENT_ID // 绑定到父布局顶部
-            endToEnd =
-                ConstraintLayout.LayoutParams.PARENT_ID // 对应 XML 中 android:layout_alignParentEnd="true"
-            startToStart = ConstraintLayout.LayoutParams.PARENT_ID // 补全左侧约束，保证布局居中
-            // 设置顶部间距（20dp 对应的像素值）
-            topMargin = getNavigationBarsHeight(activity)
-        }
+        constraintLayout.setPadding(
+            constraintLayout.paddingLeft,  // 保留原有左 padding
+            getNavigationBarsHeight(activity),                          // 顶部 padding 设为
+            constraintLayout.paddingRight, // 保留原有右 padding
+            constraintLayout.paddingBottom // 保留原有底 padding
+        )
     }
 
     /**
