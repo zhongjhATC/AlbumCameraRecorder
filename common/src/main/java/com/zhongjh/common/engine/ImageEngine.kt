@@ -49,7 +49,7 @@ interface ImageEngine {
     fun loadUrlImage(context: Context, resizeX: Int, resizeY: Int, imageView: ImageView, url: String)
 
     /**
-     * 加载静态图像资源
+     * 加载图像资源
      * 场景仅用于预览界面的图片
      *
      * @param context   上下文

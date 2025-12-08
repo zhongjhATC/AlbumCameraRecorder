@@ -85,6 +85,7 @@ public class Glide4Engine implements ImageEngine {
         Glide.with(context)
                 .load(resourceId)
                 .apply(new RequestOptions()
+                        // TODO 看看这个怎么解决
                         .error(R.drawable.ic_failed)
                         .fitCenter())
                 .into(imageView);
