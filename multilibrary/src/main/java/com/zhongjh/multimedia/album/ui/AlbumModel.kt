@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkSelfPermission
@@ -52,6 +53,7 @@ class AlbumModel(application: Application) : AndroidViewModel(application) {
     /**
      * 根据配置来确定添加的权限类型 - 图片、视频
      */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun addPermissionImagesAndVideo(): ArrayList<String> {
         val permissions = ArrayList<String>()
         if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {

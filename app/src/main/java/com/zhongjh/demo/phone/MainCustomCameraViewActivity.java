@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,6 +33,15 @@ import androidx.camera.video.Recorder;
 import androidx.camera.video.VideoCapture;
 import androidx.camera.view.PreviewView;
 
+import com.zhongjh.common.entity.GridMedia;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.demo.BaseActivity;
+import com.zhongjh.demo.configuration.GifSizeFilter;
+import com.zhongjh.demo.configuration.Glide4Engine;
+import com.zhongjh.demo.databinding.ActivityMainCustomCameraviewBinding;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.listener.GridViewListener;
+import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.multimedia.album.filter.BaseFilter;
 import com.zhongjh.multimedia.camera.listener.OnInitCameraManager;
 import com.zhongjh.multimedia.settings.AlbumSetting;
@@ -39,15 +49,6 @@ import com.zhongjh.multimedia.settings.CameraSetting;
 import com.zhongjh.multimedia.settings.GlobalSetting;
 import com.zhongjh.multimedia.settings.MultiMediaSetting;
 import com.zhongjh.multimedia.settings.RecorderSetting;
-import com.zhongjh.demo.BaseActivity;
-import com.zhongjh.demo.configuration.GifSizeFilter;
-import com.zhongjh.demo.configuration.Glide4Engine;
-import com.zhongjh.demo.databinding.ActivityMainCustomCameraviewBinding;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.common.entity.GridMedia;
-import com.zhongjh.gridview.listener.GridViewListener;
-import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -205,7 +206,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
             }
             
             @Override
-            public void initWatermarkedImage(@NonNull String path) {
+            public void initWatermarkedImage(@NonNull Uri uri, @NonNull String path) {
 
             }
         });

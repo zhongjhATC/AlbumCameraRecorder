@@ -1,29 +1,35 @@
 package com.zhongjh.multimedia.camera.ui.preview.video
 
+import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.MediaController
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.VideoEditListener
+import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.databinding.ActivityPreviewVideoZjhBinding
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.settings.GlobalSpec.orientation
+import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCompressFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 
@@ -164,7 +170,9 @@ class PreviewVideoActivity : AppCompatActivity() {
         // 判断是否开启了视频压缩功能
         mGlobalSpec.videoCompressCoordinator?.let {
             // 如果开启了直接压缩
-            compress()
+            val absolutePath = this.prepareCompressFile(applicationContext, mLocalMedia.uri, File(mLocalMedia.absolutePath)).absolutePath
+            Log.d(TAG, "confirm: absolutePath = $absolutePath")
+            compress(absolutePath)
         } ?: let {
             // 否则直接提交
             confirm(mLocalMedia.absolutePath, null)
@@ -175,10 +183,10 @@ class PreviewVideoActivity : AppCompatActivity() {
     /**
      * 压缩视频
      */
-    private fun compress() {
+    private fun compress(absolutePath: String) {
         mGlobalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
             // 获取文件名称
-            val newFile = createCompressFile(applicationContext, mLocalMedia.absolutePath)
+            val newFile = createCompressFile(applicationContext, absolutePath)
             // 弱引用持有Activity
             val weakActivity = WeakReference(this)
             // 压缩回调
@@ -209,7 +217,7 @@ class PreviewVideoActivity : AppCompatActivity() {
                 })
             // 执行压缩
             videoCompressCoordinator.compressRxJava(
-                this@PreviewVideoActivity.javaClass, mLocalMedia.absolutePath, newFile.path
+                this@PreviewVideoActivity.javaClass, absolutePath, newFile.path
             )
         }
     }
@@ -219,28 +227,35 @@ class PreviewVideoActivity : AppCompatActivity() {
      */
     private fun confirm(absolutePath: String, compressPath: String?) {
         val intent = Intent()
-        runBlocking {
-            mLocalMedia = mediaScanFile(absolutePath)
-        }
+        // 设置压缩路径
         mLocalMedia.compressPath = compressPath
+        // 设置类型
+        val suffix = absolutePath.substring(absolutePath.lastIndexOf("."))
+        mLocalMedia.mimeType = MimeType.getMimeType(suffix)
         intent.putExtra(LOCAL_FILE, mLocalMedia)
         setResult(RESULT_OK, intent)
         this@PreviewVideoActivity.finish()
     }
 
     /**
-     * 扫描
-     * 根据真实路径返回LocalMedia
+     * 检查文件是否可直接操作，不可则复制到应用私有目录（安全区域）
+     * @param context 上下文
+     * @param sourceFile 原始文件（外部存储公共目录）
+     * @return 安全区域的文件
      */
-    private suspend fun mediaScanFile(path: String): LocalMedia =
-        suspendCancellableCoroutine { ctn ->
-            MediaScannerConnection.scanFile(
-                applicationContext, arrayOf(path), MimeType.ofVideoArray()
-            ) { path, _ ->
-                // 相册刷新完成后的回调
-                ctn.resume(MediaStoreUtils.getMediaDataByPath(applicationContext, path))
-            }
+    private fun prepareCompressFile(context: Context, uriStr: String, sourceFile: File): File {
+        // 1. 低版本（API < 29）：直接返回原文件
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return sourceFile
         }
+
+        // 目标文件（私有目录下同名文件）
+        val newFile = FileMediaUtil.createTempAPI29File(context, sourceFile.name)
+        val uri = uriStr.toUri()
+        // 移动到新的文件夹
+        FileUtils.copy(context, uri, newFile)
+        return newFile
+    }
 
     companion object {
         private val TAG: String = PreviewVideoActivity::class.java.simpleName

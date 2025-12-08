@@ -218,12 +218,11 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
      *
      * @param path 拍摄的图片文件路径
      */
-    override fun addCaptureData(path: String) {
+    override fun addCaptureData(uri: Uri, path: String) {
         fragmentRef.get()?.let { baseCameraFragment ->
             rotateImage(baseCameraFragment.myContext, path)
             // 初始化数据并且存储进file
             val file = File(path)
-            val uri = Uri.fromFile(file)
             val bitmapData = BitmapData(System.currentTimeMillis(), uri.toString(), file.path)
             // 加速回收机制
             System.gc()
@@ -410,7 +409,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
             for (item in bitmapDataList) {
                 val cacheFile = File(item.absolutePath)
                 Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
-                var localMedia = LocalMedia()
+                val localMedia = LocalMedia()
                 // 压缩图片
                 val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
                     baseCameraFragment.myContext, cacheFile
@@ -437,23 +436,6 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
         }
         // 执行完成
         return newFiles
-    }
-
-    /**
-     * 扫描媒体文件并获取媒体信息
-     * 使用MediaScannerConnection扫描指定路径的文件，使其在系统相册中可见
-     * 然后通过MediaStoreUtils获取完整的媒体信息
-     *
-     * @param path 要扫描的文件路径
-     * @return 扫描后生成的LocalMedia对象，包含媒体文件的完整信息
-     */
-    private suspend fun mediaScanFile(path: String): LocalMedia = suspendCancellableCoroutine { ctn ->
-        fragmentRef.get()?.let { baseCameraFragment ->
-            MediaScannerConnection.scanFile(baseCameraFragment.myContext, arrayOf(path), MimeType.ofImageArray()) { path, _ ->
-                // 相册刷新完成后的回调
-                ctn.resume(MediaStoreUtils.getMediaDataByPath(baseCameraFragment.myContext, path))
-            }
-        }
     }
 
     companion object {

@@ -40,6 +40,7 @@ import androidx.camera.core.ViewPort
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.core.takePicture
 import androidx.camera.effects.OverlayEffect
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.MediaStoreOutputOptions
@@ -788,9 +789,10 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val uri = outputFileResults.savedUri
             val onCameraManageListenerReference: OnCameraManageListener? = mOnCameraManageListenerReference.get()
+            uri ?: return
             onCameraManageListenerReference?.let {
-                val path: String = if (MimeType.isContent(uri.toString())) uri.toString() else uri?.path.toString()
-                onCameraManageListenerReference.onPictureSuccess(path)
+                val path: String = if (MimeType.isContent(uri.toString())) uri.toString() else uri.path.toString()
+                onCameraManageListenerReference.onPictureSuccess(uri, path)
             }
         }
 

@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -429,7 +430,7 @@ public class MainActivity extends BaseActivity {
             }
 
             @Override
-            public void initWatermarkedImage(@NonNull String path) {
+            public void initWatermarkedImage(@NonNull Uri uri, @NonNull String path) {
                 if (mBinding.cbCustomWatermarkImage.isChecked()) {
                     addWatermarkToImage(path);
                 }

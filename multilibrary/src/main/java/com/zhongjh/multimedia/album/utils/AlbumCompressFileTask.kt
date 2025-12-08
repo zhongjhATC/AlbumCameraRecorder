@@ -54,8 +54,10 @@ class AlbumCompressFileTask(
                 File(item.absolutePath)
             ).absolutePath
 
+            // 返回对象为null就需要压缩，否则不需要压缩
             val isCompressItem = isCompress(item, isOnlyCompressEditPicture)
             if (isCompressItem != null) {
+                // 不需要压缩
                 newLocalFiles.add(isCompressItem)
                 continue
             }

@@ -460,11 +460,11 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 this@BaseCameraFragment.cameraStateManager.onActivityPause()
             }
 
-            override fun onPictureSuccess(path: String) {
+            override fun onPictureSuccess(uri: Uri, path: String) {
                 Log.d(TAG, "onPictureSuccess")
-                cameraSpec.onInitCameraManager?.initWatermarkedImage(path)
+                cameraSpec.onInitCameraManager?.initWatermarkedImage(uri, path)
                 // 显示图片
-                this@BaseCameraFragment.cameraPictureManager.addCaptureData(path)
+                this@BaseCameraFragment.cameraPictureManager.addCaptureData(uri, path)
                 // 恢复点击
                 childClickableLayout.setChildClickable(true)
             }

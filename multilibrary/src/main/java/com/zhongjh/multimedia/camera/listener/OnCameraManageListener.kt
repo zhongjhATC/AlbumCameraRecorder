@@ -1,12 +1,16 @@
 package com.zhongjh.multimedia.camera.listener
 
+import android.net.Uri
+
+
 interface OnCameraManageListener {
     /**
      * 拍照成功返回
      *
+     * @param uri  图片uri
      * @param path 图片地址
      */
-    fun onPictureSuccess(path: String)
+    fun onPictureSuccess(uri: Uri, path: String)
 
     /**
      * 录像成功返回

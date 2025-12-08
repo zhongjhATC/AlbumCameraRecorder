@@ -1,5 +1,6 @@
 package com.zhongjh.multimedia.camera.ui.camera.impl
 
+import android.net.Uri
 import com.zhongjh.multimedia.camera.entity.BitmapData
 
 /**
@@ -40,9 +41,10 @@ interface ICameraPicture {
     /**
      * 添加数据
      *
+     * @param uri   图片uri
      * @param path 文件路径
      */
-    fun addCaptureData(path: String)
+    fun addCaptureData(uri: Uri, path: String)
 
     /**
      * 刷新多个图片

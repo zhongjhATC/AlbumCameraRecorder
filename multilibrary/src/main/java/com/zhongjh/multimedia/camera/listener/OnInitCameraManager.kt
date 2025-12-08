@@ -1,5 +1,6 @@
 package com.zhongjh.multimedia.camera.listener
 
+import android.net.Uri
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
@@ -76,7 +77,8 @@ interface OnInitCameraManager {
 
     /**
      * 自定义图片水印效果,这个建议只有在自定义高分辨率拍照、预览的时候才设置
+     * @param uri 图片uri
      * @param path 源图路径
      */
-    fun initWatermarkedImage(path: String)
+    fun initWatermarkedImage(uri: Uri, path: String)
 }
