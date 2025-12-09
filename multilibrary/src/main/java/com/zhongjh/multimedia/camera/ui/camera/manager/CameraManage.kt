@@ -547,7 +547,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
     private fun initPreview(screenAspectRatio: Int): Preview {
         val previewBuilder = Preview.Builder().setResolutionSelector(
             ResolutionSelector.Builder().setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+                .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
         ).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initPreview(previewBuilder, screenAspectRatio, previewView.display.rotation)
         return previewBuilder.build().also {
@@ -565,7 +565,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         // 初始化 拍照类 imageCapture
         val imageBuilder = Builder().setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY).setResolutionSelector(
             ResolutionSelector.Builder().setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+                .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
         ).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initImageCapture(imageBuilder, screenAspectRatio, previewView.display.rotation)
         imageCapture = imageBuilder.build()
@@ -580,7 +580,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         // 初始化 拍照类 imageCapture,设置 优先考虑延迟而不是图像质量、设置比例、设置角度
         val imageAnalyzerBuilder = ImageAnalysis.Builder().setResolutionSelector(
             ResolutionSelector.Builder().setAspectRatioStrategy(AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-                .setResolutionStrategy(ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_NONE)).build()
+                .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY).build()
         ).setTargetRotation(previewView.display.rotation)
         cameraSpec.onInitCameraManager?.initImageAnalyzer(imageAnalyzerBuilder, screenAspectRatio, previewView.display.rotation)
         imageAnalyzer = imageAnalyzerBuilder.build()
