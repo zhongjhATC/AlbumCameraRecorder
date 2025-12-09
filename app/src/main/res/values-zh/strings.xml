@@ -52,7 +52,6 @@
     <string name="maximum_original_size_valid_only_if_original_enable_is_true_m">最大原图size,仅当originalEnable为true的时候才有效(M)</string>
     <string name="the_recording_configuration">录制配置</string>
     <string name="turn_on_the_shooting_function">开启拍摄功能</string>
-    <string name="enable_segmented_recording">开启分段录制功能</string>
     <string name="click_to_start_recording_lose_the_click_to_take_photos_function">开启点击即开启录制(失去点击拍照功能)</string>
     <string name="maximum_recording_time">最长录制时间</string>
     <string name="minimum_recording_time_milliseconds">最短录制时间(毫秒),不能低于1000</string>

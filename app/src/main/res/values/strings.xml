@@ -52,7 +52,6 @@
     <string name="maximum_original_size_valid_only_if_original_enable_is_true_m">Maximum original size, valid only if originalEnable is true (M)</string>
     <string name="the_recording_configuration">The recording configuration</string>
     <string name="turn_on_the_shooting_function">Turn on the shooting function</string>
-    <string name="enable_segmented_recording">Enable segmented recording</string>
     <string name="click_to_start_recording_lose_the_click_to_take_photos_function">Click to start recording (lose the click to take photos function)</string>
     <string name="maximum_recording_time">Maximum recording time</string>
     <string name="minimum_recording_time_milliseconds">Minimum recording time (milliseconds),Cannot be lower than 1000</string>

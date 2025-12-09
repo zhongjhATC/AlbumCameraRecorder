@@ -192,7 +192,7 @@
                         android:id="@+id/cb_is_compress_video"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
+                        android:checked="false"
                         android:text="true"
                         tools:ignore="HardcodedText" />
 
@@ -651,14 +651,6 @@
                         android:text="@string/support_video" />
 
                 </LinearLayout>
-
-                <CheckBox
-                    android:id="@+id/cb_video_merge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:checked="true"
-                    android:text="@string/enable_segmented_recording" />
 
                 <CheckBox
                     android:id="@+id/cbClickRecord"
