@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,12 +88,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.mplImageList.setGridViewListener(new GridViewListener() {
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
-
+                Toast.makeText(holder.itemView.getContext(), "执行添加", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onItemClick(@NonNull View view, @NonNull GridMedia gridMedia) {
-
+                Toast.makeText(holder.itemView.getContext(), "执行点击", Toast.LENGTH_SHORT).show();
             }
 
             @Override
