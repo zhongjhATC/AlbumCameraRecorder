@@ -12,7 +12,10 @@ import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
@@ -76,7 +79,17 @@ public class Glide4Engine implements ImageEngine {
                 .load(path)
                 .apply(new RequestOptions()
                         .error(R.drawable.ic_failed)
-                        .fitCenter())
+                        .fitCenter()
+                        // 仅传一个参数：让 Glide 按 View 尺寸适配，且不限制最大尺寸
+                        .override(Target.SIZE_ORIGINAL)
+                        // 禁用 RGB_565 降质格式
+                        .format(DecodeFormat.PREFER_ARGB_8888)
+                        // 禁用硬件位图（部分设备导致模糊）
+                        .disallowHardwareConfig()
+                        // 保证图片尺寸 ≥ View 尺寸（避免缩放模糊）
+                        .downsample(DownsampleStrategy.AT_LEAST)
+                        // 缓存高清缩放图，避免重复压缩
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE))
                 .into(imageView);
     }
 

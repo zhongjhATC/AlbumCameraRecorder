@@ -145,7 +145,7 @@ class PreviewVideoActivity : AppCompatActivity() {
         mediaController.setAnchorView(mActivityPreviewVideoZjhBinding.vvPreview)
         mediaController.setMediaPlayer(mActivityPreviewVideoZjhBinding.vvPreview)
         mActivityPreviewVideoZjhBinding.vvPreview.setMediaController(mediaController)
-        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(Uri.parse(uri))
+        mActivityPreviewVideoZjhBinding.vvPreview.setVideoURI(uri.toUri())
         // 这段代码需要放在更新视频文件后播放，不然会找不到文件。
         mActivityPreviewVideoZjhBinding.vvPreview.visibility = View.VISIBLE
         if (!mActivityPreviewVideoZjhBinding.vvPreview.isPlaying) {
@@ -170,7 +170,7 @@ class PreviewVideoActivity : AppCompatActivity() {
         // 判断是否开启了视频压缩功能
         mGlobalSpec.videoCompressCoordinator?.let {
             // 如果开启了直接压缩
-            val absolutePath = this.prepareCompressFile(applicationContext, mLocalMedia.uri, File(mLocalMedia.absolutePath)).absolutePath
+            val absolutePath = FileMediaUtil.prepareCompressFile(applicationContext, mLocalMedia.uri, File(mLocalMedia.absolutePath)).absolutePath
             Log.d(TAG, "confirm: absolutePath = $absolutePath")
             compress(absolutePath)
         } ?: let {
@@ -235,26 +235,6 @@ class PreviewVideoActivity : AppCompatActivity() {
         intent.putExtra(LOCAL_FILE, mLocalMedia)
         setResult(RESULT_OK, intent)
         this@PreviewVideoActivity.finish()
-    }
-
-    /**
-     * 检查文件是否可直接操作，不可则复制到应用私有目录（安全区域）
-     * @param context 上下文
-     * @param sourceFile 原始文件（外部存储公共目录）
-     * @return 安全区域的文件
-     */
-    private fun prepareCompressFile(context: Context, uriStr: String, sourceFile: File): File {
-        // 1. 低版本（API < 29）：直接返回原文件
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return sourceFile
-        }
-
-        // 目标文件（私有目录下同名文件）
-        val newFile = FileMediaUtil.createTempAPI29File(context, sourceFile.name)
-        val uri = uriStr.toUri()
-        // 移动到新的文件夹
-        FileUtils.copy(context, uri, newFile)
-        return newFile
     }
 
     companion object {

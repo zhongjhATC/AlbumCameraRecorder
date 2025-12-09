@@ -48,7 +48,7 @@ class AlbumCompressFileTask(
         }
         // 如果有编辑的图片,则压缩编辑的图片,否则压缩原图
         for (item in localFiles) {
-            val absolutePath = item.editorPath ?: this.prepareCompressFile(
+            val absolutePath = item.editorPath ?: FileMediaUtil.prepareCompressFile(
                 context,
                 item.uri,
                 File(item.absolutePath)
@@ -166,23 +166,5 @@ class AlbumCompressFileTask(
         return null != item.editorPath && null == item.compressPath
     }
 
-    /**
-     * 检查文件是否可直接操作，不可则复制到应用私有目录（安全区域）
-     * @param context 上下文
-     * @param sourceFile 原始文件（外部存储公共目录）
-     * @return 安全区域的文件
-     */
-    private fun prepareCompressFile(context: Context, uriStr: String, sourceFile: File): File {
-        // 1. 低版本（API < 29）：直接返回原文件
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return sourceFile
-        }
 
-        // 目标文件（私有目录下同名文件）
-        val newFile = FileMediaUtil.createTempAPI29File(context, sourceFile.name)
-        val uri = uriStr.toUri()
-        // 移动到新的文件夹
-        FileUtils.copy(context, uri, newFile)
-        return newFile
-    }
 }

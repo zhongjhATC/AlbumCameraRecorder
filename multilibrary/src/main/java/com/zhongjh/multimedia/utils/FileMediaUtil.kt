@@ -1,12 +1,15 @@
 package com.zhongjh.multimedia.utils
 
 import android.content.Context
+import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
+import androidx.core.net.toUri
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MediaType.Companion.TYPE_AUDIO
 import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.enums.MediaType.Companion.TYPE_VIDEO
+import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.multimedia.constants.DirType
 import java.io.File
 import java.text.SimpleDateFormat
@@ -125,6 +128,26 @@ object FileMediaUtil {
             folderDir.mkdirs()
         }
         return File(folderDir.absolutePath, fileName)
+    }
+
+    /**
+     * 检查文件是否可直接操作，不可则复制到应用私有目录（安全区域）
+     * @param context 上下文
+     * @param sourceFile 原始文件（外部存储公共目录）
+     * @return 安全区域的文件
+     */
+    fun prepareCompressFile(context: Context, uriStr: String, sourceFile: File): File {
+        // 1. 低版本（API < 29）：直接返回原文件
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return sourceFile
+        }
+
+        // 目标文件（私有目录下同名文件）
+        val newFile = createTempAPI29File(context, sourceFile.name)
+        val uri = uriStr.toUri()
+        // 移动到新的文件夹
+        FileUtils.copy(context, uri, newFile)
+        return newFile
     }
 
     /**
