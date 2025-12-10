@@ -635,75 +635,168 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * 初始化OverlayEffect 叠加效果,一般用于水印,实时画面
      */
     private fun initOverlayEffect() {
-        // 视频帧叠加效果
+        // 优先使用自定义叠加效果
         overlayEffect = cameraSpec.onInitCameraManager?.initOverlayEffect(previewView)
-        // 如果有自定义的则直接return
         if (overlayEffect != null) {
             return
         }
+
         if (cameraSpec.onInitCameraManager?.isDefaultOverlayEffect() == true) {
-            val textPaint = Paint().apply {
+            // ========== 1. 预初始化静态资源（仅创建一次） ==========
+            // 优化Paint：减少不必要的属性，提前配置
+            val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = Color.WHITE
                 textSize = 36f
-                // 抗锯齿
-                isAntiAlias = true
+                // 关闭硬件加速可能的兼容性问题（低版本）
+                isFilterBitmap = false
+                style = Paint.Style.FILL
             }
-            // 左右底部间距
+
+            // 固定参数缓存
             val marginSize = 50F
-            // 文字宽度
-            val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-            val textWidth: Float = textPaint.measureText(dataFormat.format(Date())) + marginSize
-            overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            // 时间格式化锁（SimpleDateFormat线程不安全）
+            val dateFormatLock = Any()
+
+            // ========== 2. 复用矩阵对象（避免频繁GC） ==========
+            val cachedSensorToUi = Matrix()
+            val cachedUiToSensor = Matrix()
+            val tempMatrix = Matrix() // 临时矩阵，避免重复创建
+
+            // ========== 3. 缓存View尺寸和旋转参数 ==========
+            var lastViewWidth = 0
+            var lastViewHeight = 0
+            var lastRotation = -1
+            var cachedTextWidth = 0f
+            var cachedDrawX = 0f
+            var cachedDrawY = 0f
+            // 缓存格式化后的时间字符串（减少创建）
+            var cachedTimeText = ""
+            var lastTimeUpdateTime = 0L
+
+            // ========== 4. 创建叠加效果 ==========
+            overlayEffect = OverlayEffect(
+                PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE,
+                0,
+                Handler(Looper.getMainLooper())
+            ) {
                 Log.e(TAG, "overlayEffect error")
             }.apply {
-                // 清除setOnDrawListener的监听
                 clearOnDrawListener()
-                // 缓存矩阵变换(仅在变化时更新)
-                var cachedSensorToUi: Matrix? = null
-                var cachedUiToSensor: Matrix? = null
-                // 在每一帧上绘制水印
+
                 setOnDrawListener { frame ->
-                    // 同步previewView的宽高
-                    val sensorToUi = previewView.sensorToViewTransform
+                    // ========== 5. 低频更新的参数（仅在变化时计算） ==========
+                    val currentRotation = previewView.getTag(R.id.target_rotation) as Int
+                    val currentWidth = previewView.width
+                    val currentHeight = previewView.height
 
-                    // 仅在传感器变换矩阵变化时才重新计算
-                    if (sensorToUi != cachedSensorToUi) {
-                        cachedSensorToUi = sensorToUi?.let { Matrix(it) }
-                        cachedUiToSensor = Matrix().apply {
-                            cachedSensorToUi?.invert(this)
-                            postConcat(frame.sensorToBufferTransform)
+                    // 仅在View尺寸/旋转变化时重新计算基础参数
+                    if (currentWidth != lastViewWidth || currentHeight != lastViewHeight || currentRotation != lastRotation) {
+                        lastViewWidth = currentWidth
+                        lastViewHeight = currentHeight
+                        lastRotation = currentRotation
+
+                        // 重新计算文字宽度（仅尺寸变化时）
+                        synchronized(dateFormatLock) {
+                            cachedTextWidth = textPaint.measureText(dateFormat.format(Date())) + marginSize
                         }
-                    }
 
-                    cachedUiToSensor?.let { uiToSensor ->
-                        // 获取画布并清除颜色，应用仿射变换
-                        val canvas = frame.overlayCanvas
-                        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                        canvas.setMatrix(uiToSensor)
-                        // 绘制文字
-                        when (previewView.getTag(R.id.target_rotation)) {
+                        // 预计算不同旋转角度的绘制坐标（避免绘制时重复计算）
+                        when (currentRotation) {
                             Surface.ROTATION_0 -> {
-                                // 底部绘制,以手机底部为标准xy正常计算
-                                canvas.drawText(dataFormat.format(Date()), previewView.width - textWidth, previewView.height - marginSize, textPaint)
+                                cachedDrawX = currentWidth - cachedTextWidth
+                                cachedDrawY = currentHeight - marginSize
                             }
-
                             Surface.ROTATION_90 -> {
-                                // 以左边为底部,依然以手机底部为标准xy正常计算
-                                canvas.rotate(90F, marginSize, previewView.height - textWidth)
-                                canvas.drawText(dataFormat.format(Date()), marginSize, previewView.height - textWidth, textPaint)
+                                cachedDrawX = marginSize
+                                cachedDrawY = currentHeight - cachedTextWidth
                             }
-
                             Surface.ROTATION_270 -> {
-                                // 以右边为底部,依然以手机底部为标准xy正常计算
-                                canvas.rotate(-90F, previewView.width - marginSize, textWidth)
-                                canvas.drawText(dataFormat.format(Date()), previewView.width - marginSize, textWidth, textPaint)
+                                cachedDrawX = currentWidth - marginSize
+                                cachedDrawY = cachedTextWidth
+                            }
+                            else -> {
+                                cachedDrawX = currentWidth - cachedTextWidth
+                                cachedDrawY = currentHeight - marginSize
                             }
                         }
                     }
+
+                    // ========== 6. 矩阵变换优化（低版本兼容） ==========
+                    val sensorToUi = previewView.sensorToViewTransform
+                    if (sensorToUi != null) {
+                        // 低版本避免使用Matrix.equals，手动比较
+                        tempMatrix.set(cachedSensorToUi)
+                        if (!tempMatrix.equals(sensorToUi)) {
+                            cachedSensorToUi.set(sensorToUi)
+                            // 重新计算逆矩阵（复用对象，避免创建新Matrix）
+                            cachedUiToSensor.reset()
+                            if (cachedSensorToUi.invert(cachedUiToSensor)) {
+                                cachedUiToSensor.postConcat(frame.sensorToBufferTransform)
+                            }
+                        }
+                    }
+
+                    // ========== 7. 时间格式化优化（减少主线程耗时） ==========
+                    val currentTime = System.currentTimeMillis()
+                    // 每秒更新一次时间（无需帧级更新）
+                    if (currentTime - lastTimeUpdateTime >= 1000) {
+                        synchronized(dateFormatLock) {
+                            cachedTimeText = dateFormat.format(Date(currentTime))
+                        }
+                        lastTimeUpdateTime = currentTime
+                    }
+
+                    // ========== 8. 绘制优化（减少不必要操作） ==========
+                    cachedUiToSensor.takeIf { it.isIdentity.not() }?.let { uiToSensor ->
+                        val canvas = frame.overlayCanvas ?: return@let
+
+                        // 优化1：仅在矩阵变化时清除画布（低版本clear开销大）
+                        if (tempMatrix.equals(uiToSensor).not()) {
+                            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                        }
+
+                        // 优化2：复用矩阵，避免频繁setMatrix
+                        canvas.setMatrix(uiToSensor)
+
+                        // 优化3：根据旋转角度绘制（预计算坐标，减少绘制时计算）
+                        when (currentRotation) {
+                            Surface.ROTATION_90 -> {
+                                canvas.save() // 保存画布状态（比重复创建矩阵更高效）
+                                canvas.rotate(90F, marginSize, lastViewHeight - cachedTextWidth)
+                                canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
+                                canvas.restore() // 恢复画布，避免影响后续绘制
+                            }
+                            Surface.ROTATION_270 -> {
+                                canvas.save()
+                                canvas.rotate(-90F, lastViewWidth - marginSize, cachedTextWidth)
+                                canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
+                                canvas.restore()
+                            }
+                            else -> {
+                                // ROTATION_0/180 直接绘制，无旋转开销
+                                canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
+                            }
+                        }
+                    }
+
                     true
                 }
             }
         }
+    }
+
+    // ========== 额外优化：低版本兼容工具方法 ==========
+    /**
+     * 低版本Matrix.equals兼容（API 19+，覆盖Android 6）
+     */
+    private fun Matrix.equals(other: Matrix?): Boolean {
+        if (other == null) return false
+        val values = FloatArray(9)
+        val otherValues = FloatArray(9)
+        this.getValues(values)
+        other.getValues(otherValues)
+        return values.contentEquals(otherValues)
     }
 
     /**
