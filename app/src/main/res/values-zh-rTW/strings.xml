@@ -13,8 +13,9 @@
     <string name="resolution_scale_hd">自定義設置最高清解析度，比例16：9</string>
     <string name="use_the_default_time_watermark">1. 使用預設的時間浮水印</string>
     <string name="custom_watermarks_all">2. 自定义水印(支持预览、视频、图片。会覆盖默认时间水印)</string>
-    <string name="custom_watermarks_video">3. 自定義浮浮水印（支援預覽、視頻。 會覆蓋預設時間浮水印。 建議在修改高清錄製才使用，其他情況使用上面的第1、2種浮水印方式即可）</string>
-    <string name="custom_hd_watermarks">4. 自定義圖片浮水印（建議在修改高清錄製才使用，其他情況使用上面的浮水印方式即可)</string>
+    <string name="custom_watermarks_video">3. 自定義浮水印(支援預覽、視頻。 會覆蓋預設時間浮水印。 建議在修改高清錄製才使用，其他情況使用上面的第1、2種浮水印方式即可)</string>
+    <string name="custom_hd_watermarks">4. 自定義圖片浮水印(建議在修改高清錄製才使用，其他情況使用上面的浮水印方式即可)</string>
+    <string name="custom_no_watermarks">5. 不使用浮水印(在一些配備很低的裝置上會比較卡，例如搭載 Android 6 系統等裝置)</string>
     <string name="start_flash_memory_model">啓動閃光燈記憶模式</string>
     <string name="volume_button_trigger_photo_taking">音量鍵觸髮拍照(可自定義key觸髮)</string>
     <string name="flash_settings">點擊更改閃光燈默認的模式：</string>

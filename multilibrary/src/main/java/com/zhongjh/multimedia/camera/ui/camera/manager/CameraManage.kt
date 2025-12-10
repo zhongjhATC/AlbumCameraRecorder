@@ -8,8 +8,10 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffXfermode
 import android.hardware.display.DisplayManager
 import android.os.Build
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
@@ -66,6 +68,7 @@ import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
+import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -276,16 +279,47 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         val activity = activityRef.get() ?: return
         // recording 如果为空则重新创建
         recording?.resume() ?: run {
-            val name = "VIDEO_" + SimpleDateFormat(
-                "yyyyMMdd_HHmmssSSS", Locale.US
-            ).format(System.currentTimeMillis()) + ".mp4"
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Video.Media.DISPLAY_NAME, name)
-                put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+            // 区分 Android 版本，使用兼容的文件生成逻辑
+            val mediaStoreOutput = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Android 10+ 保留原逻辑（使用 RELATIVE_PATH）
+                val name = "VIDEO_" + SimpleDateFormat(
+                    "yyyyMMdd_HHmmssSSS", Locale.US
+                ).format(System.currentTimeMillis()) + ".mp4"
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                    put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+                    put(MediaStore.Video.Media.MIME_TYPE, "video/mp4") // 补充 MIME 类型（高版本也建议加）
+                }
+                MediaStoreOutputOptions.Builder(
+                    activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                ).setContentValues(contentValues).build()
+            } else {
+                // Android 6.0 适配逻辑（API 23）
+                // 1. 生成绝对路径（使用 DCIM/Camera 公共目录）
+                val dcimCameraDir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                    "Camera" // 对应 DCIM_CAMERA 路径
+                )
+                if (!dcimCameraDir.exists()) {
+                    dcimCameraDir.mkdirs() // 确保目录存在
+                }
+                // 2. 生成唯一文件名
+                val name = "VIDEO_" + SimpleDateFormat(
+                    "yyyyMMdd_HHmmssSSS", Locale.US
+                ).format(System.currentTimeMillis()) + ".mp4"
+                val videoFile = File(dcimCameraDir, name)
+                // 3. 构建 ContentValues（使用绝对路径 DATA 字段）
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                    put(MediaStore.Video.Media.MIME_TYPE, "video/mp4") // 必选：指定视频类型
+                    put(MediaStore.Video.Media.DATA, videoFile.absolutePath) // 必选：Android 6.0 依赖此路径
+                }
+                // 4. 构建 MediaStoreOutputOptions（传入文件 URI）
+                MediaStoreOutputOptions.Builder(
+                    activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                ).setContentValues(contentValues)
+                    .build()
             }
-            val mediaStoreOutput = MediaStoreOutputOptions.Builder(
-                activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-            ).setContentValues(contentValues).build()
             val pendingRecording = videoCapture?.output?.prepareRecording(activity, mediaStoreOutput)
             if (isAudio) {
                 pendingRecording?.withAudioEnabled()
@@ -592,7 +626,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      */
     private fun initVideoCapture(screenAspectRatio: Int) {
         // 设置分辨率1920*1080
-        val qualitySelector = QualitySelector.from(Quality.FHD)
+        val qualitySelector = QualitySelector.from(Quality.HD)
         val recorder = Recorder.Builder().setAspectRatio(screenAspectRatio).setQualitySelector(qualitySelector)
         cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
         val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build()).setTargetRotation(previewView.display.rotation)
@@ -603,7 +637,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
     /**
      * 初始化OverlayEffect 叠加效果,一般用于水印,实时画面
      */
-    @SuppressLint("RestrictedApi")
     private fun initOverlayEffect() {
         // 视频帧叠加效果
         overlayEffect = cameraSpec.onInitCameraManager?.initOverlayEffect(previewView)
@@ -642,8 +675,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                         canvas.setMatrix(uiToSensor)
                         // 绘制文字
-
-                        previewView.setTag(R.id.target_rotation, previewView.display.rotation)
                         when (previewView.getTag(R.id.target_rotation)) {
                             Surface.ROTATION_0 -> {
                                 // 底部绘制,以手机底部为标准xy正常计算

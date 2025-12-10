@@ -748,6 +748,20 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <CheckBox
+                        android:id="@+id/cbNoWatermark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:text="@string/custom_no_watermarks" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/llFlashMode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

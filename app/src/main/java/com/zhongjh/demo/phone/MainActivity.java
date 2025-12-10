@@ -187,6 +187,7 @@ public class MainActivity extends BaseActivity {
                 mBinding.cbCustomWatermarkVideo.setEnabled(false);
                 mBinding.cbCustomWatermarkImage.setChecked(false);
                 mBinding.cbCustomWatermarkImage.setEnabled(false);
+                mBinding.cbNoWatermark.setChecked(false);
             }
         });
 
@@ -201,6 +202,17 @@ public class MainActivity extends BaseActivity {
                 mBinding.cbCustomWatermarkVideo.setEnabled(true);
                 mBinding.cbCustomWatermarkImage.setChecked(true);
                 mBinding.cbCustomWatermarkImage.setEnabled(true);
+                mBinding.cbNoWatermark.setChecked(false);
+            }
+        });
+
+        // 清空所有水印
+        mBinding.cbNoWatermark.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                mBinding.cbDefaultWatermark.setChecked(false);
+                mBinding.cbCustomWatermarkAll.setChecked(false);
+                mBinding.cbCustomWatermarkVideo.setChecked(false);
+                mBinding.cbCustomWatermarkImage.setChecked(false);
             }
         });
     }
@@ -424,6 +436,8 @@ public class MainActivity extends BaseActivity {
                     return MainActivity.this.initOverlayEffect(previewView, PREVIEW | VIDEO_CAPTURE | IMAGE_CAPTURE);
                 } else if (mBinding.cbCustomWatermarkVideo.isChecked()) {
                     return MainActivity.this.initOverlayEffect(previewView, PREVIEW | VIDEO_CAPTURE);
+                } else if (mBinding.cbNoWatermark.isChecked()) {
+                    return null;
                 } else {
                     return null;
                 }
