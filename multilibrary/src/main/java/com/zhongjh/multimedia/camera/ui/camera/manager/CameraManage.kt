@@ -8,7 +8,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Environment
@@ -17,7 +16,6 @@ import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Rational
-import android.util.Size
 import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -42,7 +40,6 @@ import androidx.camera.core.ViewPort
 import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.core.takePicture
 import androidx.camera.effects.OverlayEffect
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.MediaStoreOutputOptions
@@ -645,31 +642,40 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
             return
         }
         if (cameraSpec.onInitCameraManager?.isDefaultOverlayEffect() == true) {
+            val textPaint = Paint().apply {
+                color = Color.WHITE
+                textSize = 36f
+                // 抗锯齿
+                isAntiAlias = true
+            }
+            // 左右底部间距
+            val marginSize = 50F
+            // 文字宽度
+            val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+            val textWidth: Float = textPaint.measureText(dataFormat.format(Date())) + marginSize
             overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
                 Log.e(TAG, "overlayEffect error")
             }.apply {
-                val textPaint = Paint().apply {
-                    color = Color.WHITE
-                    textSize = 36f
-                    // 抗锯齿
-                    isAntiAlias = true
-                }
-                // 左右底部间距
-                val marginSize = 50F
-                // 文字宽度
-                val dataFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-                val textWidth: Float = textPaint.measureText(dataFormat.format(Date())) + marginSize
                 // 清除setOnDrawListener的监听
                 clearOnDrawListener()
+                // 缓存矩阵变换(仅在变化时更新)
+                var cachedSensorToUi: Matrix? = null
+                var cachedUiToSensor: Matrix? = null
                 // 在每一帧上绘制水印
                 setOnDrawListener { frame ->
                     // 同步previewView的宽高
                     val sensorToUi = previewView.sensorToViewTransform
-                    sensorToUi?.let {
-                        val sensorToEffect = frame.sensorToBufferTransform
-                        val uiToSensor = Matrix()
-                        sensorToUi.invert(uiToSensor)
-                        uiToSensor.postConcat(sensorToEffect)
+
+                    // 仅在传感器变换矩阵变化时才重新计算
+                    if (sensorToUi != cachedSensorToUi) {
+                        cachedSensorToUi = sensorToUi?.let { Matrix(it) }
+                        cachedUiToSensor = Matrix().apply {
+                            cachedSensorToUi?.invert(this)
+                            postConcat(frame.sensorToBufferTransform)
+                        }
+                    }
+
+                    cachedUiToSensor?.let { uiToSensor ->
                         // 获取画布并清除颜色，应用仿射变换
                         val canvas = frame.overlayCanvas
                         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
