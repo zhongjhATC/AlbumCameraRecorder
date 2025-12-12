@@ -681,8 +681,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
             val cachedUiToSensor = Matrix()
             val tempMatrix = Matrix()
             val rotateMatrix = Matrix() // 复用旋转矩阵
-            // 添加矩阵是否变化的标志位
-            var isMatrixChanged = false
 
             // ========== 3. 缓存View尺寸和旋转参数 ==========
             var lastRotation = -1
@@ -740,7 +738,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                                 currentRotateDegrees = 180f
                             }
                         }
-                        isMatrixChanged = true
                     }
 
                     // ========== 6. 矩阵变换优化（低版本兼容） ==========
@@ -755,7 +752,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                             if (cachedSensorToUi.invert(cachedUiToSensor)) {
                                 cachedUiToSensor.postConcat(frame.sensorToBufferTransform)
                             }
-                            isMatrixChanged = true
                         }
                     }
 
@@ -782,7 +778,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
 
                         canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
                         lastDrawnText = cachedTimeText
-                        isMatrixChanged = false
                     }
                     true
                 }
