@@ -23,7 +23,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 
@@ -76,6 +75,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 配置版
@@ -673,6 +673,57 @@ public class MainActivity extends BaseActivity {
         popupMenu.show();
     }
 
+    // ========== 1. 预初始化静态资源（仅创建一次） ==========
+    // 优化Paint：减少不必要的属性，提前配置
+    Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
+
+    {
+        textPaint.setColor(Color.RED);
+        textPaint.setTextSize(36f);
+        textPaint.setStyle(Paint.Style.FILL);
+        textPaint.setFilterBitmap(false); // 保持低版本兼容性
+        textPaint.setAntiAlias(true); // 添加文字抗锯齿优化
+        textPaint.setTextSkewX(-0.2f); // 轻微倾斜文字提升视觉效果（可选）
+    }
+
+    // 固定参数缓存
+    final float marginSize = 50F;
+
+    // 时间文本宽度固定（格式固定），提前计算一次
+    String sampleTimeText = "2024-05-20 23:59:59"; // 最大长度时间字符串
+    final float fixedTextWidth = textPaint.measureText(sampleTimeText);
+    final float fixedTextHeight = textPaint.getTextSize();
+
+    // ========== 2. 复用矩阵对象（避免频繁GC） ==========
+    Matrix cachedSensorToUi = new Matrix();
+    Matrix cachedUiToSensor = new Matrix();
+    Matrix tempMatrix = new Matrix();
+
+    // 固定文字宽度，无需每次测量
+    final float textWidth = fixedTextWidth + marginSize;
+
+    // ========== 3. 缓存View尺寸和旋转参数 ==========
+    // 注意：需确保previewView已完成布局（如在onViewCreated/onWindowFocusChanged后初始化）
+    float cachedDrawX;
+    float cachedDrawY;
+
+    // 时间格式化工具 - 线程安全
+    ThreadLocal<SimpleDateFormat> dateFormat = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        }
+    };
+
+    // 复用的日期对象 - 线程安全
+    Date date = new Date();
+
+    // 上次更新时间戳 - 线程安全
+    long lastTimeUpdateTime = 0L;
+
+    // 当前缓存的时间文本 - 线程安全
+    String cachedTimeText = "";
+
     /**
      * 自定义叠加效果
      *
@@ -681,44 +732,48 @@ public class MainActivity extends BaseActivity {
      * @return OverlayEffect
      */
     private OverlayEffect initOverlayEffect(PreviewView previewView, int targets) {
-        OverlayEffect overlayEffect = new OverlayEffect(targets, 0, new Handler(Looper.getMainLooper()), throwable -> Log.e(TAG, "initOverlayEffect errorListener " + throwable.getMessage()));
-        Paint textPaint = new Paint();
-        textPaint.setColor(Color.RED);
-        textPaint.setTextSize(36F);
-        textPaint.setAntiAlias(true);
-        // 左右底部间距
-        float marginSize = 50F;
-        // 文字宽度
-        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        float textWidthSize = textPaint.measureText("自定义 - " + dataFormat.format(new Date())) + marginSize;
-        // 在每一帧绘制水印
+        cachedDrawX = previewView.getWidth() - textWidth;
+        cachedDrawY = previewView.getHeight() - marginSize - fixedTextHeight;
+
+        // ========== 4. 创建叠加效果 ==========
+        OverlayEffect overlayEffect = new OverlayEffect(targets, 0, new Handler(Looper.getMainLooper()),
+                throwable -> Log.e("initOverlayEffect", "initOverlayEffect errorListener " + throwable.getMessage()));
+
         overlayEffect.clearOnDrawListener();
         overlayEffect.setOnDrawListener(frame -> {
+            // ========== 5. 矩阵变换优化（低版本兼容） ==========
             Matrix sensorToUi = previewView.getSensorToViewTransform();
             if (sensorToUi != null) {
-                Matrix sensorToEffect = frame.getSensorToBufferTransform();
-                Matrix uiToSensor = new Matrix();
-                sensorToUi.invert(uiToSensor);
-                uiToSensor.postConcat(sensorToEffect);
-                Canvas canvas = frame.getOverlayCanvas();
-                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                canvas.setMatrix(uiToSensor);
-                // 绘制文字
-                switch (Integer.parseInt(previewView.getTag(com.zhongjh.multimedia.R.id.target_rotation).toString())) {
-                    case Surface.ROTATION_0:
-                        // 底部绘制,以手机底部为标准xy正常计算
-                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), previewView.getWidth() - textWidthSize, previewView.getHeight() - marginSize, textPaint);
-                        break;
-                    case Surface.ROTATION_90:
-                        // 以左边为底部,依然以手机底部为标准xy正常计算
-                        canvas.rotate(90F, marginSize, previewView.getHeight() - textWidthSize);
-                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), marginSize, previewView.getHeight() - textWidthSize, textPaint);
-                        break;
-                    case Surface.ROTATION_270:
-                        // 以右边为底部,依然以手机底部为标准xy正常计算
-                        canvas.rotate(-90F, previewView.getWidth() - marginSize, textWidthSize);
-                        canvas.drawText("自定义 - " + dataFormat.format(new Date()), previewView.getWidth() - marginSize, textWidthSize, textPaint);
-                        break;
+                // 高效矩阵比较（避免使用equals方法）
+                tempMatrix.set(cachedSensorToUi);
+                if (!tempMatrix.equals(sensorToUi)) {
+                    cachedSensorToUi.set(sensorToUi);
+                    // 重新计算逆矩阵（复用对象）
+                    cachedUiToSensor.reset();
+                    if (cachedSensorToUi.invert(cachedUiToSensor)) {
+                        cachedUiToSensor.postConcat(frame.getSensorToBufferTransform());
+                    }
+                }
+            }
+
+            // ========== 6. 时间格式化优化（每秒更新一次） ==========
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastTimeUpdateTime >= TimeUnit.SECONDS.toMillis(1)) {
+                date.setTime(currentTime); // 复用Date对象
+                SimpleDateFormat sdf = dateFormat.get();
+                cachedTimeText = (sdf != null) ? sdf.format(date) : "";
+                lastTimeUpdateTime = currentTime;
+
+                // ========== 7. 绘制优化（减少画布操作） ==========
+                if (!cachedUiToSensor.isIdentity()) {
+                    Canvas canvas = frame.getOverlayCanvas();
+
+                    // 清空画布（保持透明背景）
+                    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                    // 设置矩阵变换
+                    canvas.setMatrix(cachedUiToSensor);
+                    // 绘制时间文本
+                    canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint);
                 }
             }
             return true;

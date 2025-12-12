@@ -14,9 +14,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Rational
-import android.view.Surface
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraControl
@@ -57,7 +55,6 @@ import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import com.zhongjh.common.utils.UriUtils
-import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXPreviewViewTouchListener
@@ -157,11 +154,57 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      */
     private var lastStreamState: PreviewView.StreamState? = null
 
+    // 优化Paint：减少不必要的属性，提前配置
+    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
+        color = Color.WHITE
+        textSize = 36f
+        style = Paint.Style.FILL
+        isFilterBitmap = false // 保持低版本兼容性
+        // 添加文字抗锯齿优化
+        isAntiAlias = true
+        textSkewX = -0.2f // 轻微倾斜文字提升视觉效果（可选）
+    }
+
+    // 固定参数缓存
+    val marginSize = 50F
+
+    // 时间文本宽度固定（格式固定），提前计算一次
+    val sampleTimeText = "2024-05-20 23:59:59" // 最大长度时间字符串
+    val fixedTextWidth = textPaint.measureText(sampleTimeText)
+    val fixedTextHeight = textPaint.textSize
+
+    // ========== 2. 复用矩阵对象（避免频繁GC） ==========
+    val cachedSensorToUi = Matrix()
+    val cachedUiToSensor = Matrix()
+    val tempMatrix = Matrix()
+
+    // 固定文字宽度，无需每次测量
+    val textWidth = fixedTextWidth + marginSize
+
+    // ========== 3. 缓存View尺寸和旋转参数 ==========
+    var cachedDrawX = 0F
+    var cachedDrawY = 0F
+
+    // 时间格式化工具 - 线程安全
+    val dateFormat = object : ThreadLocal<SimpleDateFormat>() {
+        override fun initialValue(): SimpleDateFormat {
+            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        }
+    }
+
+    // 复用的日期对象 - 线程安全
+    val date = Date()
+
+    // 上次更新时间戳 - 线程安全
+    var lastTimeUpdateTime = 0L
+
+    // 当前缓存的时间文本 - 线程安全
+    var cachedTimeText = ""
+
     /**
      * ui初始化，必须是ui线程
      */
     fun init() {
-        previewView.setTag(R.id.target_rotation, Surface.ROTATION_0)
         displayManager.registerDisplayListener(displayListener, null)
         previewView.post {
             displayId = previewView.display.displayId
@@ -322,7 +365,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                 pendingRecording?.withAudioEnabled()
             }
             recording = pendingRecording?.start(ContextCompat.getMainExecutor(activity)) { videoRecordEvent ->
-                Log.d(TAG, "videoRecordEvent: $videoRecordEvent ${videoRecordEvent.recordingStats.recordedDurationNanos}")
                 // 视频录制监控回调
                 when (videoRecordEvent) {
                     is VideoRecordEvent.Start -> {
@@ -622,8 +664,14 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * @param screenAspectRatio 计算后适合的比例
      */
     private fun initVideoCapture(screenAspectRatio: Int) {
-        // 设置分辨率1920*1080
-        val qualitySelector = QualitySelector.from(Quality.HD)
+        // 根据设备性能动态选择质量（降低分辨率减少抖动）
+        val qualitySelector = if (isLowPerformanceDevice()) {
+            // 720p
+            QualitySelector.from(Quality.SD)
+        } else {
+            // 1080p
+            QualitySelector.from(Quality.HD)
+        }
         val recorder = Recorder.Builder().setAspectRatio(screenAspectRatio).setQualitySelector(qualitySelector)
         cameraSpec.onInitCameraManager?.initVideoRecorder(recorder, screenAspectRatio)
         val videoCaptureBuilder = VideoCapture.Builder<Recorder>(recorder.build()).setTargetRotation(previewView.display.rotation)
@@ -631,121 +679,37 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         videoCapture = videoCaptureBuilder.build()
     }
 
-    // 在类的顶部添加以下实例变量（与其他变量声明位置相同）
-    /** 时间格式化工具 - 线程安全 */
-    private val dateFormat = object : ThreadLocal<SimpleDateFormat>() {
-        override fun initialValue(): SimpleDateFormat {
-            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        }
+    // 添加设备性能检测方法
+    private fun isLowPerformanceDevice(): Boolean {
+        // 可根据设备CPU核心数、内存等判断，这里简化处理
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.O || Runtime.getRuntime().availableProcessors() <= 4
     }
-
-    /** 复用的日期对象 */
-    private val date = Date()
-
-    /** 上次更新时间戳 */
-    private var lastTimeUpdateTime = 0L
-
-    /** 当前缓存的时间文本 */
-    private var cachedTimeText = ""
-
-    /** 上次绘制的时间文本 */
-    private var lastDrawnText = ""
 
     /**
      * 初始化OverlayEffect 叠加效果,一般用于水印,实时画面
      */
     private fun initOverlayEffect() {
+        // 优先使用自定义叠加效果
+        overlayEffect = cameraSpec.onInitCameraManager?.initOverlayEffect(previewView)
+        if (overlayEffect != null) {
+            return
+        }
         if (cameraSpec.onInitCameraManager?.isDefaultOverlayEffect() == true) {
-            // ========== 1. 预初始化静态资源（仅创建一次） ==========
-            // 优化Paint：减少不必要的属性，提前配置
-            val textPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
-                color = Color.WHITE
-                textSize = 36f
-                style = Paint.Style.FILL
-                isFilterBitmap = false // 保持低版本兼容性
-                // 添加文字抗锯齿优化
-                isAntiAlias = true
-                textSkewX = -0.2f // 轻微倾斜文字提升视觉效果（可选）
-            }
-
-            // 固定参数缓存
-            val marginSize = 50F
-
-            // 时间文本宽度固定（格式固定），提前计算一次
-            val sampleTimeText = "2024-05-20 23:59:59" // 最大长度时间字符串
-            val fixedTextWidth = textPaint.measureText(sampleTimeText)
-            val fixedTextHeight = textPaint.textSize
-
-            // ========== 2. 复用矩阵对象（避免频繁GC） ==========
-            val cachedSensorToUi = Matrix()
-            val cachedUiToSensor = Matrix()
-            val tempMatrix = Matrix()
-            val rotateMatrix = Matrix() // 复用旋转矩阵
-
-            // ========== 3. 缓存View尺寸和旋转参数 ==========
-            var lastRotation = -1
-            var cachedDrawX = 0f
-            var cachedDrawY = 0f
-            var currentRotateDegrees = 0f
-            var rotatePivotX = 0f
-            var rotatePivotY = 0f
-
-            val currentWidth = previewView.width
-            val currentHeight = previewView.height
-            val currentRotation = previewView.getTag(R.id.target_rotation) as Int
-
-            // ========== 4. 创建叠加效果 ==========
+            cachedDrawX = previewView.width - textWidth
+            cachedDrawY = previewView.height - marginSize - fixedTextHeight
+            // ========== 1. 创建叠加效果 ==========
             overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
 
             }.apply {
                 clearOnDrawListener()
 
                 setOnDrawListener { frame ->
-                    // ========== 5. 低频更新的参数（仅在变化时计算） ==========
-
-                    // 仅在View尺寸/旋转变化时重新计算基础参数
-                    if (currentRotation != lastRotation) {
-                        lastRotation = currentRotation
-
-                        // 固定文字宽度，无需每次测量
-                        val textWidth = fixedTextWidth + marginSize
-
-                        // 预计算不同旋转角度的绘制坐标和旋转参数
-                        when (currentRotation) {
-                            Surface.ROTATION_0 -> {
-                                cachedDrawX = currentWidth - textWidth
-                                cachedDrawY = currentHeight - marginSize - fixedTextHeight
-                                currentRotateDegrees = 0f
-                            }
-                            Surface.ROTATION_90 -> {
-                                cachedDrawX = marginSize
-                                cachedDrawY = currentHeight - textWidth
-                                currentRotateDegrees = 90f
-                                rotatePivotX = marginSize
-                                rotatePivotY = currentHeight - textWidth
-                            }
-                            Surface.ROTATION_270 -> {
-                                cachedDrawX = currentWidth - marginSize - fixedTextHeight
-                                cachedDrawY = marginSize
-                                currentRotateDegrees = -90f
-                                rotatePivotX = currentWidth - marginSize
-                                rotatePivotY = marginSize
-                            }
-
-                            else -> { // ROTATION_180
-                                cachedDrawX = currentWidth - textWidth
-                                cachedDrawY = marginSize
-                                currentRotateDegrees = 180f
-                            }
-                        }
-                    }
-
-                    // ========== 6. 矩阵变换优化（低版本兼容） ==========
+                    // ========== 2. 矩阵变换优化（低版本兼容） ==========
                     val sensorToUi = previewView.sensorToViewTransform
                     if (sensorToUi != null) {
                         // 高效矩阵比较（避免使用equals方法）
                         tempMatrix.set(cachedSensorToUi)
-                        if (!tempMatrix.equals(sensorToUi)) {
+                        if (tempMatrix != sensorToUi) {
                             cachedSensorToUi.set(sensorToUi)
                             // 重新计算逆矩阵（复用对象）
                             cachedUiToSensor.reset()
@@ -755,29 +719,22 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                         }
                     }
 
-                    // ========== 7. 时间格式化优化（每秒更新一次） ==========
+                    // ========== 3. 时间格式化优化（每秒更新一次） ==========
                     val currentTime = System.currentTimeMillis()
                     if (currentTime - lastTimeUpdateTime >= 1000) {
                         date.time = currentTime // 复用Date对象
                         cachedTimeText = dateFormat.get()?.format(date) ?: ""
                         lastTimeUpdateTime = currentTime
-                    }
 
-                    // ========== 8. 绘制优化（减少画布操作） ==========
-                    cachedUiToSensor.takeIf { it.isIdentity.not() }?.let { uiToSensor ->
-                        val canvas = frame.overlayCanvas
+                        // ========== 4. 绘制优化（减少画布操作） ==========
+                        cachedUiToSensor.takeIf { it.isIdentity.not() }?.let { uiToSensor ->
+                            val canvas = frame.overlayCanvas
 
-                        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
-                        canvas.setMatrix(uiToSensor)
+                            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
+                            canvas.setMatrix(uiToSensor)
 
-                        if (currentRotateDegrees != 0f) {
-                            rotateMatrix.reset()
-                            rotateMatrix.setRotate(currentRotateDegrees, rotatePivotX, rotatePivotY)
-                            canvas.concat(rotateMatrix)
+                            canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
                         }
-
-                        canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
-                        lastDrawnText = cachedTimeText
                     }
                     true
                 }
@@ -913,7 +870,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         }
 
         override fun onError(exception: ImageCaptureException) {
-            Log.d(TAG, "onError")
             mOnCameraManageListenerReference.get()?.onError(exception.imageCaptureError, exception.message, exception.cause)
         }
 
@@ -926,12 +882,10 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         override fun onDisplayAdded(displayId: Int) {}
         override fun onDisplayRemoved(displayId: Int) {}
         override fun onDisplayChanged(displayId: Int) {
-            Log.d(TAG, "onDisplayChanged:$displayId and " + this@CameraManage.displayId)
             if (displayId == this@CameraManage.displayId && null != previewView.display) {
                 imageCapture?.targetRotation = previewView.display.rotation
                 imageAnalyzer?.targetRotation = previewView.display.rotation
                 videoCapture?.targetRotation = previewView.display.rotation
-                previewView.setTag(R.id.target_rotation, previewView.display.rotation)
             }
         }
     }
@@ -942,11 +896,9 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * @param orientation 默认底部是0，以左边为底部是1，以右边为底部是3
      */
     override fun onOrientationChanged(orientation: Int) {
-        Log.d(TAG, "rotation:$orientation")
         imageCapture?.targetRotation = orientation
         imageAnalyzer?.targetRotation = orientation
         videoCapture?.targetRotation = orientation
-        previewView.setTag(R.id.target_rotation, orientation)
     }
 
 }
