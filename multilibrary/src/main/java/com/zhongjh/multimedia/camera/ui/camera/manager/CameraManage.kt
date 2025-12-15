@@ -1,6 +1,7 @@
 package com.zhongjh.multimedia.camera.ui.camera.manager
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Color
@@ -276,46 +277,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
         // recording 如果为空则重新创建
         recording?.resume() ?: run {
             // 区分 Android 版本，使用兼容的文件生成逻辑
-            val mediaStoreOutput = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android 10+ 保留原逻辑（使用 RELATIVE_PATH）
-                val name = "VIDEO_" + SimpleDateFormat(
-                    "yyyyMMdd_HHmmssSSS", Locale.US
-                ).format(System.currentTimeMillis()) + ".mp4"
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.Video.Media.DISPLAY_NAME, name)
-                    put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
-                    put(MediaStore.Video.Media.MIME_TYPE, "video/mp4") // 补充 MIME 类型（高版本也建议加）
-                }
-                MediaStoreOutputOptions.Builder(
-                    activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                ).setContentValues(contentValues).build()
-            } else {
-                // Android 6.0 适配逻辑（API 23）
-                // 1. 生成绝对路径（使用 DCIM/Camera 公共目录）
-                val dcimCameraDir = File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-                    "Camera" // 对应 DCIM_CAMERA 路径
-                )
-                if (!dcimCameraDir.exists()) {
-                    dcimCameraDir.mkdirs() // 确保目录存在
-                }
-                // 2. 生成唯一文件名
-                val name = "VIDEO_" + SimpleDateFormat(
-                    "yyyyMMdd_HHmmssSSS", Locale.US
-                ).format(System.currentTimeMillis()) + ".mp4"
-                val videoFile = File(dcimCameraDir, name)
-                // 3. 构建 ContentValues（使用绝对路径 DATA 字段）
-                val contentValues = ContentValues().apply {
-                    put(MediaStore.Video.Media.DISPLAY_NAME, name)
-                    put(MediaStore.Video.Media.MIME_TYPE, "video/mp4") // 必选：指定视频类型
-                    put(MediaStore.Video.Media.DATA, videoFile.absolutePath) // 必选：Android 6.0 依赖此路径
-                }
-                // 4. 构建 MediaStoreOutputOptions（传入文件 URI）
-                MediaStoreOutputOptions.Builder(
-                    activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                ).setContentValues(contentValues)
-                    .build()
-            }
+            val mediaStoreOutput = getMediaStoreOutput(activity)
             val pendingRecording = videoCapture?.output?.prepareRecording(activity, mediaStoreOutput)
             if (isAudio) {
                 pendingRecording?.withAudioEnabled()
@@ -806,6 +768,48 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
 
         }
 
+    }
+
+    /**
+     * 获取MediaStore输出
+     */
+    private fun getMediaStoreOutput(activity: Activity): MediaStoreOutputOptions {
+        // 生成唯一文件名
+        val name = "VIDEO_" + SimpleDateFormat(
+            "yyyyMMdd_HHmmssSSS", Locale.US
+        ).format(System.currentTimeMillis()) + ".mp4"
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10+ 保留原逻辑（使用 RELATIVE_PATH）
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                put(MediaStore.Video.Media.RELATIVE_PATH, DCIM_CAMERA)
+                // 补充 MIME 类型（高版本也建议加）
+                put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+            }
+            MediaStoreOutputOptions.Builder(activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).setContentValues(contentValues).build()
+        } else {
+            // 1. 生成绝对路径（使用 DCIM/Camera 公共目录）
+            val dcimCameraDir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                // 对应 DCIM_CAMERA 路径
+                "Camera"
+            )
+            // 2. 确保目录存在
+            if (!dcimCameraDir.exists()) {
+                dcimCameraDir.mkdirs()
+            }
+            val videoFile = File(dcimCameraDir, name)
+            // 3. 构建 ContentValues（使用绝对路径 DATA 字段）
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Video.Media.DISPLAY_NAME, name)
+                // 必选：Android 6.0 依赖此路径
+                put(MediaStore.Video.Media.DATA, videoFile.absolutePath)
+                // 必选：指定视频类型
+                put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+            }
+            // 4. 构建 MediaStoreOutputOptions（传入文件 URI）
+            MediaStoreOutputOptions.Builder(activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).setContentValues(contentValues).build()
+        }
     }
 
     /**
