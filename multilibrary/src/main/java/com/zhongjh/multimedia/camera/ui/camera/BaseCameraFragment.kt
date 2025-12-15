@@ -32,8 +32,8 @@ import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraFragment
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraView
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraManage
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureMultiple
 import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureSingle
@@ -73,7 +73,7 @@ import java.util.Objects
  * @author zhongjh
  * @date 2022/8/11
  */
-abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureManager : CameraPictureManager, VideoManager : CameraVideoManager>
+abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureViewManager : CameraPictureViewManager, VideoViewManager : CameraVideoViewManager>
     : BaseFragment(), ICameraView, ICameraFragment {
     /**
      * 使用弱引用持有 Activity
@@ -143,20 +143,20 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     abstract val cameraStateManager: StateManager
 
     /**
-     * 设置[cameraPictureManager]，专门处理有关图片逻辑
-     * 如果没有自定义，则直接返回[cameraPictureManager]
+     * 设置[cameraPictureViewManager]，专门处理有关图片逻辑
+     * 如果没有自定义，则直接返回[cameraPictureViewManager]
      *
      * @return cameraPictureManager
      */
-    abstract val cameraPictureManager: PictureManager
+    abstract val cameraPictureViewManager: PictureViewManager
 
     /**
-     * 设置[cameraVideoManager]，专门处理有关视频逻辑
-     * 如果没有自定义，则直接返回[cameraVideoManager]
+     * 设置[cameraVideoViewManager]，专门处理有关视频逻辑
+     * 如果没有自定义，则直接返回[cameraVideoViewManager]
      *
      * @return cameraVideoManager
      */
-    abstract val cameraVideoManager: VideoManager
+    abstract val cameraVideoViewManager: VideoViewManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -206,7 +206,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if ((keyCode and cameraSpec.keyCodeTakePhoto) > 0) {
-            cameraPictureManager.takePhoto()
+            cameraPictureViewManager.takePhoto()
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -283,7 +283,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         flashGetCache()
 
         // 初始化适配器
-        cameraPictureManager.initMultiplePhotoAdapter()
+        cameraPictureViewManager.initMultiplePhotoAdapter()
     }
 
     /**
@@ -303,7 +303,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         // 拍照监听
         initCameraViewListener()
         // 编辑图片事件
-        cameraPictureManager.initPhotoEditListener()
+        cameraPictureViewManager.initPhotoEditListener()
     }
 
     /**
@@ -356,7 +356,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
             override fun onClick() {
                 Log.d(TAG, "pvLayout onClick")
                 // 点击事件：通过弱引用调用拍照逻辑
-                fragmentRef.get()?.cameraPictureManager?.takePhoto()
+                fragmentRef.get()?.cameraPictureViewManager?.takePhoto()
             }
 
             override fun onLongClick() {
@@ -364,7 +364,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 // 长按事件：通过弱引用调用录像逻辑
                 fragmentRef.get()?.let { fragment ->
                     if (!fragment.isDetached) {
-                        fragment.cameraVideoManager.recordVideo()
+                        fragment.cameraVideoViewManager.recordVideo()
                         fragment.cameraStateManager.state = fragment.cameraStateManager.videoMultipleIn
                         fragment.setMenuVisibility(View.INVISIBLE)
                     }
@@ -452,7 +452,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
         // noinspection unused
         cameraManage.setOnCameraManageListener(object : OnCameraManageListener {
             override fun onRecordStart() {
-                this@BaseCameraFragment.cameraVideoManager.onRecordStart()
+                this@BaseCameraFragment.cameraVideoViewManager.onRecordStart()
             }
 
             override fun onActivityPause() {
@@ -464,7 +464,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 Log.d(TAG, "onPictureSuccess")
                 cameraSpec.onInitCameraManager?.initWatermarkedImage(uri, path)
                 // 显示图片
-                this@BaseCameraFragment.cameraPictureManager.addCaptureData(uri, path)
+                this@BaseCameraFragment.cameraPictureViewManager.addCaptureData(uri, path)
                 // 恢复点击
                 childClickableLayout.setChildClickable(true)
             }
@@ -477,12 +477,12 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
             override fun onRecordSuccess(path: String, uri: String) {
                 Log.d(TAG, "onRecordSuccess")
                 // 处理视频文件,最后会解除《禁止点击》
-                this@BaseCameraFragment.cameraVideoManager.onRecordSuccess(path, uri)
+                this@BaseCameraFragment.cameraVideoViewManager.onRecordSuccess(path, uri)
             }
 
             override fun onRecordPause(recordedDurationNanos: Long) {
                 // 处理暂停,最后会解除《禁止点击》
-                this@BaseCameraFragment.cameraVideoManager.onRecordPause(recordedDurationNanos)
+                this@BaseCameraFragment.cameraVideoViewManager.onRecordPause(recordedDurationNanos)
             }
 
             /** @noinspection unused
@@ -524,7 +524,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                         }
                     }
                     // 全部刷新
-                    cameraPictureManager.refreshMultiPhoto(bitmapDataArrayList)
+                    cameraPictureViewManager.refreshMultiPhoto(bitmapDataArrayList)
                 }
             }
         }
@@ -539,8 +539,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
                 }
             }
         }
-        cameraVideoManager.initActivityResult()
-        cameraPictureManager.initActivityResult()
+        cameraVideoViewManager.initActivityResult()
+        cameraPictureViewManager.initActivityResult()
     }
 
     /**
@@ -551,9 +551,9 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     protected fun onDestroy(isCommit: Boolean) {
         try {
             LogUtil.i("CameraLayout destroy")
-            cameraPictureManager.onDestroy(isCommit)
+            cameraPictureViewManager.onDestroy(isCommit)
             photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.reset()
-            cameraVideoManager.onDestroy()
+            cameraVideoViewManager.onDestroy()
             cameraManage.onDestroy()
             // 记忆模式
             flashSaveCache()
@@ -725,7 +725,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
     fun movePictureFile() {
         showProgress()
         // 开始迁移文件
-        cameraPictureManager.newMovePictureFileTask()
+        cameraPictureViewManager.newMovePictureFileTask()
     }
 
     /**
@@ -802,7 +802,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureMana
      * 取消单图后的重置
      */
     fun cancelOnResetBySinglePicture() {
-        cameraPictureManager.clearBitmapDataList()
+        cameraPictureViewManager.clearBitmapDataList()
 
         // 根据不同状态处理相应的事件
         resetStateAll()

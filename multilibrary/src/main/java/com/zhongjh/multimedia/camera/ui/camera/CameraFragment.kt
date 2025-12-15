@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.camera.view.PreviewView
 import androidx.recyclerview.widget.RecyclerView
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout
@@ -23,9 +23,9 @@ import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout
  * @date 2022/8/12
  * @noinspection unused
  */
-class CameraFragment : BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>() {
-    override val cameraPictureManager: CameraPictureManager = CameraPictureManager(this)
-    override val cameraVideoManager: CameraVideoManager = CameraVideoManager(this)
+class CameraFragment : BaseCameraFragment<CameraStateManager, CameraPictureViewManager, CameraVideoViewManager>() {
+    override val cameraPictureViewManager: CameraPictureViewManager = CameraPictureViewManager(this)
+    override val cameraVideoViewManager: CameraVideoViewManager = CameraVideoViewManager(this)
     override val cameraStateManager: CameraStateManager = CameraStateManager(this)
     lateinit var mBinding: FragmentCameraZjhBinding
 

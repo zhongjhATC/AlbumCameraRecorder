@@ -1,9 +1,5 @@
 package com.zhongjh.multimedia.settings
 
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment
 import com.zhongjh.multimedia.settings.api.RecorderSettingApi
 

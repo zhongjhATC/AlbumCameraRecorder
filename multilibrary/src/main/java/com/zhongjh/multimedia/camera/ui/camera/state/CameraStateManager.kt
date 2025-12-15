@@ -2,8 +2,8 @@ package com.zhongjh.multimedia.camera.ui.camera.state
 
 import android.view.View
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureMultiple
 import com.zhongjh.multimedia.camera.ui.camera.state.type.PictureSingle
 import com.zhongjh.multimedia.camera.ui.camera.state.type.Preview
@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2021/11/25
  */
-open class CameraStateManager(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : IState {
+open class CameraStateManager(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>) : IState {
 
     // 使用弱引用持有 Fragment
     private val fragmentRef = WeakReference(cameraFragment)

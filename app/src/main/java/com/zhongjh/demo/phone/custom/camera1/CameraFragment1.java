@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.demo.databinding.FragmentCamera1Binding;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 import com.zhongjh.multimedia.camera.widget.FocusView;
 import com.zhongjh.multimedia.camera.widget.PhotoVideoLayout;
@@ -34,11 +34,11 @@ import com.zhongjh.multimedia.widget.childclickable.IChildClickableLayout;
  * @author zhongjh
  * @date 2022/8/12
  */
-public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager> {
+public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, CameraPictureViewManager, CameraVideoViewManager> {
 
     FragmentCamera1Binding mBinding;
-    final CameraPictureManager cameraPicturePresenter = new CameraPictureManager(this);
-    final CameraVideoManager cameraVideoPresenter = new CameraVideoManager(this);
+    final CameraPictureViewManager cameraPicturePresenter = new CameraPictureViewManager(this);
+    final CameraVideoViewManager cameraVideoPresenter = new CameraVideoViewManager(this);
     final CameraStateManager cameraStateManager = new CameraStateManager(this);
 
     public static CameraFragment1 newInstance() {
@@ -150,13 +150,13 @@ public class CameraFragment1 extends BaseCameraFragment<CameraStateManager, Came
 
     @NonNull
     @Override
-    public CameraPictureManager getCameraPictureManager() {
+    public CameraPictureViewManager getCameraPictureViewManager() {
         return cameraPicturePresenter;
     }
 
     @NonNull
     @Override
-    public CameraVideoManager getCameraVideoManager() {
+    public CameraVideoViewManager getCameraVideoViewManager() {
         return cameraVideoPresenter;
     }
 

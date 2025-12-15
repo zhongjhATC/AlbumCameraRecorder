@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Matrix
-import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.PorterDuff
 import android.hardware.display.DisplayManager
@@ -55,6 +53,7 @@ import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
 import com.zhongjh.common.utils.UriUtils
+import com.zhongjh.multimedia.camera.entity.OverlayEffectEntity
 import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXPreviewViewTouchListener
@@ -65,7 +64,6 @@ import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executor
 import java.util.concurrent.TimeUnit
@@ -154,52 +152,10 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      */
     private var lastStreamState: PreviewView.StreamState? = null
 
-    // 优化Paint：减少不必要的属性，提前配置
-    val textPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
-        color = Color.WHITE
-        textSize = 36f
-        style = Paint.Style.FILL
-        isFilterBitmap = false // 保持低版本兼容性
-        // 添加文字抗锯齿优化
-        isAntiAlias = true
-        textSkewX = -0.2f // 轻微倾斜文字提升视觉效果（可选）
-    }
-
-    // 固定参数缓存
-    val marginSize = 50F
-
-    // 时间文本宽度固定（格式固定），提前计算一次
-    val sampleTimeText = "2024-05-20 23:59:59" // 最大长度时间字符串
-    val fixedTextWidth = textPaint.measureText(sampleTimeText)
-    val fixedTextHeight = textPaint.textSize
-
-    // ========== 2. 复用矩阵对象（避免频繁GC） ==========
-    val cachedSensorToUi = Matrix()
-    val cachedUiToSensor = Matrix()
-    val tempMatrix = Matrix()
-
-    // 固定文字宽度，无需每次测量
-    val textWidth = fixedTextWidth + marginSize
-
-    // ========== 3. 缓存View尺寸和旋转参数 ==========
-    var cachedDrawX = 0F
-    var cachedDrawY = 0F
-
-    // 时间格式化工具 - 线程安全
-    val dateFormat = object : ThreadLocal<SimpleDateFormat>() {
-        override fun initialValue(): SimpleDateFormat {
-            return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        }
-    }
-
-    // 复用的日期对象 - 线程安全
-    val date = Date()
-
-    // 上次更新时间戳 - 线程安全
-    var lastTimeUpdateTime = 0L
-
-    // 当前缓存的时间文本 - 线程安全
-    var cachedTimeText = ""
+    /**
+     * 水印实体类
+     */
+    private val overlayEffectEntity = OverlayEffectEntity()
 
     /**
      * ui初始化，必须是ui线程
@@ -695,8 +651,8 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
             return
         }
         if (cameraSpec.onInitCameraManager?.isDefaultOverlayEffect() == true) {
-            cachedDrawX = previewView.width - textWidth
-            cachedDrawY = previewView.height - marginSize - fixedTextHeight
+            overlayEffectEntity.cachedDrawX = previewView.width - overlayEffectEntity.textWidth
+            overlayEffectEntity.cachedDrawY = previewView.height - overlayEffectEntity.marginSize - overlayEffectEntity.fixedTextHeight
             // ========== 1. 创建叠加效果 ==========
             overlayEffect = OverlayEffect(PREVIEW or VIDEO_CAPTURE or IMAGE_CAPTURE, 0, Handler(Looper.getMainLooper())) {
 
@@ -708,32 +664,32 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                     val sensorToUi = previewView.sensorToViewTransform
                     if (sensorToUi != null) {
                         // 高效矩阵比较（避免使用equals方法）
-                        tempMatrix.set(cachedSensorToUi)
-                        if (tempMatrix != sensorToUi) {
-                            cachedSensorToUi.set(sensorToUi)
+                        overlayEffectEntity.tempMatrix.set(overlayEffectEntity.cachedSensorToUi)
+                        if (overlayEffectEntity.tempMatrix != sensorToUi) {
+                            overlayEffectEntity.cachedSensorToUi.set(sensorToUi)
                             // 重新计算逆矩阵（复用对象）
-                            cachedUiToSensor.reset()
-                            if (cachedSensorToUi.invert(cachedUiToSensor)) {
-                                cachedUiToSensor.postConcat(frame.sensorToBufferTransform)
+                            overlayEffectEntity.cachedUiToSensor.reset()
+                            if (overlayEffectEntity.cachedSensorToUi.invert(overlayEffectEntity.cachedUiToSensor)) {
+                                overlayEffectEntity.cachedUiToSensor.postConcat(frame.sensorToBufferTransform)
                             }
                         }
                     }
 
                     // ========== 3. 时间格式化优化（每秒更新一次） ==========
                     val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastTimeUpdateTime >= 1000) {
-                        date.time = currentTime // 复用Date对象
-                        cachedTimeText = dateFormat.get()?.format(date) ?: ""
-                        lastTimeUpdateTime = currentTime
+                    if (currentTime - overlayEffectEntity.lastTimeUpdateTime >= 1000) {
+                        overlayEffectEntity.date.time = currentTime // 复用Date对象
+                        overlayEffectEntity.cachedTimeText = overlayEffectEntity.dateFormat.format(overlayEffectEntity.date)
+                        overlayEffectEntity.lastTimeUpdateTime = currentTime
 
                         // ========== 4. 绘制优化（减少画布操作） ==========
-                        cachedUiToSensor.takeIf { it.isIdentity.not() }?.let { uiToSensor ->
+                        overlayEffectEntity.cachedUiToSensor.takeIf { it.isIdentity.not() }?.let { uiToSensor ->
                             val canvas = frame.overlayCanvas
 
                             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                             canvas.setMatrix(uiToSensor)
 
-                            canvas.drawText(cachedTimeText, cachedDrawX, cachedDrawY, textPaint)
+                            canvas.drawText(overlayEffectEntity.cachedTimeText, overlayEffectEntity.cachedDrawX, overlayEffectEntity.cachedDrawY, overlayEffectEntity.textPaint)
                         }
                     }
                     true

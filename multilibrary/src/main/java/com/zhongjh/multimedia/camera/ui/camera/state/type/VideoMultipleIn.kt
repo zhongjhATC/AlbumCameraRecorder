@@ -1,8 +1,8 @@
 package com.zhongjh.multimedia.camera.ui.camera.state.type
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
 
@@ -15,14 +15,14 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
  * @author zhongjh
  * @date 2021/11/29
  */
-class VideoMultipleIn(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>, cameraStateManager: CameraStateManager) :
+class VideoMultipleIn(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>, cameraStateManager: CameraStateManager) :
     StateMode(cameraFragment, cameraStateManager) {
     override fun getName(): String {
         return "VideoMultipleIn"
     }
 
     override fun onActivityPause() {
-        cameraFragment.cameraVideoManager.videoTime = 0L
+        cameraFragment.cameraVideoViewManager.videoTime = 0L
         // 重置所有
         cameraFragment.resetStateAll()
         // 恢复预览状态
@@ -35,7 +35,7 @@ class VideoMultipleIn(cameraFragment: BaseCameraFragment<out CameraStateManager,
         cameraFragment.cameraManage.closeVideo()
         cameraFragment.photoVideoLayout.resetConfirm()
 
-        if (cameraFragment.cameraVideoManager.videoTime == 0L) {
+        if (cameraFragment.cameraVideoViewManager.videoTime == 0L) {
             // 如果没有视频节点则重置所有按钮
             cameraFragment.photoVideoLayout.reset()
             // 恢复预览状态

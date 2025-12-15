@@ -18,7 +18,7 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2022/8/23
  */
-open class CameraVideoManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : ICameraVideo {
+open class CameraVideoViewManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>) : ICameraVideo {
 
     /**
      * 使用弱引用持有 Fragment

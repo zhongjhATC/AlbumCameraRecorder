@@ -3,8 +3,8 @@ package com.zhongjh.multimedia.settings
 import androidx.camera.core.ImageCapture.FlashMode
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.multimedia.camera.listener.OnCaptureListener
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.settings.CameraSpec.cleanInstance
 import com.zhongjh.multimedia.settings.api.CameraSettingApi
@@ -35,9 +35,9 @@ class CameraSetting : CameraSettingApi {
      * 如果设置则使用自定义的CameraFragment,否则使用默认的CameraFragment
      * 每次使用要重新赋值，因为会在每次关闭界面后删除该Fragment
      */
-    var baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>? = null
+    var baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureViewManager, CameraVideoViewManager>? = null
 
-    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>): CameraSetting {
+    override fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureViewManager, CameraVideoViewManager>): CameraSetting {
         this.baseCameraFragment = baseCameraFragment
         return this
     }

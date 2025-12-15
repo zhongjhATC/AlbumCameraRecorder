@@ -3,8 +3,8 @@ package com.zhongjh.demo.phone.custom.camera2;
 import android.widget.Toast;
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager;
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager;
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager;
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
 
 /**
@@ -14,9 +14,9 @@ import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager;
  * @author zhongjh
  * @date 2022/8/25
  */
-public class CameraPictureManagerCustom extends CameraPictureManager {
+public class CameraPictureViewManagerCustom extends CameraPictureViewManager {
 
-    public CameraPictureManagerCustom(BaseCameraFragment<? extends CameraStateManager, ? extends CameraPictureManager, ? extends CameraVideoManager> baseCameraFragment) {
+    public CameraPictureViewManagerCustom(BaseCameraFragment<? extends CameraStateManager, ? extends CameraPictureViewManager, ? extends CameraVideoViewManager> baseCameraFragment) {
         super(baseCameraFragment);
     }
 

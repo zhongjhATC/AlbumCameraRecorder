@@ -3,8 +3,8 @@ package com.zhongjh.multimedia.settings.api
 import androidx.camera.core.ImageCapture
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.settings.CameraSetting
 import com.zhongjh.multimedia.camera.listener.OnCaptureListener
 import com.zhongjh.common.enums.MimeType
@@ -24,7 +24,7 @@ interface CameraSettingApi {
      * @param baseCameraFragment CameraFragment的基类，必须继承它实现才可设置
      * @return [CameraSetting] for fluent API.
      */
-    fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureManager, CameraVideoManager>): CameraSetting
+    fun cameraFragment(baseCameraFragment: BaseCameraFragment<CameraStateManager, CameraPictureViewManager, CameraVideoViewManager>): CameraSetting
 
     /**
      * 支持的类型：图片，视频。只识别图片、视频类型，并不会具体到更细致的类型

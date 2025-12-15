@@ -3,8 +3,8 @@ package com.zhongjh.multimedia.camera.ui.camera.state.type
 import android.util.Log
 import com.zhongjh.circularprogressview.CircularProgressState
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
 
@@ -17,14 +17,14 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
  * @author zhongjh
  * @date 2021/11/29
  */
-class VideoMultiple(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>, cameraStateManager: CameraStateManager) :
+class VideoMultiple(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>, cameraStateManager: CameraStateManager) :
     StateMode(cameraFragment, cameraStateManager) {
     override fun getName(): String {
         return "VideoMultiple"
     }
 
     override fun onActivityPause() {
-        cameraFragment.cameraVideoManager.videoTime = 0L
+        cameraFragment.cameraVideoViewManager.videoTime = 0L
         // 重置所有
         cameraFragment.resetStateAll()
         // 恢复预览状态

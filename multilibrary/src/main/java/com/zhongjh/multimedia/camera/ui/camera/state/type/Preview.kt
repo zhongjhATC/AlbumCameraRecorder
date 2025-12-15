@@ -1,8 +1,8 @@
 package com.zhongjh.multimedia.camera.ui.camera.state.type
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
 
@@ -15,7 +15,7 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.StateMode
  * @author zhongjh
  * @date 2021/11/26
  */
-class Preview(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>, cameraStateManager: CameraStateManager) :
+class Preview(cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>, cameraStateManager: CameraStateManager) :
     StateMode(cameraFragment, cameraStateManager) {
     override fun getName(): String {
         return "Preview"

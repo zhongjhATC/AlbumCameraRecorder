@@ -1,8 +1,8 @@
 package com.zhongjh.multimedia.camera.ui.camera.state.type.impl
 
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureManager
-import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
+import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import java.lang.ref.WeakReference
 
@@ -16,7 +16,7 @@ import java.lang.ref.WeakReference
  * @date 2021/11/25
  */
 abstract class StateMode(
-    var cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>,
+    var cameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>,
     private var cameraStateManager: CameraStateManager
 ) : IState {
 

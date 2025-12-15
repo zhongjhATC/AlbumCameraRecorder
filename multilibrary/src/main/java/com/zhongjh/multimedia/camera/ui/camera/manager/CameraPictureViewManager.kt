@@ -45,7 +45,7 @@ import java.lang.ref.WeakReference
  * @author zhongjh
  * @date 2022/8/22
  */
-open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureManager, out CameraVideoManager>) : PhotoAdapterListener, ICameraPicture {
+open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out CameraStateManager, out CameraPictureViewManager, out CameraVideoViewManager>) : PhotoAdapterListener, ICameraPicture {
 
     /**
      * 使用弱引用持有 CameraFragment
@@ -192,7 +192,7 @@ open class CameraPictureManager(baseCameraFragment: BaseCameraFragment<out Camer
     override fun takePhoto() {
         fragmentRef.get()?.let { baseCameraFragment ->
             // 如果已经有视频，则不允许拍照了
-            if (baseCameraFragment.cameraVideoManager.videoTime <= 0) {
+            if (baseCameraFragment.cameraVideoViewManager.videoTime <= 0) {
                 // 判断数量
                 photoAdapter?.let {
                     if (it.itemCount < imageMaxCount) {
