@@ -26,19 +26,19 @@ class OverlayEffectEntity {
     }
 
     /**
-     * 固定参数缓存
-     */
-    val marginSize = 50F
-
-    /**
      * 时间文本，用于提前计算
      */
-    val sampleTimeText = "2024-05-20 23:59:59"
+    private val sampleTimeText = "2024-05-20 23:59:59"
 
     /**
      * 时间文本宽度固定（格式固定），提前计算一次
      */
-    val fixedTextWidth = textPaint.measureText(sampleTimeText)
+    private val fixedTextWidth = textPaint.measureText(sampleTimeText)
+
+    /**
+     * 固定参数缓存
+     */
+    val marginSize = 50F
 
     /**
      * 时间文本高度固定（字体大小固定），提前计算一次
@@ -96,6 +96,5 @@ class OverlayEffectEntity {
      * 当前缓存的时间文本
      */
     var cachedTimeText = ""
-
 
 }
