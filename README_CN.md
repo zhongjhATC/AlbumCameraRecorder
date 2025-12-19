@@ -170,10 +170,6 @@
 ## 历史更新
 从1.0.1版本开始总结的[历史更新](https://github.com/zhongjhATC/AlbumCameraRecorder/releases).
 
-## apk直接体验下载
- - 2.0.00版本，跟当前最新代码版本可能会有稍许不同(通过https://apponthego.com/上传)
-[下载地址](https://i.apponthego.com/9c655)
-
 # 写在最后
 
 1. 觉得好用的欢迎给个Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）

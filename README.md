@@ -168,10 +168,6 @@ If you use the displayed nine-grid library, the following APIs will be useful fo
 Historical updates
 [Historical updates](https://github.com/zhongjhATC/AlbumCameraRecorder/releases)summarized from version 1.0.1.
 
-## APK direct experience download
-- Version 2.0.00, which may differ slightly from the current latest code version(uploaded via https://apponthego.com/上传)
-  [Download link](https://i.apponthego.com/9c655)
-
 # Finally
 
 1. If you find it useful, please give a Star（[GitHub](https://github.com/zhongjhATC/AlbumCameraRecorder)）
