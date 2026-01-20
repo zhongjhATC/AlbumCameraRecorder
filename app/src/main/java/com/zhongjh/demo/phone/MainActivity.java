@@ -373,7 +373,7 @@ public class MainActivity extends BaseActivity {
                 if (mBinding.rbHDResolutionScale.isChecked()) {
                     previewBuilder.setResolutionSelector(new ResolutionSelector.Builder()
                             // 设置比例 16：9
-                            .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                            .setAspectRatioStrategy(new AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                             // 设置高分辨率
                             .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                             .build());
@@ -386,7 +386,7 @@ public class MainActivity extends BaseActivity {
                 if (mBinding.rbHDResolutionScale.isChecked()) {
                     imageBuilder.setResolutionSelector(new ResolutionSelector.Builder()
                             // 设置比例 16：9
-                            .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                            .setAspectRatioStrategy(new AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                             // 设置高分辨率
                             .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                             .build());
@@ -399,7 +399,7 @@ public class MainActivity extends BaseActivity {
                 if (mBinding.rbHDResolutionScale.isChecked()) {
                     imageAnalyzerBuilder.setResolutionSelector(new ResolutionSelector.Builder()
                             // 设置比例 16：9
-                            .setAspectRatioStrategy(new AspectRatioStrategy(AspectRatio.RATIO_16_9, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+                            .setAspectRatioStrategy(new AspectRatioStrategy(screenAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
                             // 设置高分辨率
                             .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
                             .build());
@@ -413,7 +413,7 @@ public class MainActivity extends BaseActivity {
                     // 设置高分辨率,设置比例 16：9
                     QualitySelector qualitySelector = QualitySelector.from(Quality.HIGHEST);
                     recorder.setQualitySelector(qualitySelector)
-                            .setAspectRatio(AspectRatio.RATIO_16_9);
+                            .setAspectRatio(screenAspectRatio);
                 }
             }
 

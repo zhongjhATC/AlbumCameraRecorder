@@ -216,7 +216,6 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
      */
     override fun addCaptureData(uri: Uri, path: String) {
         fragmentRef.get()?.let { baseCameraFragment ->
-            rotateImage(baseCameraFragment.myContext, path)
             // 初始化数据并且存储进file
             val file = File(path)
             val bitmapData = BitmapData(System.currentTimeMillis(), uri.toString(), file.path)

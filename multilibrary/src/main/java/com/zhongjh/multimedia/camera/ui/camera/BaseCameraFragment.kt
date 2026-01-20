@@ -20,6 +20,7 @@ import androidx.camera.core.ImageCapture
 import androidx.core.app.ActivityOptionsCompat
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
@@ -462,6 +463,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
 
             override fun onPictureSuccess(uri: Uri, path: String) {
                 Log.d(TAG, "onPictureSuccess")
+                rotateImage(myContext, path)
                 cameraSpec.onInitCameraManager?.initWatermarkedImage(uri, path)
                 // 显示图片
                 this@BaseCameraFragment.cameraPictureViewManager.addCaptureData(uri, path)

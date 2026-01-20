@@ -76,7 +76,8 @@ interface OnInitCameraManager {
     fun initOverlayEffect(previewView: PreviewView): OverlayEffect?
 
     /**
-     * 自定义图片水印效果,这个建议只有在自定义高分辨率拍照、预览的时候才设置
+     * 自定义图片水印效果,实现逻辑是拍照后，才添加水印，跟实时水印完全不一样。
+     * 建议只有在自定义高分辨率拍照、预览的时候才设置
      * @param uri 图片uri
      * @param path 源图路径
      */
