@@ -456,6 +456,20 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <CheckBox
+                        android:id="@+id/cbSelectedEnable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/enable_prompt_on_select_if_disabled" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -593,9 +607,9 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_gravity="center_vertical"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:lines="3"
                         android:text="@string/maximum_original_size_valid_only_if_original_enable_is_true_m" />
 
                     <EditText

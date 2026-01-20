@@ -499,6 +499,7 @@ public class MainActivity extends BaseActivity {
         albumSetting
                 // 是否显示多选图片的数字
                 .countable(mBinding.cbCountableTrue.isChecked())
+                .selectedEnable(mBinding.cbSelectedEnable.isChecked())
                 // 自定义过滤器
                 .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * BaseFilter.K * BaseFilter.K))
                 // 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)

@@ -1,11 +1,11 @@
 package com.zhongjh.multimedia.settings.api
 
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.multimedia.album.filter.BaseFilter
 import com.zhongjh.multimedia.album.listener.OnCheckedListener
 import com.zhongjh.multimedia.album.listener.OnSelectedListener
 import com.zhongjh.multimedia.settings.AlbumSetting
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
 
 /**
  * 相册设置接口
@@ -73,6 +73,14 @@ interface AlbumSettingApi {
      * @return [AlbumSetting] this
      */
     fun countable(countable: Boolean): AlbumSetting
+
+    /**
+     * 是否开启选择item的Enable,如果开启，当选择上限时,其它item会开启Enable不能选择。如果关闭,其他item依然能点击，但是选择时会有提示不能选择。
+     *
+     * @param selectedEnable 是否开启选择item的Enable。
+     * @return [AlbumSetting] this
+     */
+    fun selectedEnable(selectedEnable: Boolean): AlbumSetting
 
     /**
      * 添加筛选器以筛选每个文件。

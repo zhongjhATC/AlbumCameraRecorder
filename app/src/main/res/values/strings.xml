@@ -43,6 +43,7 @@
     <string name="if_the_selected_media_has_images_or_video_whether_both_can_be_selected">If the selected media has images or video, whether both can be selected</string>
     <string name="whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video">Whether to display only one media type if the media selected is only images or video</string>
     <string name="whether_to_display_the_number_of_multiple_selected_images">Whether to display the number of multiple selected images</string>
+    <string name="enable_prompt_on_select_if_disabled">Enable the selected item\'s Enable function? If enabled, when the selection limit is reached, the Enable function of other items will be activated and they will become unselectable. If disabled, other items can still be clicked, but a prompt indicating unselectability will appear when attempting to select them.</string>
     <string name="nine_grid_size_DP">Nine-grid size (DP)</string>
     <string name="the_filter_width_should_be_no_less_than_px">Filter width no less than (px)</string>
     <string name="files_cannot_be_larger_than__m">Files cannot be larger than (M)</string>

@@ -1,13 +1,12 @@
 package com.zhongjh.multimedia.settings
 
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.multimedia.album.filter.BaseFilter
 import com.zhongjh.multimedia.album.listener.OnCheckedListener
 import com.zhongjh.multimedia.album.listener.OnSelectedListener
 import com.zhongjh.multimedia.settings.api.AlbumSettingApi
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
 import java.lang.ref.WeakReference
-import java.util.*
 
 /**
  * 相册设置
@@ -69,6 +68,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
 
     override fun countable(countable: Boolean): AlbumSetting {
         mAlbumSpec.countable = countable
+        return this
+    }
+
+    override fun selectedEnable(selectedEnable: Boolean): AlbumSetting {
+        mAlbumSpec.selectedEnable = selectedEnable
         return this
     }
 

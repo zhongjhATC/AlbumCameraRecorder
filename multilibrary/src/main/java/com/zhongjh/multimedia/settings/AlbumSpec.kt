@@ -69,6 +69,11 @@ object AlbumSpec {
     var countable = true
 
     /**
+     * 是否开启选择item的Enable,如果开启，当选择上限时,其它item会开启Enable不能选择。如果关闭,其他item依然能点击，但是选择时会有提示不能选择
+     */
+    var selectedEnable = true
+
+    /**
      * 如果设置了item宽度的具体数值则计算获得列表的列数，否则使用设置的列数。如果你想要固定的跨度计数，请使用 spanCount(int spanCount)，当方向更改时，范围计数将保持不变。
      */
     var spanCount = 0
@@ -146,6 +151,7 @@ object AlbumSpec {
         mediaTypeExclusive = false
         pageSize = 60
         countable = true
+        selectedEnable = true
         baseFilters = null
         spanCount = 3
         thumbnailScale = 0.5f

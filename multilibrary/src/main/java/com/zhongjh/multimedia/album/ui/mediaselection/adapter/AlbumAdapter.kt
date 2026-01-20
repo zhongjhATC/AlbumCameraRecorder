@@ -115,10 +115,10 @@ class AlbumAdapter(
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
                 if (mSelectedModel.getSelectedData().maxSelectableReached()) {
-                    mediaGrid.setCheckEnabled(false)
+                    setCheckEnabled(mediaGrid,false)
                     mediaGrid.setCheckedNum(CheckView.UNCHECKED)
                 } else {
-                    mediaGrid.setCheckEnabled(true)
+                    setCheckEnabled(mediaGrid,true)
                     mediaGrid.setCheckedNum(checkedNum)
                 }
             }
@@ -127,12 +127,12 @@ class AlbumAdapter(
             val selected = mSelectedModel.getSelectedData().isSelected(item)
             // 如果被选中了，就设置选择
             if (selected) {
-                mediaGrid.setCheckEnabled(true)
+                setCheckEnabled(mediaGrid,true)
                 mediaGrid.setChecked(true)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
                 mediaGrid.setCheckEnabled(!mSelectedModel.getSelectedData().maxSelectableReached())
-                mediaGrid.setChecked(false)
+                setCheckEnabled(mediaGrid,false)
             }
         }
     }
@@ -186,18 +186,6 @@ class AlbumAdapter(
     }
 
     /**
-     * 验证当前item是否满足可以被选中的条件
-     *
-     * @param context 上下文
-     * @param item    数据源
-     */
-    private fun assertAddSelection(context: Context, item: LocalMedia): Boolean {
-        val cause = mSelectedModel.getSelectedData().isAcceptable(item)
-        handleCause(context, cause)
-        return cause == null
-    }
-
-    /**
      * 注册选择事件
      *
      * @param listener 事件
@@ -227,6 +215,27 @@ class AlbumAdapter(
      */
     fun unregisterOnMediaClickListener() {
         mOnMediaClickListener = null
+    }
+
+    /**
+     * 验证当前item是否满足可以被选中的条件
+     *
+     * @param context 上下文
+     * @param item    数据源
+     */
+    private fun assertAddSelection(context: Context, item: LocalMedia): Boolean {
+        val cause = mSelectedModel.getSelectedData().isAcceptable(item)
+        handleCause(context, cause)
+        return cause == null
+    }
+
+    /**
+     * 封装配置是否启动才设置是否可选中
+     */
+    private fun setCheckEnabled(mediaGrid: MediaGrid, enable: Boolean) {
+        if (mAlbumSpec.selectedEnable) {
+            mediaGrid.setCheckEnabled(enable)
+        }
     }
 
     interface CheckStateListener {
