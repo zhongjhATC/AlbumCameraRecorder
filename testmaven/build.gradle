@@ -44,14 +44,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // 公共库，如果不使用上面的combined库
-    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2.0.13'
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2013'
     // 核心lib，调用显示相册、录屏、录音等
-    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2.0.13'
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2013'
     // 配套使用，主要用于获取数据后进行相关显示，相应的上传进度显示，如果你只需要获取照片录像录音等数据，可以不需要使用这个
-    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:gridview:2.0.13'
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:gridview:2013'
 
     // 配套编辑图片使用
-    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2.0.13'
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2013'
     // 配套编辑视频使用,目前只有压缩功能,后续持续添加相关功能,因为该库使用了ffmpeg,占用了文件大小25M,根据实际情况选择是否使用
-    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2.0.13'
+    implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2013'
 }
