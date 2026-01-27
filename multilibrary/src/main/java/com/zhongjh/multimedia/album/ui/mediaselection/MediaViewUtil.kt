@@ -168,10 +168,9 @@ class MediaViewUtil(
                     val position = recyclerView.getChildAdapterPosition(child)
                     if (position != RecyclerView.NO_POSITION) {
                         isSelecting = true
-                        Log.d("onLongPress", "position: $position" + "isSelecting: $isSelecting")
                         initialSelectedPosition = position
                         lastSelectedPosition = position
-                        toggleSelection(position)
+                        toggleSelection(child.findViewById(R.id.media_thumbnail), position)
 
                         // 添加长按激活选择模式的震动反馈
                         child.performHapticFeedback(
@@ -197,12 +196,8 @@ class MediaViewUtil(
                 // 先让GestureDetector处理事件（长按检测）
                 gestureDetector.onTouchEvent(e)
 
-                // 仅在长按激活选择模式后拦截事件
-                if (isSelecting) {
-                    // 拦截所有事件，交由onTouchEvent处理
-                    return true
-                }
-                return false
+                // 仅在长按激活选择模式后拦截事件 拦截所有事件，交由onTouchEvent处理
+                return isSelecting
             }
 
             override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
@@ -214,7 +209,7 @@ class MediaViewUtil(
                                 val position = recyclerView.getChildAdapterPosition(child)
                                 if (position != RecyclerView.NO_POSITION && position != lastSelectedPosition) {
                                     lastSelectedPosition = position
-                                    toggleSelection(position)
+                                    toggleSelection(child.findViewById(R.id.media_thumbnail), position)
                                 }
                             }
                         }
@@ -233,11 +228,9 @@ class MediaViewUtil(
     /**
      * 切换项目选择状态
      */
-    private fun toggleSelection(position: Int) {
-        Log.d("MediaViewUtil", "toggleSelection1: $position")
+    private fun toggleSelection(imageView: ImageView, position: Int) {
         val media = mAdapter?.getItem(position) ?: return
-        Log.d("MediaViewUtil", "toggleSelection2: $position")
-        mAdapter?.onCheckViewClicked(media, context)
+        mAdapter?.onCheckViewClicked(imageView, media, context)
     }
 
     override fun onUpdate() {

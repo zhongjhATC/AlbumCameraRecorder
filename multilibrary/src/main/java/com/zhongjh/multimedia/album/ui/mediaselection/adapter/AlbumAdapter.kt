@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
@@ -141,7 +142,7 @@ class AlbumAdapter(
         mOnMediaClickListener?.onMediaClick(null, imageView, item, holder.bindingAdapterPosition)
     }
 
-    override fun onCheckViewClicked(item: LocalMedia, context: Context) {
+    override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context) {
         Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
@@ -150,6 +151,10 @@ class AlbumAdapter(
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
                 if (assertAddSelection(context, item)) {
+                    // 动画
+                    val animation = AnimationUtils.loadAnimation(context, R.anim.album_item_anim_select)
+//                    SELECT_ANIM_DURATION = animation.duration.toInt()
+                    imageView.startAnimation(animation)
                     // 添加选择了当前数据
                     mSelectedModel.addSelectedData(item)
                     // 刷新数据源
@@ -170,6 +175,7 @@ class AlbumAdapter(
                 notifyCheckStateChanged()
             } else {
                 if (assertAddSelection(context, item)) {
+                    // 动画
                     mSelectedModel.addSelectedData(item)
                     notifyCheckStateChanged()
                 }

@@ -107,7 +107,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
             mListener.onThumbnailClicked(mImageView, mMedia, mPreBindInfo.mViewHolder)
         } else if (view === mCheckView) {
             // 勾选的选择事件
-            mListener.onCheckViewClicked(mMedia, mPreBindInfo.mViewHolder.itemView.context)
+            mListener.onCheckViewClicked(mImageView, mMedia, mPreBindInfo.mViewHolder.itemView.context)
         }
     }
 
@@ -219,19 +219,16 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
          * @param item      数据
          * @param holder    控件
          */
-        fun onThumbnailClicked(
-            imageView: ImageView,
-            item: LocalMedia,
-            holder: RecyclerView.ViewHolder
-        )
+        fun onThumbnailClicked(imageView: ImageView, item: LocalMedia, holder: RecyclerView.ViewHolder)
 
         /**
          * 选择事件
          *
+         * @param imageView 图片控件,主要用于处理动画
          * @param item      数据
          * @param context    上下文
          */
-        fun onCheckViewClicked(item: LocalMedia, context: Context)
+        fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context)
     }
 
     class PreBindInfo(
