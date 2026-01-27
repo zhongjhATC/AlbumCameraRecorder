@@ -2,7 +2,7 @@
 <resources>
 
     <dimen name="z_media_grid_size">48dp</dimen>
-    <dimen name="z_media_grid_spacing">4dp</dimen>
+    <dimen name="z_media_grid_spacing">2dp</dimen>
 
     <dimen name="z_cpb_stroke_width">4dp</dimen>
 

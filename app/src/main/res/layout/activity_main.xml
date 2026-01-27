@@ -471,16 +471,63 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="@string/nine_grid_size_DP" />
 
                     <EditText
+                        android:layout_width="0dp"
                         android:id="@+id/etGridExpectedSize"
-                        android:layout_width="match_parent"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:inputType="number"
-                        android:text="120" />
+                        android:text="0" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="@string/nine_grid_span_count" />
+
+                    <EditText
+                        android:id="@+id/etGridSpanCount"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:inputType="number"
+                        android:text="4" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:text="@string/nine_grid_spacing" />
+
+                    <EditText
+                        android:id="@+id/etSpacing"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:inputType="number"
+                        android:text="1" />
 
                 </LinearLayout>
 

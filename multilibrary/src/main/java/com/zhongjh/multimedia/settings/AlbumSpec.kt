@@ -79,9 +79,14 @@ object AlbumSpec {
     var spanCount = 0
 
     /**
-     * 设置列宽
+     * 设置列宽，默认值为0
      */
     var gridExpectedSize = 0
+
+    /**
+     * 网格间距，默认值为2
+     */
+    var spacing = 2
 
     /**
      * 图片缩放比例
@@ -154,6 +159,8 @@ object AlbumSpec {
         selectedEnable = true
         baseFilters = null
         spanCount = 3
+        gridExpectedSize = 0
+        spacing = 2
         thumbnailScale = 0.5f
         originalEnable = false
         originalMaxSize = Int.MAX_VALUE

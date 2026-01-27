@@ -68,9 +68,15 @@ class MediaViewUtil(
         mAdapter?.setHasStableIds(true)
         recyclerView.setHasFixedSize(true)
 
-        // 加载线，recyclerView加载数据
-        val spacing = context.resources.getDimensionPixelSize(R.dimen.z_media_grid_spacing)
-        recyclerView.addItemDecoration(MediaGridInset(spanCount, spacing, false))
+        // 加载线,如果有配置则加载
+        if (mAlbumSpec.spacing > 0) {
+            recyclerView.addItemDecoration(MediaGridInset(spanCount, mAlbumSpec.spacing, false))
+        } else {
+            val spacing = context.resources.getDimensionPixelSize(R.dimen.z_media_grid_spacing)
+            recyclerView.addItemDecoration(MediaGridInset(spanCount, spacing, false))
+        }
+
+        // recyclerView加载数据
         recyclerView.adapter = mAdapter
 
         // 添加长按滑动选择功能

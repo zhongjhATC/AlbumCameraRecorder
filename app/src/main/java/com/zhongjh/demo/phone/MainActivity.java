@@ -504,6 +504,10 @@ public class MainActivity extends BaseActivity {
                 .addFilter(new GifSizeFilter(Integer.parseInt(mBinding.etAddFilterMinWidth.getText().toString()), Integer.parseInt(mBinding.etAddFilterMinHeight.getText().toString()), Integer.parseInt(mBinding.etMaxSizeInBytes.getText().toString()) * BaseFilter.K * BaseFilter.K))
                 // 九宫格大小 ,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
                 .gridExpectedSize(dip2px(Integer.parseInt(mBinding.etGridExpectedSize.getText().toString())))
+                // 九宫格列数,如果设置了九宫格宽度>0,则该值不生效
+                .spanCount(Integer.parseInt(mBinding.etGridSpanCount.getText().toString()))
+                // 网格间距,建议这样使用getResources().getDimensionPixelSize(R.dimen.grid_expected_size)
+                .spacing(dip2px(Integer.parseInt(mBinding.etSpacing.getText().toString())))
                 // 图片缩放比例
                 .thumbnailScale(0.85f).setOnSelectedListener(localFiles -> {
                     // 每次选择的事件

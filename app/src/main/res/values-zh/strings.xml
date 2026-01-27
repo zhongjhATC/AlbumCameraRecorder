@@ -44,7 +44,9 @@
     <string name="whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video">如果选择的媒体只有图像或视频，是否只显示一种媒体类型</string>
     <string name="whether_to_display_the_number_of_multiple_selected_images">是否显示多选图片的数字</string>
     <string name="enable_prompt_on_select_if_disabled">是否开启选择item的Enable,如果开启，当选择上限时,其它item会开启Enable不能选择。如果关闭,其他item依然能点击，但是选择时会有提示不能选择</string>
-    <string name="nine_grid_size_DP">九宫格大小(dp)</string>
+    <string name="nine_grid_size_DP">九宫格宽度(dp),如果该值不为0,则会根据该值计算出列数</string>
+    <string name="nine_grid_span_count">九宫格列数,如果设置了九宫格宽度,则该值不生效</string>
+    <string name="nine_grid_spacing">九宫格间距(dp)</string>
     <string name="the_filter_width_should_be_no_less_than_px">过滤宽度不少于(px)</string>
     <string name="files_cannot_be_larger_than__m">过滤文件不能大于(m)</string>
     <string name="the_filter_height_shall_be_no_less_than_px">过滤高度不少于(px)</string>

@@ -125,6 +125,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun spacing(spacing: Int): AlbumSetting {
+        mAlbumSpec.spacing = spacing
+        return this
+    }
+
     override fun thumbnailScale(scale: Float): AlbumSetting {
         require(!(scale <= SCALE_ZERO || scale > SCALE_ONE)) { "Thumbnail scale must be between (0.0, 1.0)" }
         mAlbumSpec.thumbnailScale = scale

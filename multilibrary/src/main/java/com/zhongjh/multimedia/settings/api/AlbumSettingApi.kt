@@ -158,6 +158,14 @@ interface AlbumSettingApi {
     fun gridExpectedSize(size: Int): AlbumSetting
 
     /**
+     * 网格间距，默认值为2
+     *
+     * @param spacing 网格间距大小（像素）
+     * @return [AlbumSetting] this
+     */
+    fun spacing(spacing: Int): AlbumSetting
+
+    /**
      * 照片缩略图的比例与视图的大小相比。它应该是(0.0,1.0] 中的浮点值.
      *
      * @param scale 缩略图的缩放比例（0.0，1.0）。默认值为0.5。

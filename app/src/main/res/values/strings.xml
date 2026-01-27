@@ -44,7 +44,9 @@
     <string name="whether_to_display_only_one_media_type_if_the_media_selected_is_only_images_or_video">Whether to display only one media type if the media selected is only images or video</string>
     <string name="whether_to_display_the_number_of_multiple_selected_images">Whether to display the number of multiple selected images</string>
     <string name="enable_prompt_on_select_if_disabled">Enable the selected item\'s Enable function? If enabled, when the selection limit is reached, the Enable function of other items will be activated and they will become unselectable. If disabled, other items can still be clicked, but a prompt indicating unselectability will appear when attempting to select them.</string>
-    <string name="nine_grid_size_DP">Nine-grid size (DP)</string>
+    <string name="nine_grid_size_DP">Nine-grid width(dp). If this value is not 0, the number of columns will be calculated based on this value.</string>
+    <string name="nine_grid_span_count">Number of nine-grid columns. If the nine-grid width is set, this value will not take effect.</string>
+    <string name="nine_grid_spacing">Nine-grid spacing (dp)</string>
     <string name="the_filter_width_should_be_no_less_than_px">Filter width no less than (px)</string>
     <string name="files_cannot_be_larger_than__m">Files cannot be larger than (M)</string>
     <string name="the_filter_height_shall_be_no_less_than_px">The filter height shall be no less than (px)</string>
