@@ -239,31 +239,31 @@ class CheckView : View {
         /**
          * dp
          */
-        private const val STROKE_WIDTH = 3.0f
+        private const val STROKE_WIDTH = 2.4f  // 3.0f * 0.8 = 2.4f
 
         /**
          * dp
          */
-        private const val SHADOW_WIDTH = 6.0f
+        private const val SHADOW_WIDTH = 4.8f  // 6.0f * 0.8 = 4.8f
 
         /**
          * dp
          */
-        private const val SIZE = 48
+        private const val SIZE = 38.4f             // 48 * 0.8 = 38.4 → 整型取整（若需保留浮点可改为 38.4f）
 
         /**
          * dp
          */
-        private const val STROKE_RADIUS = 11.5f
+        private const val STROKE_RADIUS = 9.2f  // 11.5f * 0.8 = 9.2f
 
         /**
          * dp
          */
-        private const val BG_RADIUS = 11.0f
+        private const val BG_RADIUS = 8.8f      // 11.0f * 0.8 = 8.8f
 
         /**
          * dp
          */
-        private const val CONTENT_SIZE = 16
+        private const val CONTENT_SIZE = 12.8f     // 16 * 0.8 = 12.8 → 整型取整（若需保留浮点可改为 12.8f）
     }
 }
