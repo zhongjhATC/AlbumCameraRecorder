@@ -426,39 +426,7 @@ class PreviewFragment : BaseFragment() {
         })
         // 右上角选择事件
         mViewHolder.checkView.setOnClickListener {
-            val media = mLocalMedias[mViewPager2.currentItem]
-            if (mSelectedModel.getSelectedData().isSelected(media)) {
-                mSelectedModel.removeSelectedData(media)
-                if (mAlbumSpec.countable) {
-                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
-                } else {
-                    mViewHolder.checkView.setChecked(false)
-                }
-            } else {
-                var isTrue = true
-                if (mIsSelectedCheck) {
-                    isTrue = assertAddSelection(media)
-                }
-                if (isTrue) {
-                    mSelectedModel.addSelectedData(media)
-                    if (mAlbumSpec.countable) {
-                        mViewHolder.checkView.setCheckedNum(
-                            mSelectedModel.getSelectedData().checkedNumOf(
-                                media
-                            )
-                        )
-                    } else {
-                        mViewHolder.checkView.setChecked(true)
-                    }
-                }
-            }
-            updateApplyButton()
-            mAlbumSpec.onSelectedListener?.let {
-                if (mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) {
-                    // 触发选择的接口事件
-                    it.onSelected(mSelectedModel.getSelectedData().localMedias)
-                }
-            }
+            setCheckViewClickable()
         }
         // 点击原图事件
         mViewHolder.originalLayout.setOnClickListener {
@@ -610,39 +578,49 @@ class PreviewFragment : BaseFragment() {
             mViewHolder.buttonApply.visibility = View.VISIBLE
             setCheckViewEnable(true)
             mViewHolder.checkView.setOnClickListener {
-                //            MultiMedia item = mAdapter.getMediaItem(mViewHolder.pager.getCurrentItem());
-//            if (mSelectedCollection.isSelected(item)) {
-//                mSelectedCollection.remove(item);
-//                if (mAlbumSpec.getCountable()) {
-//                    mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED);
-//                } else {
-//                    mViewHolder.checkView.setChecked(false);
-//                }
-//            } else {
-//                boolean isTrue = true;
-//                if (mIsSelectedCheck) {
-//                    isTrue = assertAddSelection(item);
-//                }
-//                if (isTrue) {
-//                    mSelectedCollection.add(item);
-//                    if (mAlbumSpec.getCountable()) {
-//                        mViewHolder.checkView.setCheckedNum(mSelectedCollection.checkedNumOf(item));
-//                    } else {
-//                        mViewHolder.checkView.setChecked(true);
-//                    }
-//                }
-//            }
-//            updateApplyButton();
-//
-//            if (mAlbumSpec.getOnSelectedListener() != null && mIsSelectedListener) {
-//                // 触发选择的接口事件
-//                mAlbumSpec.getOnSelectedListener().onSelected(mSelectedCollection.asListOfLocalFile());
-//            } else {
-//                mSelectedCollection.updatePath();
-//            }
+                setCheckViewClickable()
             }
             mViewHolder.tvEdit.isEnabled = true
             mViewHolder.originalLayout.isEnabled = true
+        }
+    }
+
+    /**
+     * 右上角点击事件
+     */
+    private fun setCheckViewClickable() {
+        val media = mLocalMedias[mViewPager2.currentItem]
+        if (mSelectedModel.getSelectedData().isSelected(media)) {
+            mSelectedModel.removeSelectedData(media)
+            if (mAlbumSpec.countable) {
+                mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
+            } else {
+                mViewHolder.checkView.setChecked(false)
+            }
+        } else {
+            var isTrue = true
+            if (mIsSelectedCheck) {
+                isTrue = assertAddSelection(media)
+            }
+            if (isTrue) {
+                mSelectedModel.addSelectedData(media)
+                if (mAlbumSpec.countable) {
+                    mViewHolder.checkView.setCheckedNum(
+                        mSelectedModel.getSelectedData().checkedNumOf(
+                            media
+                        )
+                    )
+                } else {
+                    mViewHolder.checkView.setChecked(true)
+                }
+            }
+        }
+        updateApplyButton()
+        mAlbumSpec.onSelectedListener?.let {
+            if (mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) {
+                // 触发选择的接口事件
+                it.onSelected(mSelectedModel.getSelectedData().localMedias)
+            }
         }
     }
 

@@ -176,7 +176,12 @@ class AlbumAdapter(
             } else {
                 if (assertAddSelection(context, item)) {
                     // 动画
+                    val animation = AnimationUtils.loadAnimation(context, R.anim.album_item_anim_select)
+//                    SELECT_ANIM_DURATION = animation.duration.toInt()
+                    imageView.startAnimation(animation)
+                    // 添加选择了当前数据
                     mSelectedModel.addSelectedData(item)
+                    // 刷新数据源
                     notifyCheckStateChanged()
                 }
             }
