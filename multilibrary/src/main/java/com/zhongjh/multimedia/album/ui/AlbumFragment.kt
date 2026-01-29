@@ -348,7 +348,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             }
         }
         // 选择数据改变
-        mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { mMediaViewUtil?.notifyItemByLocalMedia() }
+        mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { position:Int -> mMediaViewUtil?.notifyItemByLocalMedia(position) }
         // 原图选项改变
         LifecycleFlowCollector.collect(this, mMainModel.originalEnable) { value: Boolean ->
             mBinding.original.setChecked(value)

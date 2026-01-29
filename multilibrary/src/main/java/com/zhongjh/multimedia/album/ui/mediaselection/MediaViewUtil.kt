@@ -2,7 +2,6 @@ package com.zhongjh.multimedia.album.ui.mediaselection
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -61,8 +60,7 @@ class MediaViewUtil(
         recyclerView.itemAnimator = null
         recyclerView.layoutManager = GridLayoutManager(context, spanCount)
         // 需要先设置布局获取确定的spanCount，才能设置adapter
-        mAdapter = AlbumAdapter(context, owner, selectedModel, placeholder, imageResize)
-        Log.d("onSaveInstanceState", " mAdapter")
+        mAdapter = AlbumAdapter(selectedModel, placeholder, imageResize)
         mAdapter?.registerCheckStateListener(this)
         mAdapter?.registerOnMediaClickListener(this)
         mAdapter?.setHasStableIds(true)
@@ -154,8 +152,8 @@ class MediaViewUtil(
     /**
      * 刷新列表数据
      */
-    fun notifyItemByLocalMedia() {
-        mAdapter?.notifyCheckStateChanged()
+    fun notifyItemByLocalMedia(position: Int) {
+        mAdapter?.notifyCheckStateChanged(position)
     }
 
     /**
@@ -164,7 +162,6 @@ class MediaViewUtil(
     private fun setupLongPressSlideSelection() {
         var isSelecting = false
         var lastSelectedPosition = -1
-        var initialSelectedPosition = -1
 
         // 创建手势检测器处理长按事件
         val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
@@ -174,7 +171,6 @@ class MediaViewUtil(
                     val position = recyclerView.getChildAdapterPosition(child)
                     if (position != RecyclerView.NO_POSITION) {
                         isSelecting = true
-                        initialSelectedPosition = position
                         lastSelectedPosition = position
                         toggleSelection(child.findViewById(R.id.media_thumbnail), position)
 
@@ -223,7 +219,6 @@ class MediaViewUtil(
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                         isSelecting = false
                         lastSelectedPosition = -1
-                        initialSelectedPosition = -1
                     }
                 }
             }
@@ -236,7 +231,7 @@ class MediaViewUtil(
      */
     private fun toggleSelection(imageView: ImageView, position: Int) {
         val media = mAdapter?.getItem(position) ?: return
-        mAdapter?.onCheckViewClicked(imageView, media, context)
+        mAdapter?.onCheckViewClicked(imageView, media, context, position)
     }
 
     override fun onUpdate() {

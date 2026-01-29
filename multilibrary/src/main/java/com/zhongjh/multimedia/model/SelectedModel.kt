@@ -27,25 +27,25 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据更改
      */
-    private val _selectedDataChange = MutableLiveData<LocalMedia>()
-    val selectedDataChange: LiveData<LocalMedia> get() = _selectedDataChange
+    private val _selectedDataChange = MutableLiveData<Int>()
+    val selectedDataChange: LiveData<Int> get() = _selectedDataChange
 
     /**
      * 选择的数据添加
      */
-    fun addSelectedData(item: LocalMedia) {
+    fun addSelectedData(item: LocalMedia, position: Int) {
         selectedData.add(item)
         // 通知更新
-        _selectedDataChange.postValue(item)
+        _selectedDataChange.postValue(position)
     }
 
     /**
      * 选择的数据删除
      */
-    fun removeSelectedData(item: LocalMedia) {
+    fun removeSelectedData(item: LocalMedia, position: Int) {
         selectedData.remove(item)
         // 通知更新
-        _selectedDataChange.postValue(item)
+        _selectedDataChange.postValue(position)
     }
 
 

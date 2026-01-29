@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
 import com.zhongjh.common.entity.LocalMedia
@@ -26,8 +25,7 @@ import com.zhongjh.multimedia.settings.AlbumSpec
  * @author zhongjh
  */
 class AlbumAdapter(
-    context: Context, private val lifecycleOwner: LifecycleOwner, private val mSelectedModel: SelectedModel,
-    private val placeholder: Drawable?, imageResize: Int
+    private val mSelectedModel: SelectedModel, private val placeholder: Drawable?, imageResize: Int
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
     MediaGrid.OnMediaGridClickListener {
     private val tag: String = this@AlbumAdapter.javaClass.simpleName
@@ -78,7 +76,7 @@ class AlbumAdapter(
         // 传递相关的值
         mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, placeholder!!, mAlbumSpec.countable, holder))
 
-        mediaViewHolder.mMediaGrid.bindMedia(item)
+        mediaViewHolder.mMediaGrid.bindMedia(item, position)
         mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this)
         setCheckStatus(item, mediaViewHolder.mMediaGrid)
     }
@@ -142,7 +140,7 @@ class AlbumAdapter(
         mOnMediaClickListener?.onMediaClick(null, imageView, item, holder.bindingAdapterPosition)
     }
 
-    override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context) {
+    override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context, position: Int) {
         Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
@@ -153,36 +151,26 @@ class AlbumAdapter(
                 if (assertAddSelection(context, item)) {
                     // 动画
                     val animation = AnimationUtils.loadAnimation(context, R.anim.album_item_anim_select)
-//                    SELECT_ANIM_DURATION = animation.duration.toInt()
                     imageView.startAnimation(animation)
                     // 添加选择了当前数据
-                    mSelectedModel.addSelectedData(item)
-                    // 刷新数据源
-                    notifyCheckStateChanged()
+                    mSelectedModel.addSelectedData(item, position)
                 }
             } else {
                 // 删除当前选择
-                mSelectedModel.removeSelectedData(item)
-                // 刷新数据
-                notifyCheckStateChanged()
+                mSelectedModel.removeSelectedData(item, position)
             }
         } else {
             // 不是多选模式
             if (mSelectedModel.getSelectedData().isSelected(item)) {
                 // 如果当前已经被选中，再次选择就是取消了
-                mSelectedModel.removeSelectedData(item)
-                // 刷新数据源
-                notifyCheckStateChanged()
+                mSelectedModel.removeSelectedData(item, position)
             } else {
                 if (assertAddSelection(context, item)) {
                     // 动画
                     val animation = AnimationUtils.loadAnimation(context, R.anim.album_item_anim_select)
-//                    SELECT_ANIM_DURATION = animation.duration.toInt()
                     imageView.startAnimation(animation)
                     // 添加选择了当前数据
-                    mSelectedModel.addSelectedData(item)
-                    // 刷新数据源
-                    notifyCheckStateChanged()
+                    mSelectedModel.addSelectedData(item, position)
                 }
             }
         }
@@ -191,8 +179,8 @@ class AlbumAdapter(
     /**
      * 刷新数据
      */
-    fun notifyCheckStateChanged() {
-        notifyDataSetChanged()
+    fun notifyCheckStateChanged(position: Int) {
+        notifyItemChanged(position)
         mCheckStateListener?.onUpdate()
     }
 

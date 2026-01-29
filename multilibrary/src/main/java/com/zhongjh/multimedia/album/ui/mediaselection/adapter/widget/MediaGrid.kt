@@ -56,6 +56,11 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
     private lateinit var mMedia: LocalMedia
 
     /**
+     * 索引
+     */
+    private var mPosition: Int = 0
+
+    /**
      * 控件 和一些别的变量
      */
     private lateinit var mPreBindInfo: PreBindInfo
@@ -107,7 +112,7 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
             mListener.onThumbnailClicked(mImageView, mMedia, mPreBindInfo.mViewHolder)
         } else if (view === mCheckView) {
             // 勾选的选择事件
-            mListener.onCheckViewClicked(mImageView, mMedia, mPreBindInfo.mViewHolder.itemView.context)
+            mListener.onCheckViewClicked(mImageView, mMedia, mPreBindInfo.mViewHolder.itemView.context, mPosition)
         }
     }
 
@@ -120,8 +125,9 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
      *
      * @param item 值
      */
-    fun bindMedia(item: LocalMedia) {
+    fun bindMedia(item: LocalMedia, position: Int) {
         mMedia = item
+        mPosition = position
         setGifTag()
         initCheckView()
         setImage()
@@ -227,8 +233,9 @@ class MediaGrid : SquareFrameLayout, View.OnClickListener {
          * @param imageView 图片控件,主要用于处理动画
          * @param item      数据
          * @param context    上下文
+         * @param position 索引
          */
-        fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context)
+        fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context, position: Int)
     }
 
     class PreBindInfo(

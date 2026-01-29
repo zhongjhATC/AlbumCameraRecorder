@@ -591,7 +591,7 @@ class PreviewFragment : BaseFragment() {
     private fun setCheckViewClickable() {
         val media = mLocalMedias[mViewPager2.currentItem]
         if (mSelectedModel.getSelectedData().isSelected(media)) {
-            mSelectedModel.removeSelectedData(media)
+            mSelectedModel.removeSelectedData(media, mViewPager2.currentItem)
             if (mAlbumSpec.countable) {
                 mViewHolder.checkView.setCheckedNum(CheckView.UNCHECKED)
             } else {
@@ -603,7 +603,7 @@ class PreviewFragment : BaseFragment() {
                 isTrue = assertAddSelection(media)
             }
             if (isTrue) {
-                mSelectedModel.addSelectedData(media)
+                mSelectedModel.addSelectedData(media, mViewPager2.currentItem)
                 if (mAlbumSpec.countable) {
                     mViewHolder.checkView.setCheckedNum(
                         mSelectedModel.getSelectedData().checkedNumOf(
