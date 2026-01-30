@@ -134,6 +134,11 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
     private var lensFacing = CameraSelector.LENS_FACING_BACK
 
     /**
+     * 是否切换了摄像头方向
+     */
+    private var isToggleFacing = false
+
+    /**
      * 显示id
      */
     private var displayId = -1
@@ -184,6 +189,11 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                                 previewView.foreground = ContextCompat.getDrawable(activity, android.R.color.background_dark)
                             }
                         }
+
+                        // 如果当前操作是切换摄像头方向,需要重新初始化预览模式
+                        if (isToggleFacing) {
+                            initCameraPreviewMode()
+                        }
                     }
 
                     PreviewView.StreamState.STREAMING -> {
@@ -194,6 +204,9 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                                 previewView.foreground = null
                             }
                         }
+
+                        // 预览初始化成功,重置状态为false
+                        isToggleFacing = false
                     }
 
                     else -> {}
@@ -290,9 +303,6 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                     }
 
                     is VideoRecordEvent.Status -> {
-//                        // 录制时间大于0才代表真正开始,通知长按按钮开始动画
-//                        if (videoRecordEvent.recordingStats.recordedDurationNanos > 0) {
-//                        }
                     }
 
                     is VideoRecordEvent.Finalize -> {
@@ -350,12 +360,28 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * 切换前后摄像头
      */
     fun toggleFacing() {
+        if (isToggleFacing) {
+            // 正在行行像头头切换操作, 直接返回
+            return
+        }
+        // 1. 立即暂停叠加效果，彻底释放纹理引用
+        pauseOverlayEffect()
+
+        // 2. 停止录制（避免录制中切换）
+        stopVideo()
+
+        // 3. 清空Preview的Surface，强制释放旧纹理
+        cameraProvider?.unbindAll()
+
+        // 4. 切换摄像头方向
         lensFacing = if (CameraSelector.LENS_FACING_FRONT == lensFacing) {
             CameraSelector.LENS_FACING_BACK
         } else {
             CameraSelector.LENS_FACING_FRONT
         }
-        initCameraPreviewMode()
+
+        // 5. 设置摄像头切换中,在preview状态IDLE后,设置为false
+        isToggleFacing = true
     }
 
     /**
@@ -604,7 +630,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
     }
 
     /**
-     * 初始化OverlayEffect 叠加效果,一般用于水印,实时画面
+     * 初始化 OverlayEffect 叠加效果,一般用于水印,实时画面
      */
     private fun initOverlayEffect() {
         // 优先使用自定义叠加效果
@@ -657,6 +683,22 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                     true
                 }
             }
+        }
+    }
+
+    /**
+     * 暂停 OverlayEffect 叠加效果
+     */
+    private fun pauseOverlayEffect() {
+        // 1. 移除绘制监听器，停止叠加层绘制
+        overlayEffect?.clearOnDrawListener()
+        // 2. 清空叠加效果引用（解绑）
+        overlayEffect = null
+        // 3. 重置叠加效果实体类的临时数据
+        overlayEffectEntity.apply {
+            cachedSensorToUi.reset()
+            cachedUiToSensor.reset()
+            lastTimeUpdateTime = 0
         }
     }
 
