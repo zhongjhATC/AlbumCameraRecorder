@@ -32,7 +32,7 @@ import java.util.Locale
  *
  * @author Clock
  * @author zhongjh
- * @date 2015/12/31
+ * @date 2016/12/31
  * @date 2022/01/05
  */
 object MediaStoreUtils {
