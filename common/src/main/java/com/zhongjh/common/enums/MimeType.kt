@@ -168,7 +168,7 @@ enum class MimeType(val mimeTypeName: String, val extensions: Set<String>) {
     fun checkType(absolutePath: String): Boolean {
         for (extension in extensions) {
             // 判断字符串是否以指定类型后缀结尾
-            if (absolutePath.endsWith(extension)) {
+            if (absolutePath.lowercase(Locale.getDefault()).endsWith(extension.lowercase(Locale.getDefault()))) {
                 return true
             }
         }
