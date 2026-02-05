@@ -44,8 +44,8 @@ allprojects {
 
 ext {
 
-    versionCode = 2016
-    versionName = '2.0.16'
+    versionCode = 2019
+    versionName = '2.0.19'
 
     androidCompileSdkVersion = 34
     recyclerviewSdkVersion = '1.3.0'
