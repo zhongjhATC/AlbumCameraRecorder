@@ -161,7 +161,8 @@ class MediaLoader(private val context: Context) {
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {
                             val media = parse(cursor)
-                            media.position = mediaList.size
+                            // 当前位置 = (当前页 - 1)* 每页数量 + 当前列表数量
+                            media.position = (page - 1) * pageSize + mediaList.size
                             mediaList += media
                         }
                     }
@@ -173,7 +174,8 @@ class MediaLoader(private val context: Context) {
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {
                             val media = parse(cursor)
-                            media.position = mediaList.size
+                            // 当前位置 = (当前页 - 1)* 每页数量 + 当前列表数量
+                            media.position = (page - 1) * pageSize + mediaList.size
                             mediaList += media
                         }
                     }

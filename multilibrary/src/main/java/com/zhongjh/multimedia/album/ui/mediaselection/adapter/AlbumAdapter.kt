@@ -181,6 +181,9 @@ class AlbumAdapter(
      */
     fun notifyCheckStateChanged(position: Int) {
         notifyItemChanged(position)
+        for (localMedia in mSelectedModel.getSelectedData().localMedias) {
+            notifyItemChanged(localMedia.position)
+        }
         mCheckStateListener?.onUpdate()
     }
 
