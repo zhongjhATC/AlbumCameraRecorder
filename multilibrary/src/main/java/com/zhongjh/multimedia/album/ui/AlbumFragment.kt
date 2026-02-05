@@ -518,6 +518,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mBinding.recyclerview.visibility = View.GONE
             mBinding.emptyView.visibility = View.VISIBLE
         } else {
+            // 清空当前相册所有选择的数据
+            mSelectedModel.getSelectedData().localMedias.clear()
             // 如果有数据，显示相应相关照片
             mBinding.recyclerview.visibility = View.VISIBLE
             mBinding.emptyView.visibility = View.GONE

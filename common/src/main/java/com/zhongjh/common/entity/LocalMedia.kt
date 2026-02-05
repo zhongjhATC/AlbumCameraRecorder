@@ -90,7 +90,7 @@ open class LocalMedia() : Parcelable {
     var isCut: Boolean = false
 
     /**
-     * 列表中的索引
+     * 当前列表中的索引
      */
     var position: Int = 0
 

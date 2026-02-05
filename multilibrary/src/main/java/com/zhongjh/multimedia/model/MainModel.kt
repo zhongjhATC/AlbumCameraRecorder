@@ -108,6 +108,9 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * 重新加载媒体数据（分页第一页 + DiffUtil 差异计算）
+     *
+     * @param bucketId 逻辑id
+     * @param pageSize 每页数量
      */
     fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
         viewModelScope.launch {
@@ -116,11 +119,11 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                 val newMedias = mediaRepository.loadMediaPage(bucketId, page = 1, pageSize).first()
                 // 计算数据差异（IO 线程执行耗时操作）
                 val diffResult = withContext(Dispatchers.IO) {
-                    DiffUtil.calculateDiff(LocalMediaCallback(localMedias, newMedias))
+                    DiffUtil.calculateDiff(LocalMediaCallback(this@MainModel.localMedias, newMedias))
                 }
                 // 更新缓存
-                localMedias.clear()
-                localMedias.addAll(newMedias)
+                this@MainModel.localMedias.clear()
+                this@MainModel.localMedias.addAll(newMedias)
                 // 重置页码
                 page = 1
 
@@ -130,7 +133,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                 } else {
                     // 发送 DiffResult 用于列表刷新
                     val refreshMediaData = RefreshMediaData()
-                    refreshMediaData.data = localMedias.toList()
+                    refreshMediaData.data = this@MainModel.localMedias.toList()
                     refreshMediaData.diffResult = diffResult
                     _mediaPageState.value = MediaPageState.RefreshSuccess(refreshMediaData)
                 }

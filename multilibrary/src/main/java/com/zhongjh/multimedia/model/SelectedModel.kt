@@ -34,6 +34,7 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      * 选择的数据添加
      */
     fun addSelectedData(item: LocalMedia, position: Int) {
+        item.isChecked = true
         selectedData.add(item)
         // 通知更新
         _selectedDataChange.postValue(position)
@@ -43,6 +44,7 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      * 选择的数据删除
      */
     fun removeSelectedData(item: LocalMedia, position: Int) {
+        item.isChecked = false
         selectedData.remove(item)
         // 通知更新
         _selectedDataChange.postValue(position)
