@@ -927,6 +927,9 @@ class PreviewFragment : BaseFragment() {
      * 共享动画结束，退出fragment
      */
     private fun onSharedViewFinish() {
+        if (!isAdded) {
+            return
+        }
         requireActivity().supportFragmentManager.popBackStack()
     }
 

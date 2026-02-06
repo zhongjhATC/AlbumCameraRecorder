@@ -154,7 +154,7 @@ class CheckView : View {
             if (mChecked) {
                 initBackgroundPaint()
                 canvas.drawCircle(
-                    SIZE.toFloat() * mDensity / 2, SIZE.toFloat() * mDensity / 2,
+                    SIZE * mDensity / 2, SIZE * mDensity / 2,
                     BG_RADIUS * mDensity, mBackgroundPaint
                 )
                 mCheckDrawable!!.bounds = checkRect

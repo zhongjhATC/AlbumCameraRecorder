@@ -103,13 +103,12 @@ class AlbumAdapter(
      */
     private fun setCheckStatus(item: LocalMedia, mediaGrid: MediaGrid) {
         Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " setCheckStatus")
-        // 是否多选时,显示数字
+        // 是否多选时,显示数字 - true:选择数字,false:不显示数字
         if (mAlbumSpec.countable) {
-            // 显示数字
             val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
             if (checkedNum > 0) {
                 // 设置启用,设置数量
-                mediaGrid.setCheckEnabled(true)
+                setCheckEnabled(mediaGrid, true)
                 mediaGrid.setCheckedNum(checkedNum)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
@@ -122,16 +121,15 @@ class AlbumAdapter(
                 }
             }
         } else {
-            // 不显示数字
-            val selected = mSelectedModel.getSelectedData().isSelected(item)
             // 如果被选中了，就设置选择
+            val selected = mSelectedModel.getSelectedData().isSelected(item)
             if (selected) {
                 setCheckEnabled(mediaGrid,true)
                 mediaGrid.setChecked(true)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                mediaGrid.setCheckEnabled(!mSelectedModel.getSelectedData().maxSelectableReached())
-                setCheckEnabled(mediaGrid,false)
+                setCheckEnabled(mediaGrid, !mSelectedModel.getSelectedData().maxSelectableReached())
+                mediaGrid.setChecked(false)
             }
         }
     }
@@ -180,10 +178,8 @@ class AlbumAdapter(
      * 刷新数据
      */
     fun notifyCheckStateChanged(position: Int) {
-        notifyItemChanged(position)
-        for (localMedia in mSelectedModel.getSelectedData().localMedias) {
-            notifyItemChanged(localMedia.position)
-        }
+        // 用全更新是因为选择了item1之后,不止item1会改变,其他item也会改变,所以用全更新
+        notifyDataSetChanged()
         mCheckStateListener?.onUpdate()
     }
 
