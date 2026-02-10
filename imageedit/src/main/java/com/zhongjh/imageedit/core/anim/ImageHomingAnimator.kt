@@ -1,42 +1,33 @@
-package com.zhongjh.imageedit.core.anim;
+package com.zhongjh.imageedit.core.anim
 
-import android.animation.ValueAnimator;
-import android.view.animation.AccelerateDecelerateInterpolator;
-
-import com.zhongjh.imageedit.core.homing.ImageHoming;
-import com.zhongjh.imageedit.core.homing.ImageHomingEvaluator;
+import android.animation.ValueAnimator
+import android.view.animation.AccelerateDecelerateInterpolator
+import com.zhongjh.imageedit.core.homing.ImageHoming
+import com.zhongjh.imageedit.core.homing.ImageHomingEvaluator
 
 /**
- *
- * @author felix
- * @date 2017/11/28 下午12:54
+ * @author zhongjh
+ * @date 2025/09/01
  */
-public class ImageHomingAnimator extends ValueAnimator {
+class ImageHomingAnimator : ValueAnimator() {
+    private var isRotate: Boolean = false
 
-    private boolean isRotate = false;
+    private var mEvaluator: ImageHomingEvaluator? = null
 
-    private ImageHomingEvaluator mEvaluator;
-
-    /** @noinspection unused*/
-    public ImageHomingAnimator() {
-        setInterpolator(new AccelerateDecelerateInterpolator());
+    init {
+        interpolator = AccelerateDecelerateInterpolator()
     }
 
-    @Override
-    public void setObjectValues(Object... values) {
-        super.setObjectValues(values);
+    override fun setObjectValues(vararg values: Any) {
+        super.setObjectValues(*values)
         if (mEvaluator == null) {
-            mEvaluator = new ImageHomingEvaluator();
+            mEvaluator = ImageHomingEvaluator()
         }
-        setEvaluator(mEvaluator);
+        setEvaluator(mEvaluator)
     }
 
-    public void setHomingValues(ImageHoming sHoming, ImageHoming eHoming) {
-        setObjectValues(sHoming, eHoming);
-        isRotate = ImageHoming.isRotate(sHoming, eHoming);
-    }
-
-    public boolean isRotate() {
-        return isRotate;
+    fun setHomingValues(sHoming: ImageHoming, eHoming: ImageHoming) {
+        setObjectValues(sHoming, eHoming)
+        isRotate = ImageHoming.isRotate(sHoming, eHoming)
     }
 }
