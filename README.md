@@ -73,16 +73,16 @@ A non-X library version, no longer maintained(https://github.com/zhongjhATC/Albu
 	}
 
 ## snapshoot
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration1.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration2.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/Demonstration.gif)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/Demonstration1.gif)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/Demonstration2.gif)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/DemonstrationShowImg.png)
 
 
 
 ## Compatibility testing of mobile phones is commonly used in the market
 100% through[Compatibility Test Report](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/wetest/5.jpg)
 
 ## use(You are advised to download Demo for more functions)
 #### Enable multimedia related functions

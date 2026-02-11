@@ -82,14 +82,14 @@
     android.useAndroidX=true
 
 ## 快照
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration1.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/Demonstration2.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/DemonstrationShowImg.png)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/Demonstration.gif)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/Demonstration1.gif)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/Demonstration2.gif)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/java/DemonstrationShowImg.png)
 
 ## 市场上常用手机兼容测试
 100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/androidx/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/androidx/wetest/5.jpg)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/wetest/5.jpg)
 
 ## 使用(更多功能建议下载Demo了解)
 #### 启动多媒体相关功能
