@@ -76,13 +76,13 @@ No longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/andr
     android.useAndroidX=true
 
 ## Screenshots
-![相册界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/album.gif)
-![拍摄界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/camera.gif)
-![多种配置任意搭配](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/1.jpg)
-![可随意配置样式的相册界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/2.jpg)
-![动态水印、拍照录制界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/3.jpg)
-![录音界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/4.jpg)
-![九宫格显示界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/5.jpg)
+![Album Interface](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/album.gif)
+![Camera Interface](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/camera.gif)
+![Various Configurations Can Be Combined Arbitrarily](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/1.jpg)
+![Album Interface with Customizable Styles](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/2.jpg)
+![Dynamic Watermark, Photo Taking & Recording Interface](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/3.jpg)
+![Audio Recording Interface](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/4.jpg)
+![Nine-grid Display Interface](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/5.jpg)
 
 ## Compatibility test on commonly used mobile phones in the market
 100% passed the[compatibility test report.](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/WeTest.md).
