@@ -78,14 +78,17 @@
     android.useAndroidX=true
 
 ## 快照
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/Demonstration.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/Demonstration1.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/Demonstration2.gif)
-![](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/DemonstrationShowImg.png)
+![相册界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/album.gif)
+![拍摄界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/camera.gif)
+![多种配置任意搭配](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/1.jpg)
+![可随意配置样式的相册界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/2.jpg)
+![动态水印、拍照录制界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/3.jpg)
+![录音界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/4.jpg)
+![九宫格显示界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/5.jpg)
 
 ## 市场上常用手机兼容测试
 100%通过[兼容测试报告](https://github.com/zhongjhATC/AlbumCameraRecorder/blob/kotlin/WeTest.md).
-![](https://raw.githubusercontent.com/zhongjhATC/AlbumCameraRecorder/kotlin/wetest/5.jpg)
+![](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/wetest/5.jpg)
 
 ## 使用(更多功能建议下载Demo了解)
 #### 启动多媒体相关功能
