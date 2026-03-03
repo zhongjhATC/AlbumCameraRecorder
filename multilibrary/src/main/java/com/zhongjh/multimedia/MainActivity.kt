@@ -2,16 +2,13 @@ package com.zhongjh.multimedia
 
 import android.Manifest
 import android.animation.ObjectAnimator
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
@@ -72,14 +69,13 @@ open class MainActivity : AppCompatActivity() {
     /**
      * 跳转系统设置界面后的回调
      */
-    private val mAppSettingsLauncher: ActivityResultLauncher<Intent> by lazy {
+    private val mAppSettingsLauncher: ActivityResultLauncher<Intent> =
         this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
                 requestPermissions(null)
             }
         }
-    }
 
     private val mAdapterViewPager by lazy {
         MyPagerAdapter(this, mSpec)
