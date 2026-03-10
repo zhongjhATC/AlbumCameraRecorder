@@ -8,14 +8,14 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
-import com.zhongjh.multimedia.settings.GlobalSetting
-import com.zhongjh.multimedia.settings.GlobalSpec
-import com.zhongjh.multimedia.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.listener.AbstractGridViewListener
 import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.widget.GridView
+import com.zhongjh.multimedia.settings.GlobalSetting
+import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.settings.MultiMediaSetting.Companion.obtainLocalMediaResult
 
 /**
  * 协调多个控件之间代码，更加简化代码
@@ -143,8 +143,8 @@ open class Combined(
                 listener.onItemClick(view, gridMedia)
             }
 
-            override fun onItemClose(gridMedia: GridMedia) {
-                listener.onItemClose(gridMedia)
+            override fun onItemClose(gridMedia: GridMedia, position: Int) {
+                listener.onItemClose(gridMedia, position)
             }
         }
     }

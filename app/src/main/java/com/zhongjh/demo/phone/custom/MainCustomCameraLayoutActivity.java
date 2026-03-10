@@ -62,6 +62,7 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 
+
             /** @noinspection unused*/
             @Override
             public boolean onItemStartDownload(@NonNull View view, @NonNull GridMedia gridMedia, int position) {
@@ -90,16 +91,17 @@ public class MainCustomCameraLayoutActivity extends BaseActivity {
                 timers.put(gridMedia, timer);
                 timer.schedule();
             }
-
+            
             /** @noinspection unused*/
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NonNull GridMedia gridMedia, int position) {
                 // 停止上传
                 MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {
                     myTask.cancel();
                     timers.remove(gridMedia);
                 }
+
             }
 
         });

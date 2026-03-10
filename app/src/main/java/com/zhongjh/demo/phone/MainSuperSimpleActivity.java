@@ -129,8 +129,8 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
-                super.onItemClose(gridMedia);
+            public void onItemClose(@NotNull GridMedia gridMedia, int position) {
+                super.onItemClose(gridMedia, position);
                 // 停止上传
                 MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {

@@ -7,21 +7,21 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.zhongjh.common.entity.GridMedia;
+import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.demo.BaseActivity;
+import com.zhongjh.demo.configuration.GifSizeFilter;
+import com.zhongjh.demo.configuration.Glide4Engine;
+import com.zhongjh.demo.databinding.ActivityMainThemeBinding;
+import com.zhongjh.gridview.apapter.GridAdapter;
+import com.zhongjh.gridview.listener.GridViewListener;
+import com.zhongjh.gridview.widget.GridView;
 import com.zhongjh.multimedia.album.filter.BaseFilter;
 import com.zhongjh.multimedia.settings.AlbumSetting;
 import com.zhongjh.multimedia.settings.CameraSetting;
 import com.zhongjh.multimedia.settings.GlobalSetting;
 import com.zhongjh.multimedia.settings.MultiMediaSetting;
 import com.zhongjh.multimedia.settings.RecorderSetting;
-import com.zhongjh.demo.BaseActivity;
-import com.zhongjh.demo.configuration.GifSizeFilter;
-import com.zhongjh.demo.configuration.Glide4Engine;
-import com.zhongjh.demo.databinding.ActivityMainThemeBinding;
-import com.zhongjh.common.enums.MimeType;
-import com.zhongjh.gridview.apapter.GridAdapter;
-import com.zhongjh.common.entity.GridMedia;
-import com.zhongjh.gridview.listener.GridViewListener;
-import com.zhongjh.gridview.widget.GridView;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -77,7 +77,7 @@ public class MainThemeActivity extends BaseActivity {
 
             /** @noinspection unused*/
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NotNull GridMedia gridMedia, int position) {
                 // 停止上传
                 MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {

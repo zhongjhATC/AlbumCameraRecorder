@@ -383,7 +383,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
     fun removePosition(position: Int) {
         val multiMediaView = list[position]
         // 根据索引获取相关view
-        listener?.onItemClose(multiMediaView)
+        listener?.onItemClose(multiMediaView, position)
         val mutableList = list.toMutableList()
         mutableList.remove(multiMediaView)
         addAddItem(mutableList)

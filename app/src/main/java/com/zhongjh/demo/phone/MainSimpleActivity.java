@@ -82,7 +82,7 @@ public class MainSimpleActivity extends BaseActivity {
 
             /** @noinspection unused*/
             @Override
-            public void onItemClose(@NotNull GridMedia gridMedia) {
+            public void onItemClose(@NotNull GridMedia gridMedia, int position) {
                 // 停止上传
                 MyTask myTask = timers.get(gridMedia);
                 if (myTask != null) {

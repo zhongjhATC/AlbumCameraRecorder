@@ -28,7 +28,8 @@ open class AbstractGridViewListener : GridViewListener {
     ) {
     }
 
-    override fun onItemClose(gridMedia: GridMedia) {}
+    override fun onItemClose(gridMedia: GridMedia, position: Int) {
+    }
 
     override fun onItemStartDownload(
         view: View,

@@ -86,6 +86,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         holder.mplImageList.reset();
         holder.mplImageList.setUrls(dataArrayList.get(position).getImageUrls(), dataArrayList.get(position).getVideoUrls(), dataArrayList.get(position).getAudioUrls());
         holder.mplImageList.setGridViewListener(new GridViewListener() {
+
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
                 Toast.makeText(holder.itemView.getContext(), "执行添加", Toast.LENGTH_SHORT).show();
@@ -97,7 +98,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             }
 
             @Override
-            public void onItemClose(@NonNull GridMedia gridMedia) {
+            public void onItemClose(@NonNull GridMedia gridMedia, int position) {
 
             }
 

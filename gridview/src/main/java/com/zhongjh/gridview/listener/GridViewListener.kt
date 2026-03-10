@@ -40,8 +40,9 @@ interface GridViewListener {
      * 回调删除事件
      *
      * @param gridMedia 传递的多媒体
+     * @param position 视频/图片的索引
      */
-    fun onItemClose(gridMedia: GridMedia)
+    fun onItemClose(gridMedia: GridMedia, position: Int)
 
     /**
      * 开始上传 - 指刚添加后的
