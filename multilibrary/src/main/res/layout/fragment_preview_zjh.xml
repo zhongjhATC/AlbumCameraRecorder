@@ -62,7 +62,6 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/z_multi_library_button_edit"
-            android:textColor="?attr/preview.bottomToolbar.back.textColor"
             android:textSize="16sp"
             tools:textColor="@color/white" />
 
@@ -105,7 +104,6 @@
             android:layout_gravity="center_vertical"
             android:enabled="true"
             android:text="@string/z_multi_library_button_original"
-            android:textColor="?attr/preview.bottomToolbar.back.textColor"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvSize"
@@ -120,7 +118,6 @@
             android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
             android:enabled="true"
-            android:textColor="?attr/preview.bottomToolbar.back.textColor"
             android:textSize="14sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -138,7 +135,6 @@
             android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:textColor="?attr/preview.bottomToolbar.apply.textColor"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="确定"

@@ -226,8 +226,8 @@ open class CircularProgressButton : AppCompatButton {
         try {
             // 由Activity主题提供的样式：提交按钮的文字的文本
             val confirmTextValue = mContext.theme.obtainStyledAttributes(intArrayOf(R.attr.preview_video_button_confirm_text_value))
-            idleText = if (confirmTextValue.length() <= 0) {
-                attr.getString(R.styleable.CircularProgressButton_cpb_textIdle)
+            idleText = if (confirmTextValue.length() <= 0 || confirmTextValue.getText(0) == null) {
+                attr.getString(R.styleable.CircularProgressButton_cpb_textIdle) ?: mContext.getString(R.string.z_multi_library_confirm)
             } else {
                 confirmTextValue.getText(0).toString()
             }

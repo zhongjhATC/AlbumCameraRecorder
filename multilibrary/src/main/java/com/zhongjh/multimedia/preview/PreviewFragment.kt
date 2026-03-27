@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -21,9 +23,13 @@ import android.widget.VideoView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
 import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -231,6 +237,16 @@ class PreviewFragment : BaseFragment() {
         initBundleValue(savedInstanceState)
         mMediaController = MediaController(activity)
         mViewHolder = ViewHolder(view)
+
+        // 安全设置颜色：有主题用主题，没有就用白色
+        val textColor = getThemeAttrColor(mContext, R.attr.preview_bottomToolbar_back_textColor, Color.WHITE)
+        val colorStateList = getThemeColorStateList(mContext, R.attr.preview_bottomToolbar_apply_textColor, R.color.blue_preview_bottom_toolbar_apply_zjh)
+        mViewHolder.tvEdit.setTextColor(textColor)
+        mViewHolder.tvOriginal.setTextColor(textColor)
+        mViewHolder.tvSize.setTextColor(textColor)
+        mViewHolder.buttonApply.setTextColor(colorStateList)
+        mViewHolder.pbLoading.indeterminateTintList = colorStateList
+
         mViewHolder.checkView.setCountable(mAlbumSpec.countable)
         // 初始化状态栏
         if (requireActivity() is MainActivity) {
@@ -992,6 +1008,40 @@ class PreviewFragment : BaseFragment() {
         // 设置原图按钮根据配置来
         mViewHolder.original.setChecked(mMainModel.getOriginalEnable())
         mOriginalManage.updateOriginalState()
+    }
+
+    /**
+     * 安全获取主题属性颜色，没有定义则返回默认白色，解决库崩溃问题
+     */
+    private fun getThemeAttrColor(context: Context, attrResId: Int, defaultColor: Int = Color.WHITE): Int {
+        val typedArray = context.obtainStyledAttributes(intArrayOf(attrResId))
+        return try {
+            // 取不到就用默认值，绝对不崩
+            typedArray.getColor(0, defaultColor)
+        } catch (e: Exception) {
+            defaultColor
+        } finally {
+            typedArray.recycle()
+        }
+    }
+
+    /**
+     * 兼容 API 21+ 安全获取 ColorStateList
+     * 有主题取主题，无主题取默认XML选择器
+     */
+    private fun getThemeColorStateList(context: Context, @AttrRes attrResId: Int, @ColorRes defaultResId: Int): ColorStateList? {
+        val ta: TypedArray = context.obtainStyledAttributes(intArrayOf(attrResId))
+        return try {
+            // 兼容方式获取主题色
+            val csl = ta.getColorStateList(0)
+            // 取不到 → 用兼容方法获取默认selector
+            csl ?: ContextCompat.getColorStateList(context, defaultResId)
+        } catch (e: Exception) {
+            // 异常兜底
+            ContextCompat.getColorStateList(context, defaultResId)
+        } finally {
+            ta.recycle()
+        }
     }
 
     /**
