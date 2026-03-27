@@ -11,7 +11,7 @@ import com.zhongjh.common.entity.LocalMedia
  * @param newData 新数据
  *
  * @author zhongjh
- * @date 2023/8/04
+ * @date 2024/8/04
  */
 class LocalMediaCallback(private val oldData: List<LocalMedia>, private val newData: List<LocalMedia>) : DiffUtil.Callback() {
 

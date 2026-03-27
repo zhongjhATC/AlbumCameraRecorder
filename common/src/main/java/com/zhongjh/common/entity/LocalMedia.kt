@@ -25,7 +25,7 @@ import java.io.File
  * absolutePath： 初始的真实路径，未压缩、未编辑前的，即是原图。如果是相册编辑后的图,那么该值跟editorPath相同
  *
  * @author zhongjh
- * @date 2023/7/26
+ * @date 2024/7/26
  *
  *
  */

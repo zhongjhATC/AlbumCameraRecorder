@@ -7,7 +7,7 @@ import android.content.ContextWrapper
 /**
  * 跟Activity相关的辅助类
  * @author zhongjh
- * @date 2023/11/17
+ * @date 2024/11/17
  */
 object ActivityUtils {
 

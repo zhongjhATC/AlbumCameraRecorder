@@ -7,7 +7,7 @@ import androidx.annotation.ChecksSdkIntAtLeast
  * Sdk版本判断
  *
  * @author zhongjh
- * @date 2023/4/7
+ * @date 2024/4/7
  */
 object SdkVersionUtils {
 

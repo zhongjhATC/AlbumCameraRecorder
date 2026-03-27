@@ -10,7 +10,7 @@ import com.zhongjh.common.entity.LocalMedia
  * 选择数据的ViewModel，缓存相关数据给它的子Fragment共同使用
  *
  * @author zhongjh
- * @date 2023/10/19
+ * @date 2024/10/19
  */
 class SelectedModel(application: Application) : AndroidViewModel(application) {
 

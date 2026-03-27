@@ -5,7 +5,7 @@ import android.os.SystemClock
 /**
  * 防止抖动点击
  * @author zhongjh
- * @date 2023/09/08
+ * @date 2024/09/08
  */
 object DoubleUtils {
     private const val TIME: Long = 600
