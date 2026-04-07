@@ -307,7 +307,9 @@ open class LocalMedia() : Parcelable {
      * 不包含gif
      */
     fun isImage(): Boolean {
-        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.BMP.toString() || mimeType == MimeType.WEBP.toString()
+        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.BMP.toString()
+                || mimeType == MimeType.X_MS_BMP.toString() || mimeType == MimeType.VND_BMP.toString() || mimeType == MimeType.WEBP.toString()
+                || mimeType == MimeType.HEIC.toString()
     }
 
     /**
@@ -321,7 +323,9 @@ open class LocalMedia() : Parcelable {
      * 包含gif
      */
     fun isImageOrGif(): Boolean {
-        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.GIF.toString() || mimeType == MimeType.BMP.toString() || mimeType == MimeType.WEBP.toString()
+        return mimeType == MimeType.JPEG.toString() || mimeType == MimeType.PNG.toString() || mimeType == MimeType.GIF.toString() || mimeType == MimeType.BMP.toString()
+                || mimeType == MimeType.X_MS_BMP.toString() || mimeType == MimeType.VND_BMP.toString() || mimeType == MimeType.WEBP.toString()
+                || mimeType == MimeType.HEIC.toString()
     }
 
     /**
