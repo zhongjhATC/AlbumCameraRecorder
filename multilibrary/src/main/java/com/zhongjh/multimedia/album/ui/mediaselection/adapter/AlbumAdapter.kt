@@ -16,8 +16,10 @@ import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.entity.RefreshMediaData
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid
 import com.zhongjh.multimedia.album.widget.CheckView
+import com.zhongjh.multimedia.constants.AlbumTypes
 import com.zhongjh.multimedia.model.SelectedModel
 import com.zhongjh.multimedia.settings.AlbumSpec
+
 
 /**
  * 相册适配器
@@ -58,27 +60,49 @@ class AlbumAdapter(
         this@AlbumAdapter.data = data
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return if (mAlbumSpec.isDisplayCamera && position == 0) {
+            // 第一个位置返回拍照类型
+            AlbumTypes.CAMERA
+        } else {
+            // 其他位置返回图片/视频
+            AlbumTypes.FILE
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        // 相片的item
-        return MediaViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.media_grid_item_zjh, parent, false))
+        return if (viewType == AlbumTypes.CAMERA) {
+            // 拍照的item
+            CameraViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.media_grid_item_camera_zjh, parent, false))
+        } else {
+            // 相片的item
+            MediaViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.media_grid_item_zjh, parent, false))
+        }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onBindViewHolder")
-        // 相片的item
-        val mediaViewHolder = holder as MediaViewHolder
+        if (getItemViewType(position) == AlbumTypes.CAMERA) {
+            holder.itemView.setOnClickListener {
+                // 打开添加功能
+                mOnMediaClickListener?.onOpenAddClick()
+            }
+        } else {
+            // 相片的item
+            val mediaViewHolder = holder as MediaViewHolder
 
-        val item = data[position]
-        Log.d(tag, "position: $position")
-        if (position == 0) {
-            Log.d(tag, "path: " + item.uri)
+            val item = data[position]
+            Log.d(tag, "position: $position")
+            if (position == 0) {
+                Log.d(tag, "path: " + item.uri)
+            }
+            // 传递相关的值
+            mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, placeholder!!, mAlbumSpec.countable, holder))
+
+            mediaViewHolder.mMediaGrid.bindMedia(item, position)
+            mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this)
+            setCheckStatus(item, mediaViewHolder.mMediaGrid)
         }
-        // 传递相关的值
-        mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, placeholder!!, mAlbumSpec.countable, holder))
-
-        mediaViewHolder.mMediaGrid.bindMedia(item, position)
-        mediaViewHolder.mMediaGrid.setOnMediaGridClickListener(this)
-        setCheckStatus(item, mediaViewHolder.mMediaGrid)
     }
 
     override fun getItemId(position: Int): Long {
@@ -245,7 +269,7 @@ class AlbumAdapter(
 
     interface OnMediaClickListener {
         /**
-         * 点击事件
+         * 图片/视频 点击事件
          *
          * @param album           相册集合
          * @param imageView       图片View
@@ -254,9 +278,16 @@ class AlbumAdapter(
          * @noinspection unused
          */
         fun onMediaClick(album: Album?, imageView: ImageView?, item: LocalMedia?, adapterPosition: Int)
+
+        /**
+         * 打开添加功能
+         */
+        fun onOpenAddClick()
     }
 
     private class MediaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mMediaGrid: MediaGrid = itemView as MediaGrid
     }
+
+    private class CameraViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 }

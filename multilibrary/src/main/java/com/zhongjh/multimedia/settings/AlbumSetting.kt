@@ -61,6 +61,11 @@ class AlbumSetting(mediaTypeExclusive: Boolean) : AlbumSettingApi {
         return this
     }
 
+    override fun isDisplayCamera(isDisplayCamera: Boolean): AlbumSetting {
+        mAlbumSpec.isDisplayCamera = isDisplayCamera
+        return this
+    }
+
     override fun pageSize(pageSize: Int): AlbumSetting {
         mAlbumSpec.pageSize = pageSize
         return this

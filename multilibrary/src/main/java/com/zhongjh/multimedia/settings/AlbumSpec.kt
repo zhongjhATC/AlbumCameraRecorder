@@ -1,14 +1,14 @@
 package com.zhongjh.multimedia.settings
 
+import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.enums.MimeType.Companion.ofImage
+import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.multimedia.album.filter.BaseFilter
 import com.zhongjh.multimedia.album.listener.OnCheckedListener
 import com.zhongjh.multimedia.album.listener.OnSelectedListener
 import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.multimedia.utils.SelectableUtils.singleImageVideo
-import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.enums.MimeType.Companion.ofImage
-import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 
 /**
  * 相册的设置
@@ -52,6 +52,11 @@ object AlbumSpec {
      * 当设置为false的时候，会在相册数据源剔除掉heic文件
      */
     var isSupportHeic = true
+    
+    /**
+     * 相册界面是否显示拍摄功能
+     */
+    var isDisplayCamera = false
 
     /**
      * 是否可以同时选择不同的资源类型 true表示不可以 false表示可以
@@ -153,6 +158,8 @@ object AlbumSpec {
         isSupportGif = true
         isSupportWebp = true
         isSupportBmp = true
+        isSupportHeic = true
+        isDisplayCamera = true
         mediaTypeExclusive = false
         pageSize = 60
         countable = true

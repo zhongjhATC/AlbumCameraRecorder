@@ -42,8 +42,10 @@ object MediaStoreUtils {
 
     /**
      * 插入图片到图库
+     *
      * 视频不需要：
      * 录像会自动加入系统相册，因为代码通过MediaStoreOutputOptions将视频保存到了系统标准的媒体库目录（DCIM/Camera），
+     *
      * 并注册到了MediaStore，相册应用会自动扫描并显示该目录下的文件
      *
      * @param context          上下文

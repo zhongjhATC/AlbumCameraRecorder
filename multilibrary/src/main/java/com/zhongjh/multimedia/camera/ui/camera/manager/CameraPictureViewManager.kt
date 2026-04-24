@@ -143,7 +143,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
         fragmentRef.get()?.let { baseCameraFragment ->
             baseCameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.setOnClickListener { view: View ->
                 val uri = Uri.parse(view.tag.toString()).toString()
-                photoEditFile = createCacheFile(baseCameraFragment.myContext, MediaType.TYPE_PICTURE)
+                photoEditFile = createCacheFile(baseCameraFragment.myContext, TYPE_PICTURE)
                 val intent = Intent()
                 intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
                 intent.putExtra(ImageEditActivity.EXTRA_IMAGE_SCREEN_ORIENTATION, baseCameraFragment.mainActivity?.requestedOrientation)

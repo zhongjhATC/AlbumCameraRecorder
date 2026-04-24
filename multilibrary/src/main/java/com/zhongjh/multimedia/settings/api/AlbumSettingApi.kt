@@ -61,6 +61,13 @@ interface AlbumSettingApi {
     fun isSupportHeic(isSupportHeic: Boolean): AlbumSetting
 
     /**
+     * 相册界面是否显示拍摄功能
+     * @param isDisplayCamera 是否支持
+     * @return [AlbumSetting] this
+     */
+    fun isDisplayCamera(isDisplayCamera: Boolean): AlbumSetting
+
+    /**
      * 相册以分页形式展开
      * @param pageSize 每页多少个文件
      */

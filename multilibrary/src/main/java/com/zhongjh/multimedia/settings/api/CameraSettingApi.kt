@@ -1,14 +1,14 @@
 package com.zhongjh.multimedia.settings.api
 
 import androidx.camera.core.ImageCapture
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.multimedia.camera.listener.OnCaptureListener
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
-import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
+import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.settings.CameraSetting
-import com.zhongjh.multimedia.camera.listener.OnCaptureListener
-import com.zhongjh.common.enums.MimeType
-import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 
 /**
  * 有关拍摄界面的动态设置
@@ -63,6 +63,22 @@ interface CameraSettingApi {
      * @return [CameraSetting] for fluent API.
      */
     fun isClickRecord(isClickRecord: Boolean): CameraSetting
+
+    /**
+     * 是否需要开启前台服务，该配置用于避免使用相机功能时因为占用系统内存过大，而被系统杀掉App
+     *
+     * @param isCameraForegroundService 是否需要开启前台服务
+     * @return [CameraSetting] for fluent API.
+     */
+    fun isCameraForegroundService(isCameraForegroundService: Boolean): CameraSetting
+
+    /**
+     * 是否默认后置摄像头
+     *
+     * @param isCameraDirectionDefaultBack true为后置摄像头,false为前置摄像头
+     * @return [CameraSetting] for fluent API.
+     */
+    fun isCameraDirectionDefaultBack(isCameraDirectionDefaultBack: Boolean): CameraSetting
 
     /**
      * 水印资源,可通过layout赋值水印，所处于的位置等等都可通过layout本身来处理

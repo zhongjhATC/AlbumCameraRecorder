@@ -1,12 +1,19 @@
 package com.zhongjh.multimedia.album.ui
 
+import android.Manifest
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -16,17 +23,24 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
 import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
+import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.MainActivity
@@ -47,14 +61,20 @@ import com.zhongjh.multimedia.model.SelectedData.Companion.STATE_SELECTION
 import com.zhongjh.multimedia.model.SelectedModel
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewActivityByAlbum
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewFragmentByAlbum
+import com.zhongjh.multimedia.service.ForegroundService
 import com.zhongjh.multimedia.settings.AlbumSpec
+import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
+import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.LifecycleFlowCollector
+import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import java.io.File
+
 
 /**
  * 相册,该Fragment主要处理 顶部的专辑上拉列表 和 底部的功能选项
@@ -83,6 +103,26 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private lateinit var mPreviewActivityResult: ActivityResultLauncher<Intent>
 
     /**
+     * 拍照请求权限回调
+     */
+    private lateinit var mPicturePermissionLauncher: ActivityResultLauncher<Array<String>>
+
+    /**
+     * 视频请求权限回调
+     */
+    private lateinit var mVideoPermissionLauncher: ActivityResultLauncher<Array<String>>
+
+    /**
+     * 跳转系统设置界面后的回调
+     */
+    private lateinit var mAppSettingsLauncher: ActivityResultLauncher<Intent>
+
+    /**
+     * 系统拍照的回调
+     */
+    private lateinit var mAppCameraLauncher: ActivityResultLauncher<Intent>
+
+    /**
      * 公共配置
      */
     private val mGlobalSpec = GlobalSpec
@@ -91,6 +131,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 相册配置
      */
     private val mAlbumSpec = AlbumSpec
+
+    /**
+     * 拍摄配置
+     */
+    private val mCameraSpec = CameraSpec
 
     /**
      * 声明 TvAlbumPermissionManager 实例
@@ -150,6 +195,16 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 判断scroll是否处于滑动中
      */
     private var isRecyclerViewScrolling = false
+
+    /**
+     * 是否正在弹着dialog
+     */
+    private var mIsShowDialog = false
+
+    /**
+     * 记录拍照文件路径
+     */
+    var cameraFile: File? = null
 
     /**
      * 先执行onAttach生命周期再执行onCreateView
@@ -376,6 +431,168 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             }
             requireActivity().finish()
         }
+
+        // 拍照权限回调
+        mPicturePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionGranted ->
+            activity?.let {
+                val permissions = ArrayList<String>()
+                permissions.add(Manifest.permission.CAMERA)
+                // 回调结果：true=授权成功，false=授权拒绝
+                val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
+                if (cameraGranted) {
+                    openCamera(it)
+                } else {
+                    showPermissionDialog(it, permissions)
+                }
+            }
+        }
+
+        // 录像权限回调
+        mVideoPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionGranted ->
+            activity?.let {
+                val permissions = ArrayList<String>()
+                permissions.add(Manifest.permission.CAMERA)
+                permissions.add(Manifest.permission.RECORD_AUDIO)
+                // 两个权限都授权才通过
+                val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
+                val audioGranted = permissionGranted[Manifest.permission.RECORD_AUDIO] ?: false
+                if (cameraGranted && audioGranted) {
+                    // 打开系统摄像机
+                    openCamera(it)
+                } else {
+                    showPermissionDialog(it, permissions)
+                }
+            }
+        }
+
+        // 设置界面回调
+        mAppSettingsLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+//            // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
+//            requestPermissions(null)
+        }
+
+        // 系统拍照回调
+        mAppCameraLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            Log.d("a", result.data.toString())
+//            // 刷新相册
+//            cameraFile?.let {
+//                MediaStoreUtils.displayToGallery(mApplicationContext, it, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
+//            }
+
+        }
+    }
+
+    /**
+     * 显示请求权限弹窗
+     */
+    private fun showPermissionDialog(activity: Activity, permissions: ArrayList<String>) {
+        if (mIsShowDialog)
+            return
+        // 至少一个不再提醒,就提示去到应用设置里面修改配置
+        if (!isRejectWithoutReminderPermissions(activity, permissions)) {
+            val builder = AlertDialog.Builder(activity, R.style.MyAlertDialogStyle)
+            builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { _: DialogInterface?, _: Int ->
+                val settingsIntent = SettingsPermissionUtils.createAppSettingsIntent(activity.packageName)
+                mAppSettingsLauncher.launch(settingsIntent)
+                mIsShowDialog = false
+            }
+            builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                activity.finish()
+            }
+
+            // 获取app名称
+            val appName = getAppName(mApplicationContext)
+            if (TextUtils.isEmpty(appName)) {
+                builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked))
+            } else {
+                val message = StringBuilder()
+                for (item in permissions) {
+                    when (item) {
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_in_settings_apply_files))
+                        Manifest.permission.READ_MEDIA_IMAGES -> message.append(getString(R.string.z_multi_library_in_settings_apply_image))
+                        Manifest.permission.READ_MEDIA_VIDEO -> message.append(getString(R.string.z_multi_library_in_settings_apply_video))
+                        Manifest.permission.RECORD_AUDIO -> message.append(getString(R.string.z_multi_library_in_settings_apply_sound))
+                        Manifest.permission.CAMERA -> message.append(getString(R.string.z_multi_library_in_settings_apply_camera))
+                        else -> {}
+                    }
+                }
+                val messageStr = message.toString().dropLast(1)
+                val toSettingTipStr = getString(R.string.z_multi_library_in_settings_apply, appName) + messageStr + getString(
+                    R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions
+                )
+                builder.setMessage(toSettingTipStr)
+            }
+            builder.setTitle(getString(R.string.z_multi_library_hint))
+            builder.setOnDismissListener { mIsShowDialog = false }
+            val dialog: Dialog = builder.create()
+            dialog.setCanceledOnTouchOutside(false)
+            dialog.setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
+                    activity.finish()
+                }
+                false
+            }
+            dialog.show()
+            mIsShowDialog = true
+        } else {
+            // 动态消息
+            val message = StringBuilder()
+            message.append(getString(R.string.z_multi_library_to_use_this_feature))
+            // 弹窗提示为什么要请求这个权限
+            for (item in permissions) {
+                when (item) {
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files))
+                    Manifest.permission.READ_MEDIA_IMAGES -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_image))
+                    Manifest.permission.READ_MEDIA_VIDEO -> message.append(getString(R.string.z_multi_library_file_read_and_write_permission_to_read_and_store_related_files_by_video))
+                    Manifest.permission.RECORD_AUDIO -> message.append(getString(R.string.z_multi_library_record_permission_to_record_sound))
+                    Manifest.permission.CAMERA -> message.append(getString(R.string.z_multi_library_record_permission_to_shoot))
+                    else -> {}
+                }
+            }
+            val builder = AlertDialog.Builder(activity, R.style.MyAlertDialogStyle)
+            builder.setTitle(getString(R.string.z_multi_library_hint))
+            message.append(getString(R.string.z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you))
+            builder.setMessage(message.toString())
+            builder.setPositiveButton(getString(R.string.z_multi_library_ok)) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                mIsShowDialog = false
+                // 再次请求权限
+                val permissions = ArrayList<String>()
+                permissions.add(Manifest.permission.CAMERA)
+                permissions.add(Manifest.permission.RECORD_AUDIO)
+                mPicturePermissionLauncher.launch(permissions.toTypedArray())
+            }
+            builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                activity.finish()
+            }
+            val dialog: Dialog = builder.create()
+            dialog.setCanceledOnTouchOutside(false)
+            dialog.setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
+                    activity.finish()
+                }
+                false
+            }
+            dialog.show()
+            mIsShowDialog = true
+        }
+    }
+
+    /**
+     * 判断这些权限是否 拒绝+无需提醒的权限
+     * @param permissions 请求的权限
+     */
+    private fun isRejectWithoutReminderPermissions(activity: Activity, permissions: ArrayList<String>): Boolean {
+        var permissionsLength = 0
+        for (i in permissions.indices) {
+            // 只有当用户同时点选了拒绝开启权限和不再提醒后才会true
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
+                permissionsLength++
+            }
+        }
+        return permissionsLength > 0
     }
 
     /**
@@ -557,6 +774,77 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         mMainModel.previewPosition = adapterPosition
 
         startPreviewFragmentByAlbum((requireActivity() as MainActivity))
+    }
+
+    /**
+     * 拍摄事件
+     */
+    override fun onOpenAddClick() {
+        // 1. 创建官方底部弹窗（纯View版，无Compose）
+        val dialog = BottomSheetDialog(requireContext())
+        // 2. 加载我们的布局（就是之前的 dialog_bottom_sheet_selector.xml）
+        val view = View.inflate(requireContext(), R.layout.dialog_bottom_sheet_selector_zjh, null)
+        dialog.setContentView(view)
+
+        // 3. 点击事件
+        view.findViewById<View>(R.id.layout_camera).setOnClickListener {
+            // 请求拍照或者请求权限
+            openImageCameraOrPermission()
+            dialog.dismiss()
+        }
+        view.findViewById<View>(R.id.layout_video).setOnClickListener {
+            // 请求拍照或者请求录制
+            openVideoCameraOrPermission()
+            dialog.dismiss()
+        }
+        // 支持拖拽关闭
+        dialog.behavior.isDraggable = true
+        // 4. 显示弹窗
+        dialog.show()
+    }
+
+    /**
+     * 请求拍照或者请求权限
+     */
+    private fun openImageCameraOrPermission() {
+        activity?.let {
+            if (ContextCompat.checkSelfPermission(mApplicationContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                // 请求权限
+                mPicturePermissionLauncher.launch(Manifest.permission.CAMERA)
+            } else {
+                // 没有所需要请求的权限，就打开系统拍照
+                openCamera(it)
+            }
+        }
+    }
+
+    /**
+     * 请求录制或者请求权限
+     */
+    private fun openVideoCameraOrPermission() {
+        activity?.let {
+            if (ContextCompat.checkSelfPermission(mApplicationContext, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                // 请求权限
+                mVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
+            } else {
+                // 没有所需要请求的权限，就打开系统拍照
+                openCamera(it)
+            }
+        }
+    }
+
+    private fun openCamera(activity: Activity) {
+        // 权限已授予，打开系统相机
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (cameraIntent.resolveActivity(activity.packageManager) != null) {
+            ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
+            cameraFile = FileMediaUtil.createCacheFile(activity, TYPE_PICTURE)
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath))
+            if (!mCameraSpec.isCameraDirectionDefaultBack) {
+                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+            }
+            mAppCameraLauncher.launch(cameraIntent)
+        }
     }
 
     /**

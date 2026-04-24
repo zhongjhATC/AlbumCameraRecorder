@@ -90,6 +90,16 @@ object CameraSpec {
     var isClickRecord = false
 
     /**
+     * 是否需要开启前台服务，该配置用于避免使用相机功能时因为占用系统内存过大，而被系统杀掉App
+     */
+    var isCameraForegroundService = false
+
+    /**
+     * 是否默认后置摄像头拍摄
+     */
+    var isCameraDirectionDefaultBack = true
+
+    /**
      * 仅支持图片
      */
     fun onlySupportImages(): Boolean {
@@ -144,6 +154,9 @@ object CameraSpec {
         minDuration = 2000
         readinessDuration = 1000
         watermarkResource = -1
+        isClickRecord = false
+        isCameraForegroundService = false
+        isCameraDirectionDefaultBack = true
     }
 
 }

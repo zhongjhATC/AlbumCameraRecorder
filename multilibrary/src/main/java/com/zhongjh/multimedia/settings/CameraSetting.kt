@@ -1,15 +1,15 @@
 package com.zhongjh.multimedia.settings
 
 import androidx.camera.core.ImageCapture.FlashMode
-import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.multimedia.camera.listener.OnCaptureListener
+import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
 import com.zhongjh.multimedia.settings.CameraSpec.cleanInstance
 import com.zhongjh.multimedia.settings.api.CameraSettingApi
-import com.zhongjh.common.enums.MimeType
-import com.zhongjh.multimedia.camera.listener.OnInitCameraManager
 import java.lang.ref.WeakReference
 
 /**
@@ -68,6 +68,16 @@ class CameraSetting : CameraSettingApi {
 
     override fun isClickRecord(isClickRecord: Boolean): CameraSetting {
         mCameraSpec.isClickRecord = isClickRecord
+        return this
+    }
+
+    override fun isCameraForegroundService(isCameraForegroundService: Boolean): CameraSetting {
+        mCameraSpec.isCameraForegroundService = isCameraForegroundService
+        return this
+    }
+
+    override fun isCameraDirectionDefaultBack(isCameraDirectionDefaultBack: Boolean): CameraSetting {
+        mCameraSpec.isCameraDirectionDefaultBack = isCameraDirectionDefaultBack
         return this
     }
 

@@ -4,14 +4,14 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.StyleRes
-import com.zhongjh.multimedia.R
+import com.zhongjh.common.coordinator.VideoCompressCoordinator
 import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.engine.impl.GlideEngine
+import com.zhongjh.common.enums.MimeType
+import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.multimedia.listener.OnImageCompressionListener
 import com.zhongjh.multimedia.listener.OnLogListener
-import com.zhongjh.common.coordinator.VideoCompressCoordinator
-import com.zhongjh.common.enums.MimeType
 
 /**
  * 设置的一些属性,别的界面也根据这个来进行动态改变
@@ -188,6 +188,7 @@ object GlobalSpec {
         cutscenesEnabled = true
         orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         imageEditEnabled = true
+        isAddAlbumByEdit = true
         onImageCompressionListener = null
         onLogListener = null
         activityResultLauncher = null

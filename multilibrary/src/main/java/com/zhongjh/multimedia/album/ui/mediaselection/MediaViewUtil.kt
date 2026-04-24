@@ -243,6 +243,10 @@ class MediaViewUtil(
         onMediaClickListener?.onMediaClick(mAlbum, imageView, item, adapterPosition)
     }
 
+    override fun onOpenAddClick() {
+        onMediaClickListener?.onOpenAddClick()
+    }
+
     private val imageResize: Int
         /**
          * 返回图片调整大小

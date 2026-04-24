@@ -38,6 +38,8 @@ android {
     // viewBinding
     buildFeatures {
         viewBinding true
+        // 关键修复：显式声明开启 buildConfig（核心！避免被 buildFeatures 隐式关闭）
+        buildConfig true
     }
 
     sourceSets {
