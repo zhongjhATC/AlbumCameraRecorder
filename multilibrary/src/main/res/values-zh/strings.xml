@@ -14,7 +14,7 @@
     <string name="z_multi_library_record_permission_to_shoot">\n录制权限来拍摄</string>
     <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">\n否则无法正常运行，接下来会向您申请相关权限</string>
 
-    <string name="z_multi_library_in_settings_apply">在设置-应用-%1$d-权限中开启</string>
+    <string name="z_multi_library_in_settings_apply">在设置-应用-%1$s-权限中开启</string>
     <string name="z_multi_library_in_settings_apply_files">文件,</string>
     <string name="z_multi_library_in_settings_apply_image">图片,</string>
     <string name="z_multi_library_in_settings_apply_video">视频,</string>

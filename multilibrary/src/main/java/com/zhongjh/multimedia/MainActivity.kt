@@ -149,62 +149,62 @@ open class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    @RequiresApi(23)
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (mIsShowDialog) return
-
-        // 至少一个不再提醒,就提示去到应用设置里面修改配置
-        if (isRejectWithoutReminderPermissions(permissions, grantResults)) {
-            val builder = AlertDialog.Builder(this@MainActivity, R.style.MyAlertDialogStyle)
-            builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { _: DialogInterface?, _: Int ->
-                val settingsIntent = SettingsPermissionUtils.createAppSettingsIntent(packageName)
-                mAppSettingsLauncher.launch(settingsIntent)
-                mIsShowDialog = false
-            }
-            builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-                finish()
-            }
-
-            // 获取app名称
-            val appName = getAppName(applicationContext)
-            if (TextUtils.isEmpty(appName)) {
-                builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked))
-            } else {
-                val message = StringBuilder()
-                for (item in permissions) {
-                    when (item) {
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_in_settings_apply_files))
-                        Manifest.permission.READ_MEDIA_IMAGES -> message.append(getString(R.string.z_multi_library_in_settings_apply_image))
-                        Manifest.permission.READ_MEDIA_VIDEO -> message.append(getString(R.string.z_multi_library_in_settings_apply_video))
-                        Manifest.permission.RECORD_AUDIO -> message.append(getString(R.string.z_multi_library_in_settings_apply_sound))
-                        Manifest.permission.CAMERA -> message.append(getString(R.string.z_multi_library_in_settings_apply_camera))
-                        else -> {}
-                    }
+        if (requestCode == GET_PERMISSION_REQUEST) {
+            // 至少一个不再提醒,就提示去到应用设置里面修改配置
+            if (isRejectWithoutReminderPermissions(permissions, grantResults)) {
+                val builder = AlertDialog.Builder(this@MainActivity, R.style.MyAlertDialogStyle)
+                builder.setPositiveButton(getString(R.string.z_multi_library_setting)) { _: DialogInterface?, _: Int ->
+                    val settingsIntent = SettingsPermissionUtils.createAppSettingsIntent(packageName)
+                    mAppSettingsLauncher.launch(settingsIntent)
+                    mIsShowDialog = false
                 }
-                val messageStr = message.toString().dropLast(1)
-                val toSettingTipStr = getString(R.string.z_multi_library_in_settings_apply, appName) + messageStr + getString(
-                    R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions
-                )
-                builder.setMessage(toSettingTipStr)
-            }
-            builder.setTitle(getString(R.string.z_multi_library_hint))
-            builder.setOnDismissListener { mIsShowDialog = false }
-            val dialog: Dialog = builder.create()
-            dialog.setCanceledOnTouchOutside(false)
-            dialog.setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
+                builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
                     finish()
                 }
-                false
-            }
-            dialog.show()
-            mIsShowDialog = true
-        }
 
-        // 看是否需要再次请求权限
-        if (requestCode == GET_PERMISSION_REQUEST) {
+                // 获取app名称
+                val appName = getAppName(applicationContext)
+                if (TextUtils.isEmpty(appName)) {
+                    builder.setMessage(getString(R.string.permission_has_been_set_and_will_no_longer_be_asked))
+                } else {
+                    val message = StringBuilder()
+                    for (item in permissions) {
+                        when (item) {
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE -> message.append(getString(R.string.z_multi_library_in_settings_apply_files))
+                            Manifest.permission.READ_MEDIA_IMAGES -> message.append(getString(R.string.z_multi_library_in_settings_apply_image))
+                            Manifest.permission.READ_MEDIA_VIDEO -> message.append(getString(R.string.z_multi_library_in_settings_apply_video))
+                            Manifest.permission.RECORD_AUDIO -> message.append(getString(R.string.z_multi_library_in_settings_apply_sound))
+                            Manifest.permission.CAMERA -> message.append(getString(R.string.z_multi_library_in_settings_apply_camera))
+                            else -> {}
+                        }
+                    }
+                    val messageStr = message.toString().dropLast(1)
+                    val toSettingTipStr = getString(R.string.z_multi_library_in_settings_apply, appName) + messageStr + getString(
+                        R.string.z_multi_library_enable_storage_and_camera_permissions_for_normal_use_of_related_functions
+                    )
+                    builder.setMessage(toSettingTipStr)
+                }
+                builder.setTitle(getString(R.string.z_multi_library_hint))
+                builder.setOnDismissListener { mIsShowDialog = false }
+                val dialog: Dialog = builder.create()
+                dialog.setCanceledOnTouchOutside(false)
+                dialog.setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
+                    if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
+                        finish()
+                    }
+                    false
+                }
+                dialog.show()
+                mIsShowDialog = true
+            }
+
+            if (mIsShowDialog) return
+
+            // 看是否需要再次请求权限
             var permissionsLength = 0
             for (grantResult in grantResults) {
                 if (grantResult == PermissionChecker.PERMISSION_DENIED) {
