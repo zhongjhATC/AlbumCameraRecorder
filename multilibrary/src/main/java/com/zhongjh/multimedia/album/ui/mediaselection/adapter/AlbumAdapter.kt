@@ -46,18 +46,19 @@ class AlbumAdapter(
     /**
      * 重新赋值数据
      *
-     * @param refreshMediaData 数据源和比较数据
+     * @param refreshMediaData 数据源和比较数据工具类
      */
     fun setReloadPageMediaData(refreshMediaData: RefreshMediaData) {
-            this@AlbumAdapter.data = refreshMediaData.data
-            refreshMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
+        this@AlbumAdapter.data = refreshMediaData.data
+        refreshMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
     }
 
     /**
-     * 设置数据
+     * 赋值合并新数据后的总数据，并刷新下拉后的数据
      */
-    fun setData(data: List<LocalMedia>) {
+    fun notifyDataInserted(data: List<LocalMedia>, startPosition: Int) {
         this@AlbumAdapter.data = data
+        notifyItemInserted(startPosition)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -91,7 +92,13 @@ class AlbumAdapter(
             // 相片的item
             val mediaViewHolder = holder as MediaViewHolder
 
-            val item = data[position]
+            // 👇 修复：按钮占了位置，图片要 -1
+            val realPos = if (mAlbumSpec.isDisplayCamera) {
+                position - 1
+            } else {
+                position
+            }
+            val item = data[realPos]
             Log.d(tag, "position: $position")
             if (position == 0) {
                 Log.d(tag, "path: " + item.uri)
@@ -105,18 +112,28 @@ class AlbumAdapter(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        // 需要返回id，否则不会重复调用onBindViewHolder，因为设置了mAdapter.setHasStableIds(true)
-        return data[position].fileId
+    override fun getItemCount(): Int {
+        // 如果显示拍照按钮，总数 = 图片数量 + 1
+        return if (mAlbumSpec.isDisplayCamera) {
+            data.size + 1
+        } else {
+            data.size
+        }
     }
 
-    override fun getItemCount(): Int {
-        Log.d(tag, "data.size(): " + data.size)
-        return data.size
+    override fun getItemId(position: Int): Long {
+        // 相机按钮返回固定ID，不读取数据
+        if (mAlbumSpec.isDisplayCamera && position == 0) {
+            return -1000L
+        }
+        // 需要返回id，否则不会重复调用onBindViewHolder，因为设置了mAdapter.setHasStableIds(true)
+        val realPos = if (mAlbumSpec.isDisplayCamera) position - 1 else position
+        return data[realPos].fileId
     }
 
     fun getItem(position: Int): LocalMedia {
-        return data[position]
+        val realPos = if (mAlbumSpec.isDisplayCamera) position - 1 else position
+        return data[realPos]
     }
 
     /**

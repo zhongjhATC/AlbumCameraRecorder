@@ -14,7 +14,7 @@
     <string name="z_multi_library_record_permission_to_shoot">\nRecord permission to shoot</string>
     <string name="z_multi_library_Otherwise_it_cannot_run_normally_and_will_apply_for_relevant_permissions_from_you">\nOtherwise, it cannot run normally and will apply for relevant permissions from you</string>
 
-    <string name="z_multi_library_in_settings_apply">Enable in Settings - Apps - Permissions</string>
+    <string name="z_multi_library_in_settings_apply">Enable in Settings-Apps-%1$s-Permissions</string>
     <string name="z_multi_library_in_settings_apply_files">Files,</string>
     <string name="z_multi_library_in_settings_apply_image">Photos,</string>
     <string name="z_multi_library_in_settings_apply_video">Videos,</string>

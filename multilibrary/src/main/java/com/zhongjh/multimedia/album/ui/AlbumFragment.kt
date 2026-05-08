@@ -7,8 +7,10 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
@@ -33,7 +35,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
@@ -67,13 +68,14 @@ import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
-import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.LifecycleFlowCollector
 import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 /**
@@ -449,9 +451,9 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
                 if (cameraGranted) {
                     // 打开系统摄像机
-                    openCamera(it)
+                    openCameraPicture(it)
                 } else {
-                    onRequestPermissionsResult(it, permissionPictures)
+                    onRequestPermissionsResult(it)
                 }
             }
         }
@@ -462,26 +464,28 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
                 if (cameraGranted) {
                     // 打开系统摄像机
-                    openCamera(it)
+                    openCameraPicture(it)
                 } else {
-                    onRequestPermissionsResult(it, permissionVideos)
+                    onRequestPermissionsResult(it)
                 }
             }
         }
 
         // 设置界面回调
         mAppSettingsLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-//            // 因为权限一直拒绝后，只能跑到系统设置界面调整，这个是系统设置界面返回后的回调，重新验证权限
-//            requestPermissions(null)
         }
 
         // 系统拍照回调
         mAppCameraLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            Log.d("a", result.data.toString())
-//            // 刷新相册
-//            cameraFile?.let {
-//                MediaStoreUtils.displayToGallery(mApplicationContext, it, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
-//            }
+            if (result.resultCode == Activity.RESULT_OK) {
+                cameraFile?.let { file ->
+                    // 1. 通知系统扫描这张照片 → 系统相册立刻显示
+                    MediaScannerConnection.scanFile(mApplicationContext, arrayOf(file.absolutePath), null) { _, _ ->
+                        // 扫描完成回调 刷新你自己App的相册列表（立刻看到刚拍的）
+                        mMainModel.loadAlbums()
+                    }
+                }
+            }
 
         }
     }
@@ -522,28 +526,26 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             }
             builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
-                activity.finish()
+                mIsShowDialog = false
             }
             val dialog: Dialog = builder.create()
             dialog.setCanceledOnTouchOutside(false)
-            dialog.setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
-                    activity.finish()
-                }
+            dialog.setOnKeyListener { _: DialogInterface?, _: Int, _: KeyEvent ->
+                mIsShowDialog = false
                 false
             }
             dialog.show()
             mIsShowDialog = true
         } else {
             // 没有所需要请求的权限，就打开相机
-            openCamera(activity)
+            openCameraPicture(activity)
         }
     }
 
     /**
-     * 显示请求权限弹窗
+     * 录制权限如果被设置不再提醒
      */
-    private fun onRequestPermissionsResult(activity: Activity, permissions: ArrayList<String>) {
+    private fun onRequestPermissionsResult(activity: Activity) {
         if (mIsShowDialog)
             return
         // 录制权限如果被设置不再提醒
@@ -556,7 +558,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             }
             builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
-                activity.finish()
+                mIsShowDialog = false
             }
 
             // 获取app名称
@@ -576,10 +578,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             builder.setOnDismissListener { mIsShowDialog = false }
             val dialog: Dialog = builder.create()
             dialog.setCanceledOnTouchOutside(false)
-            dialog.setOnKeyListener { _: DialogInterface?, keyCode: Int, event: KeyEvent ->
-                if (keyCode == KeyEvent.KEYCODE_BACK && event.repeatCount == 0) {
-                    activity.finish()
-                }
+            dialog.setOnKeyListener { _: DialogInterface?, _: Int, _: KeyEvent ->
+                mIsShowDialog = false
                 false
             }
             dialog.show()
@@ -777,7 +777,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         add(mBinding.recyclerview, 0)
 
         currentPosition = adapterPosition
-        // 设置position
         mMainModel.previewPosition = adapterPosition
 
         startPreviewFragmentByAlbum((requireActivity() as MainActivity))
@@ -822,7 +821,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 })
             } else {
                 // 没有所需要请求的权限，就打开系统拍照
-                openCamera(it)
+                openCameraPicture(it)
             }
         }
     }
@@ -839,23 +838,41 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 })
             } else {
                 // 没有所需要请求的权限，就打开系统拍照
-                openCamera(it)
+                openCameraPicture(it)
             }
         }
     }
 
-    private fun openCamera(activity: Activity) {
+    /**
+     * 系统拍照
+     */
+    private fun openCameraPicture(activity: Activity) {
         // 权限已授予，打开系统相机
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (cameraIntent.resolveActivity(activity.packageManager) != null) {
             ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
-            cameraFile = FileMediaUtil.createCacheFile(activity, TYPE_PICTURE)
+            cameraFile = createCameraFile()
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath))
             if (!mCameraSpec.isCameraDirectionDefaultBack) {
                 cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
             }
+
             mAppCameraLauncher.launch(cameraIntent)
         }
+    }
+
+    /**
+     * 系统目录，自动加入相册刷新
+     */
+    private fun createCameraFile(): File {
+        val dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+        val cameraDir = File(dcim, "Camera")
+        if (!cameraDir.exists()) cameraDir.mkdirs()
+        // 生成唯一文件名
+        val fileName = "IMAGE_" + SimpleDateFormat(
+            "yyyyMMdd_HHmmssSSS", Locale.US
+        ).format(System.currentTimeMillis()) + ".jpg"
+        return File(cameraDir, fileName)
     }
 
     /**

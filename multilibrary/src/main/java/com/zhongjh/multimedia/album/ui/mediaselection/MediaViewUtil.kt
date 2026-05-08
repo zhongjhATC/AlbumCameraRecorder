@@ -104,12 +104,11 @@ class MediaViewUtil(
                     recyclerView.scrollToPosition(0)
                 }
 
-                // 监听到下拉相册数据
+                // 监听到下拉加载相册数据
                 is MainModel.MediaPageState.LoadMoreSuccess -> {
                     // 如果没有数据，则关闭下拉加载
                     recyclerView.setEnabledLoadMore(state.startPosition != -1)
-                    mAdapter?.setData(state.data)
-                    mAdapter?.notifyItemInserted(state.startPosition)
+                    mAdapter?.notifyDataInserted(state.data, state.startPosition)
                 }
 
                 // 输出失败信息
