@@ -273,7 +273,7 @@ class MediaLoader(private val context: Context) {
         val fileSize = getFileSizeCondition()
         return if (AlbumSpec.onlyShowImages()) {
             // 只查询图片
-            "$MEDIA_TYPE=? ${getImageMimeTypeCondition()}"
+            "$MEDIA_TYPE=? ${getImageMimeTypeCondition()} AND $fileSize"
         } else if (AlbumSpec.onlyShowVideos()) {
             // 只查询视频
             "$MEDIA_TYPE=? ${getVideoMimeTypeCondition()} AND $duration"

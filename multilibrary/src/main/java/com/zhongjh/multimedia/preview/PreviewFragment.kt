@@ -29,7 +29,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -198,6 +197,11 @@ class PreviewFragment : BaseFragment() {
     private var mIsEdit = false
 
     /**
+     * AlbumFragment是否有开启显示拍摄，如果是别的界面启动的PreviewFragment，默认为false
+     */
+    private var mIsDisplayCamera = false
+
+    /**
      * 设置右上角是否检测类型
      */
     private var mIsSelectedCheck = true
@@ -324,12 +328,14 @@ class PreviewFragment : BaseFragment() {
                 // 设置是否开启原图
                 mOriginalEnable = it.getBoolean(PreviewSetting.EXTRA_RESULT_ORIGINAL_ENABLE, true)
                 // 数据源
-                it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)
-                    ?.let { selection ->
-                        mLocalMedias.addAll(selection)
-                        mSelectedModel.getSelectedData().addAll(selection)
-                        mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
-                    }
+                it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
+                    mLocalMedias.addAll(selection)
+                    mSelectedModel.getSelectedData().addAll(selection)
+                    mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
+                } ?: run {
+                    // 没值 / null / 空列表 走这里
+                    mIsDisplayCamera = mAlbumSpec.isDisplayCamera
+                }
             }
         } else {
             mIsSavedInstanceState = true
@@ -384,7 +390,7 @@ class PreviewFragment : BaseFragment() {
      * 初始化ViewPager2
      */
     private fun initViewPagerData() {
-        mAdapter = PreviewPagerAdapter(mContext, requireActivity())
+        mAdapter = PreviewPagerAdapter(mContext, requireActivity(), mIsDisplayCamera)
         mLocalMedias.addAll(mMainModel.getLocalMedias())
         mAdapter.addAll(mLocalMedias)
         mAdapter.notifyItemRangeChanged(0, mLocalMedias.size)
@@ -924,8 +930,7 @@ class PreviewFragment : BaseFragment() {
      * 设置预览 view 跟相册的 view 一样的高度宽度
      */
     private fun onSharedBeginBackMinFinish(isResetSize: Boolean) {
-        val itemViewParams =
-            RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
+        val itemViewParams = RecycleItemViewParams.getItemViewParams(mViewPager2.currentItem) ?: return
         val currentHolder = mAdapter.getCurrentViewHolder(mViewPager2.currentItem) ?: return
         val layoutParams = currentHolder.imageView.layoutParams
         layoutParams?.width = itemViewParams.width

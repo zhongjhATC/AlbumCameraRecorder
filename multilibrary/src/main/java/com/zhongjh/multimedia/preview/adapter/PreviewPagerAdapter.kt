@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 /**
  * @author zhongjh
  */
-class PreviewPagerAdapter(private val mContext: Context, private val mActivity: Activity) :
+class PreviewPagerAdapter(private val mContext: Context, private val mActivity: Activity, private val mIsDisplayCamera: Boolean) :
     RecyclerView.Adapter<PreviewViewHolder>() {
 
     /**
@@ -70,7 +70,15 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
 
     override fun onBindViewHolder(holder: PreviewViewHolder, position: Int) {
         mViewHolderCache[position] = holder
-        val item = items[position]
+
+        // 如果数据源包含拍照选项（位置0），需要-1
+        val actualPosition = if (mIsDisplayCamera) {
+            position - 1
+        } else {
+            position
+        }
+
+        val item = items[actualPosition]
         if (item.isVideo()) {
             holder.videoPlayButton.visibility = View.VISIBLE
             holder.videoPlayButton.setOnClickListener {
