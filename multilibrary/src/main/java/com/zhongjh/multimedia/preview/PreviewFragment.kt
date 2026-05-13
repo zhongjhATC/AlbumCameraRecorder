@@ -411,7 +411,7 @@ class PreviewFragment : BaseFragment() {
 
         // 多图时滑动事件
         mViewPager2.registerOnPageChangeCallback(mOnPageChangeCallback)
-        mViewPager2.setCurrentItem(mMainModel.previewPosition, false)
+        mViewPager2.setCurrentItem(getDataPosition(), false)
     }
 
     /**
@@ -514,7 +514,7 @@ class PreviewFragment : BaseFragment() {
      * 打开编辑的Activity
      */
     private fun openImageEditActivity() {
-        val item = mAdapter.getLocalMedia(mMainModel.previewPosition)
+        val item = mAdapter.getLocalMedia(getDataPosition())
         item?.let {
             val file = FileMediaUtil.createCacheFile(mContext, TYPE_PICTURE)
             mEditImagePath = file.absoluteFile.toString()
@@ -775,7 +775,7 @@ class PreviewFragment : BaseFragment() {
             return
         }
         if (isSharedAnimation()) {
-            setImageViewScaleType(holder, mLocalMedias[mMainModel.previewPosition])
+            setImageViewScaleType(holder, mLocalMedias[getDataPosition()])
         }
     }
 
@@ -808,7 +808,7 @@ class PreviewFragment : BaseFragment() {
             val mediaRealSize = getMediaRealSizeFromMedia(media)
             val width = mediaRealSize[0]
             val height = mediaRealSize[1]
-            val viewParams = RecycleItemViewParams.getItem(mMainModel.previewPosition)
+            val viewParams = RecycleItemViewParams.getItem(getViewPosition())
 
             if (viewParams == null || width == 0 && height == 0) {
                 mViewHolder.sharedAnimationView.startNormal(width, height, false)
@@ -843,7 +843,7 @@ class PreviewFragment : BaseFragment() {
             val mediaSize = getMediaRealSizeFromMedia(media)
             val width = mediaSize[0]
             val height = mediaSize[1]
-            val viewParams = RecycleItemViewParams.getItem(mMainModel.previewPosition)
+            val viewParams = RecycleItemViewParams.getItem(getViewPosition())
             if (viewParams == null || width == 0 || height == 0) {
                 mViewHolder.sharedAnimationView.setViewParams(0, 0, 0, 0, width, height)
             } else {
@@ -958,7 +958,11 @@ class PreviewFragment : BaseFragment() {
      * 滑动事件
      */
     private fun onViewPageSelected(position: Int) {
-        mMainModel.previewPosition = position
+        if (mIsDisplayCamera) {
+            mMainModel.previewPosition = position + 1
+        } else {
+            mMainModel.previewPosition = position
+        }
         if (isSharedAnimation()) {
             if (mFirstSharedAnimation) {
                 startSharedAnimation(position)
@@ -1013,6 +1017,24 @@ class PreviewFragment : BaseFragment() {
         // 设置原图按钮根据配置来
         mViewHolder.original.setChecked(mMainModel.getOriginalEnable())
         mOriginalManage.updateOriginalState()
+    }
+
+    /**
+     * 返回数据源的索引,因为由于相册界面可能会有Add,预览界面没有Add,所以两者的postion会出现不一样的情况
+     */
+    private fun getDataPosition(): Int {
+        return if (mIsDisplayCamera) {
+            mMainModel.previewPosition - 1
+        } else {
+            mMainModel.previewPosition
+        }
+    }
+
+    /**
+     * 返回视图索引,因为由于相册界面可能会有Add,预览界面没有Add,所以两者的postion会出现不一样的情况
+     */
+    private fun getViewPosition(): Int {
+        return mMainModel.previewPosition
     }
 
     /**

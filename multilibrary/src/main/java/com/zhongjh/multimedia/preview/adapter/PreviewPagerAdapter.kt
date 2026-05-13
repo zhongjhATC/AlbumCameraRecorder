@@ -71,14 +71,7 @@ class PreviewPagerAdapter(private val mContext: Context, private val mActivity: 
     override fun onBindViewHolder(holder: PreviewViewHolder, position: Int) {
         mViewHolderCache[position] = holder
 
-        // 如果数据源包含拍照选项（位置0），需要-1
-        val actualPosition = if (mIsDisplayCamera) {
-            position - 1
-        } else {
-            position
-        }
-
-        val item = items[actualPosition]
+        val item = items[position]
         if (item.isVideo()) {
             holder.videoPlayButton.visibility = View.VISIBLE
             holder.videoPlayButton.setOnClickListener {
