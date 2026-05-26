@@ -109,7 +109,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 重新加载媒体数据（分页第一页 + DiffUtil 差异计算）
      *
-     * @param bucketId 逻辑id
+     * @param bucketId 专辑id，-1是全部
      * @param pageSize 每页数量
      */
     fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
@@ -135,7 +135,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                     val refreshMediaData = RefreshMediaData()
                     refreshMediaData.data = this@MainModel.localMedias.toList()
                     refreshMediaData.diffResult = diffResult
-                    _mediaPageState.value = MediaPageState.RefreshSuccess(refreshMediaData)
+                    _mediaPageState.value = MediaPageState.RefreshSuccess(bucketId, refreshMediaData)
                 }
             } catch (e: Exception) {
                 // 发送错误状态
@@ -214,9 +214,10 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
         /**
          * 刷新事件 也用于初次加载
+         * @param bucketId 专辑id,-1是全部
          * @param refreshMediaData 刷新数据
          */
-        data class RefreshSuccess(val refreshMediaData: RefreshMediaData) : MediaPageState()
+        data class RefreshSuccess(val bucketId: Long, val refreshMediaData: RefreshMediaData) : MediaPageState()
 
         /**
          * 加载更多局部刷新事件（复用原 addAllPageMediaData 逻辑）

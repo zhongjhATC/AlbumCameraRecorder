@@ -22,6 +22,11 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
         const val PREVIEW_DATA = "preview_data"
 
         /**
+         * 相册界面是否显示拍照
+         */
+        const val IS_DISPLAY_CAMERA = "is_display_camera"
+
+        /**
          * 当前索引
          */
         const val CURRENT_POSITION = "current_position"
@@ -71,6 +76,11 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
         return this
     }
 
+    override fun isDisplayCamera(isDisplayCamera: Boolean): PreviewSetting {
+        previewSpec.isDisplayCamera = isDisplayCamera
+        return this
+    }
+
     override fun setCurrentPosition(currentPosition: Int): PreviewSetting {
         previewSpec.currentPosition = currentPosition
         return this
@@ -99,6 +109,7 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
     override fun setIntent(intent: Intent) {
         intent.putExtra(PREVIEW_TYPE, previewSpec.previewType)
         intent.putParcelableArrayListExtra(PREVIEW_DATA, previewSpec.localMediaArrayList)
+        intent.putExtra(IS_DISPLAY_CAMERA, previewSpec.isDisplayCamera)
         intent.putExtra(CURRENT_POSITION, previewSpec.currentPosition)
         intent.putExtra(EXTRA_RESULT_ORIGINAL_ENABLE, previewSpec.isOriginal)
         intent.putExtra(IS_SELECTED_CHECK, previewSpec.isSelectedCheck)
@@ -109,6 +120,7 @@ class PreviewSetting(previewType: PreviewType) : PreviewApi {
     override fun setBundle(bundle: Bundle) {
         bundle.putSerializable(PREVIEW_TYPE, previewSpec.previewType)
         bundle.putParcelableArrayList(PREVIEW_DATA, previewSpec.localMediaArrayList)
+        bundle.putBoolean(IS_DISPLAY_CAMERA, previewSpec.isDisplayCamera)
         bundle.putInt(CURRENT_POSITION, previewSpec.currentPosition)
         bundle.putBoolean(EXTRA_RESULT_ORIGINAL_ENABLE, previewSpec.isOriginal)
         bundle.putBoolean(IS_SELECTED_CHECK, previewSpec.isSelectedCheck)

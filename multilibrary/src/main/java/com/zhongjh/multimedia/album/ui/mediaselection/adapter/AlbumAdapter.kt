@@ -13,6 +13,7 @@ import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.Album.Companion.ALBUM_ID_ALL
 import com.zhongjh.multimedia.album.entity.RefreshMediaData
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.widget.MediaGrid
 import com.zhongjh.multimedia.album.widget.CheckView
@@ -38,6 +39,11 @@ class AlbumAdapter(
     private var mOnMediaClickListener: OnMediaClickListener? = null
     private val mImageResize: Int
 
+    /**
+     * 专辑id,-1是全部
+     */
+    private var mBucketId: Long = ALBUM_ID_ALL
+
     init {
         Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " AlbumMediaAdapter")
         mImageResize = imageResize
@@ -46,10 +52,12 @@ class AlbumAdapter(
     /**
      * 重新赋值数据
      *
+     * @param bucketId 专辑id,-1是全部
      * @param refreshMediaData 数据源和比较数据工具类
      */
-    fun setReloadPageMediaData(refreshMediaData: RefreshMediaData) {
+    fun setReloadPageMediaData(bucketId: Long, refreshMediaData: RefreshMediaData) {
         this@AlbumAdapter.data = refreshMediaData.data
+        this@AlbumAdapter.mBucketId = bucketId
         refreshMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
     }
 
@@ -62,7 +70,7 @@ class AlbumAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (mAlbumSpec.isDisplayCamera && position == 0) {
+        return if (isDisplayCamera() && position == 0) {
             // 第一个位置返回拍照类型
             AlbumTypes.CAMERA
         } else {
@@ -92,8 +100,8 @@ class AlbumAdapter(
             // 相片的item
             val mediaViewHolder = holder as MediaViewHolder
 
-            // 👇 修复：按钮占了位置，图片要 -1
-            val realPos = if (mAlbumSpec.isDisplayCamera) {
+            // 按钮占了位置，图片要 -1
+            val realPos = if (isDisplayCamera()) {
                 position - 1
             } else {
                 position
@@ -114,7 +122,7 @@ class AlbumAdapter(
 
     override fun getItemCount(): Int {
         // 如果显示拍照按钮，总数 = 图片数量 + 1
-        return if (mAlbumSpec.isDisplayCamera) {
+        return if (isDisplayCamera()) {
             data.size + 1
         } else {
             data.size
@@ -123,16 +131,16 @@ class AlbumAdapter(
 
     override fun getItemId(position: Int): Long {
         // 相机按钮返回固定ID，不读取数据
-        if (mAlbumSpec.isDisplayCamera && position == 0) {
+        if (isDisplayCamera() && position == 0) {
             return -1000L
         }
         // 需要返回id，否则不会重复调用onBindViewHolder，因为设置了mAdapter.setHasStableIds(true)
-        val realPos = if (mAlbumSpec.isDisplayCamera) position - 1 else position
+        val realPos = if (isDisplayCamera()) position - 1 else position
         return data[realPos].fileId
     }
 
     fun getItem(position: Int): LocalMedia {
-        val realPos = if (mAlbumSpec.isDisplayCamera) position - 1 else position
+        val realPos = if (isDisplayCamera()) position - 1 else position
         return data[realPos]
     }
 
@@ -275,6 +283,13 @@ class AlbumAdapter(
         if (mAlbumSpec.selectedEnable) {
             mediaGrid.setCheckEnabled(enable)
         }
+    }
+
+    /**
+     * 返回是否显示相机
+     */
+    private fun isDisplayCamera(): Boolean {
+        return mAlbumSpec.isDisplayCamera && mBucketId == ALBUM_ID_ALL
     }
 
     interface CheckStateListener {

@@ -172,6 +172,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private val permissionVideos = arrayListOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
 
     /**
+     * 当前专辑
+     */
+    private var mAlbum = Album()
+
+    /**
      * 是否刷新
      */
     private val mIsRefresh = false
@@ -216,7 +221,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     /**
      * 记录拍照文件路径
      */
-    var cameraFile: File? = null
+    private var cameraFile: File? = null
 
     /**
      * 先执行onAttach生命周期再执行onCreateView
@@ -352,7 +357,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 预览事件
         mBinding.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
-                startPreviewActivityByAlbum(requireActivity(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.getSelectedData().localMedias)
+                startPreviewActivityByAlbum(requireActivity(), isDisplayCamera(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.getSelectedData().localMedias)
             }
         })
 
@@ -409,7 +414,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 mAlbumSpinner?.bindFolder(albums)
                 // 默认选中第一个专辑
                 mMainModel.currentSelection = 0
-                onAlbumSelected(albums[0]) // 加载默认专辑数据
+                // 加载默认专辑数据
+                onAlbumSelected(albums[0])
                 // 更新专辑标题（保留原动画逻辑）
                 updateAlbumTitle(albums)
             }
@@ -737,6 +743,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * @param album 专辑
      */
     private fun onAlbumSelected(album: Album) {
+        mAlbum = album
         if (album.isAll && album.isEmpty) {
             // 如果是选择全部并且没有数据的话，显示空的view
             mBinding.recyclerview.visibility = View.GONE
@@ -752,6 +759,13 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 mBinding.tvAlbumTitle.text = album.name
             }
         }
+    }
+
+    /**
+     * 返回是否显示相机
+     */
+    private fun isDisplayCamera(): Boolean {
+        return mAlbumSpec.isDisplayCamera && mAlbum.isAll
     }
 
     override fun onUpdate() {
@@ -779,7 +793,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         currentPosition = adapterPosition
         mMainModel.previewPosition = adapterPosition
 
-        startPreviewFragmentByAlbum((requireActivity() as MainActivity))
+        startPreviewFragmentByAlbum((requireActivity() as MainActivity), isDisplayCamera())
     }
 
     /**

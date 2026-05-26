@@ -19,6 +19,14 @@ interface PreviewApi {
     fun setLocalMediaArrayList(localMediaArrayList: ArrayList<LocalMedia>): PreviewSetting
 
     /**
+     * 这个配置是搭配相册界面含有相机按钮使用的，如果相册界面含有相机按钮，需要设置为true
+     * 相册界面是否显示相机按钮,默认不显示
+     * @param isDisplayCamera 相册界面是否显示相机按钮
+     * @return [PreviewSetting] this
+     */
+    fun isDisplayCamera(isDisplayCamera: Boolean): PreviewSetting
+
+    /**
      * 当前选择的索引
      * @param currentPosition 当前选择的索引
      * @return [PreviewSetting] this
@@ -55,11 +63,13 @@ interface PreviewApi {
 
     /**
      * 最终将配置设置到intent
+     * @param intent intent
      */
     fun setIntent(intent: Intent)
 
     /**
      * 最终将配置设置到bundle
+     * @param bundle bundle
      */
     fun setBundle(bundle: Bundle)
 }

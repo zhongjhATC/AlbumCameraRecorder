@@ -19,6 +19,12 @@ object PreviewSpec {
     var localMediaArrayList: ArrayList<LocalMedia>? = null
 
     /**
+     * 这个配置是搭配相册界面含有相机按钮使用的，如果相册界面含有相机按钮，需要设置为true
+     * 相册界面是否显示相机按钮,默认不显示
+     */
+    var isDisplayCamera: Boolean = false
+
+    /**
      * 当前选择的数据索引
      */
     var currentPosition: Int = 0
@@ -56,6 +62,7 @@ object PreviewSpec {
     private fun reset() {
         previewType = PreviewType.ALBUM_ACTIVITY
         localMediaArrayList = null
+        isDisplayCamera = false
         currentPosition = 0
         isOriginal = true
         isSelectedCheck = true

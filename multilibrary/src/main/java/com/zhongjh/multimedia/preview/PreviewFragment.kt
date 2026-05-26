@@ -327,14 +327,13 @@ class PreviewFragment : BaseFragment() {
                 mEditEnable = it.getBoolean(PreviewSetting.EDIT_ENABLE, true)
                 // 设置是否开启原图
                 mOriginalEnable = it.getBoolean(PreviewSetting.EXTRA_RESULT_ORIGINAL_ENABLE, true)
+                // 上一个相册界面是否显示拍照，如果显示，关联的预览界面也要相对应做position调整
+                mIsDisplayCamera = it.getBoolean(PreviewSetting.IS_DISPLAY_CAMERA, false)
                 // 数据源
                 it.getParcelableArrayList<LocalMedia>(PreviewSetting.PREVIEW_DATA)?.let { selection ->
                     mLocalMedias.addAll(selection)
                     mSelectedModel.getSelectedData().addAll(selection)
                     mMainModel.previewPosition = it.getInt(PreviewSetting.CURRENT_POSITION, 0)
-                } ?: run {
-                    // 没值 / null / 空列表 走这里
-                    mIsDisplayCamera = mAlbumSpec.isDisplayCamera
                 }
             }
         } else {

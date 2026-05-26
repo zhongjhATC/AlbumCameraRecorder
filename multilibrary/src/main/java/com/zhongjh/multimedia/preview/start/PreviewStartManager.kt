@@ -11,6 +11,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
+import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.camera.entity.BitmapData
 import com.zhongjh.multimedia.preview.PreviewActivity
 import com.zhongjh.multimedia.preview.PreviewFragment
@@ -24,13 +25,15 @@ import com.zhongjh.multimedia.preview.enum.PreviewType
 object PreviewStartManager {
     /**
      * 相册界面 打开tPreviewActivity
+     * @param isDisplayCamera 相册界面是否显示拍照
      */
     @JvmStatic
-    fun startPreviewActivityByAlbum(activity: Activity, cutscenesEnabled: Boolean, previewActivityResult: ActivityResultLauncher<Intent>, localMedias: ArrayList<LocalMedia>) {
+    fun startPreviewActivityByAlbum(activity: Activity, isDisplayCamera: Boolean, cutscenesEnabled: Boolean, previewActivityResult: ActivityResultLauncher<Intent>, localMedias: ArrayList<LocalMedia>) {
         val intent = Intent(activity, PreviewActivity::class.java)
         // 支持所有功能
         PreviewSetting(PreviewType.ALBUM_ACTIVITY)
             .setLocalMediaArrayList(localMedias)
+            .isDisplayCamera(isDisplayCamera)
             .setIntent(intent)
         previewActivityResult.launch(intent)
         if (cutscenesEnabled) {
@@ -44,15 +47,17 @@ object PreviewStartManager {
 
     /**
      * 相册界面 打开PreviewFragment
+     * @param isDisplayCamera 相册界面是否显示拍照
      */
     @JvmStatic
-    fun startPreviewFragmentByAlbum(mainActivity: MainActivity) {
+    fun startPreviewFragmentByAlbum(mainActivity: MainActivity, isDisplayCamera: Boolean) {
         // 隐藏底部控件
         mainActivity.showHideTableLayoutAnimator(false)
         val fragment: Fragment = PreviewFragment()
         val bundle = Bundle()
         // 支持所有功能
         PreviewSetting(PreviewType.ALBUM_FRAGMENT)
+            .isDisplayCamera(isDisplayCamera)
             .setBundle(bundle)
         fragment.arguments = bundle
         mainActivity.supportFragmentManager

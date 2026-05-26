@@ -100,7 +100,7 @@ class MediaViewUtil(
                 is MainModel.MediaPageState.RefreshSuccess -> {
                     // 如果没有数据，则关闭下拉加载
                     recyclerView.setEnabledLoadMore(state.refreshMediaData.data.isNotEmpty())
-                    mAdapter?.setReloadPageMediaData(state.refreshMediaData)
+                    mAdapter?.setReloadPageMediaData(state.bucketId, state.refreshMediaData)
                     recyclerView.scrollToPosition(0)
                 }
 
@@ -130,7 +130,7 @@ class MediaViewUtil(
     }
 
     /**
-     * 每次筛选后，重新查询数据
+     * 每次选择某个专辑或者全部相册后，重新查询数据
      *
      * @param album 专辑
      */
