@@ -50,5 +50,12 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
         _selectedDataChange.postValue(position)
     }
 
+    /**
+     * 清空所有数据源
+     */
+    fun clearAllData() {
+        getSelectedData().localMedias.clear()
+    }
+
 
 }
