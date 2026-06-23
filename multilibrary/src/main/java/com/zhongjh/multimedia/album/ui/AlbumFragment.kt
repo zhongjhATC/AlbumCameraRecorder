@@ -47,6 +47,7 @@ import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
+import com.zhongjh.multimedia.album.entity.Album.Companion.ALBUM_ID_ALL
 import com.zhongjh.multimedia.album.entity.AlbumSpinnerStyle
 import com.zhongjh.multimedia.album.ui.manager.BottomToolbarManager
 import com.zhongjh.multimedia.album.ui.manager.TvAlbumPermissionManager
@@ -170,7 +171,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 录像请求的权限
      */
     private val permissionVideos = arrayListOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
-
     /**
      * 当前专辑
      */
@@ -348,8 +348,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         mAlbumSpinner?.setOnAlbumItemClickListener(object : OnAlbumItemClickListener {
             override fun onItemClick(position: Int, album: Album) {
                 // 设置缓存值
-                mMainModel.currentSelection = position
-                onAlbumSelected(album)
+                mMainModel.changeAlbum(album)
                 mAlbumSpinner?.dismiss()
             }
         })
@@ -407,11 +406,32 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 初始化数据的监控
      */
     private fun initObserveData() {
-        // 专辑加载完毕
-        LifecycleFlowCollector.collect(this, mMainModel.albums) { albums ->
+        // 专辑加载完毕,StateFlow只做纯UI绑定，不加载数据、不重置选中
+        LifecycleFlowCollector.collectDistinct(this, mMainModel.albums) { albums ->
+            Log.d("AlbumFragmentFlow","mMainModel.albums")
             if (albums.isNotEmpty()) {
                 // 更新专辑列表
                 mAlbumSpinner?.bindFolder(albums)
+            }
+        }
+        // 原图选项改变
+        LifecycleFlowCollector.collectDistinct(this, mMainModel.originalEnable) { value: Boolean ->
+            Log.d("AlbumFragmentFlow","mMainModel.originalEnable")
+            mBinding.original.setChecked(value)
+        }
+        // 预览界面的viewPage滑动时触发
+        LifecycleFlowCollector.collectDistinct(this, mMainModel.onViewPageSelected) { value: Int ->
+            Log.d("AlbumFragmentFlow","mMainModel.onViewPageSelected")
+            smoothScrollPosition = value
+            // 滑动到viewPage的一样position
+            isRecyclerViewUserDragging = false
+            mBinding.recyclerview.smoothScrollToPosition(smoothScrollPosition)
+        }
+        // 一次性初始化逻辑：仅首次加载执行，重订阅绝不触发 ==========
+        LifecycleFlowCollector.collect(this, mMainModel.albumLoadFinishEvent) {
+            Log.d("AlbumFragmentFlow","mMainModel.albumLoadFinishEvent")
+            val albums = mMainModel.albums.value
+            if (albums.isNotEmpty()) {
                 // 默认选中第一个专辑
                 mMainModel.currentSelection = 0
                 // 加载默认专辑数据
@@ -420,18 +440,17 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 updateAlbumTitle(albums)
             }
         }
-        // 选择数据改变
-        mSelectedModel.selectedDataChange.observe(viewLifecycleOwner) { position:Int -> mMediaViewUtil?.notifyItemByLocalMedia(position) }
-        // 原图选项改变
-        LifecycleFlowCollector.collect(this, mMainModel.originalEnable) { value: Boolean ->
-            mBinding.original.setChecked(value)
+        // 一次性初始化逻辑：手动切换专辑才重载媒体、清空选中 ==========
+        LifecycleFlowCollector.collect(this, mMainModel.albumChangeEvent) { targetAlbum ->
+            Log.d("AlbumFragmentFlow","mMainModel.albumChangeEvent")
+            mSelectedModel.clearAllData()
+            mMainModel.reloadPageMediaData(targetAlbum.id, mAlbumSpec.pageSize)
+            mBinding.tvAlbumTitle.text = targetAlbum.name
         }
-        // 预览界面的viewPage滑动时触发
-        LifecycleFlowCollector.collect(this, mMainModel.onViewPageSelected) { value: Int ->
-            smoothScrollPosition = value
-            // 滑动到viewPage的一样position
-            isRecyclerViewUserDragging = false
-            mBinding.recyclerview.smoothScrollToPosition(smoothScrollPosition)
+        // 选择数据改变
+        LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) { position ->
+            Log.d("AlbumFragmentFlow","mSelectedModel.selectedDataChange")
+            mMediaViewUtil?.notifyItemByLocalMedia(position)
         }
     }
 
@@ -488,7 +507,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                     // 1. 通知系统扫描这张照片 → 系统相册立刻显示
                     MediaScannerConnection.scanFile(mApplicationContext, arrayOf(file.absolutePath), null) { _, _ ->
                         // 扫描完成回调 刷新你自己App的相册列表（立刻看到刚拍的）
-                        mMainModel.loadAlbums()
+                        mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize)
                     }
                 }
             }
@@ -750,7 +769,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mBinding.emptyView.visibility = View.VISIBLE
         } else {
             // 清空当前相册所有选择的数据
-            mSelectedModel.getSelectedData().localMedias.clear()
+            mSelectedModel.clearAllData()
             // 如果有数据，显示相应相关照片
             mBinding.recyclerview.visibility = View.VISIBLE
             mBinding.emptyView.visibility = View.GONE

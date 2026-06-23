@@ -2,6 +2,7 @@ package com.zhongjh.multimedia.album.ui.mediaselection
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -94,10 +95,11 @@ class MediaViewUtil(
             }
         })
 
-        LifecycleFlowCollector.collect(owner, mainModel.mediaPageState) { state ->
+        LifecycleFlowCollector.collectDistinct(owner, mainModel.mediaPageState) { state ->
             when (state) {
                 // 监听到新的相册数据
                 is MainModel.MediaPageState.RefreshSuccess -> {
+                    Log.d("AlbumFragmentFlow","mainModel.mediaPageState")
                     // 如果没有数据，则关闭下拉加载
                     recyclerView.setEnabledLoadMore(state.refreshMediaData.data.isNotEmpty())
                     mAdapter?.setReloadPageMediaData(state.bucketId, state.refreshMediaData)

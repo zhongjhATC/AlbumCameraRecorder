@@ -11,8 +11,11 @@ import com.zhongjh.multimedia.album.loader.MediaLoader
 import com.zhongjh.multimedia.album.repository.MediaRepository
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.LocalMediaCallback
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -66,6 +69,18 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     val onScrollToPositionComplete: StateFlow<Int> = _onScrollToPositionComplete.asStateFlow()
 
     /**
+     * 事件1：专辑列表首次加载完成（页面初始化动作）
+     */
+    private val _albumLoadFinishEvent = MutableSharedFlow<Unit>(replay = 0, extraBufferCapacity = 1)
+    val albumLoadFinishEvent: Flow<Unit> = _albumLoadFinishEvent.asSharedFlow()
+
+    /**
+     * 事件2：主动切换专辑（手动选择/初始化切换，触发清空选中、加载媒体）
+     */
+    private val _albumChangeEvent = MutableSharedFlow<Album>(replay = 0, extraBufferCapacity = 1)
+    val albumChangeEvent: Flow<Album> = _albumChangeEvent.asSharedFlow()
+
+    /**
      * 媒体数据缓存
      * */
     private val localMedias = ArrayList<LocalMedia>()
@@ -90,19 +105,23 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      */
     fun loadAlbums() {
         viewModelScope.launch {
-            try {
-                // 从 Repository 收集数据流（自动在 IO 线程执行）
-                mediaRepository.loadAlbums().collect { repoAlbums ->
-                    // 更新专辑列表（转为不可变 List，确保数据安全）
-                    _albums.value = repoAlbums.toList()
-                }
-            } catch (e: Exception) {
-                // 错误状态通过 mediaPageState 传递（统一状态管理）
-                _mediaPageState.value = MediaPageState.Error(
-                    userMessage = "加载专辑失败",
-                    cause = e
-                )
+            // 从 Repository 收集数据流（自动在 IO 线程执行）
+            mediaRepository.loadAlbums().collect { repoAlbums ->
+                // 更新专辑列表（转为不可变 List，确保数据安全）
+                _albums.value = repoAlbums.toList()
+                // 发送【一次性初始化事件】
+                _albumLoadFinishEvent.emit(Unit)
             }
+        }
+    }
+
+    /**
+     * 对外暴露：切换专辑（入口统一，不暴露内部逻辑）
+     * */
+    fun changeAlbum(targetAlbum: Album) {
+        viewModelScope.launch {
+            // 发送【一次性切换事件】
+            _albumChangeEvent.emit(targetAlbum)
         }
     }
 

@@ -247,7 +247,6 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
     /**
      * 清空数据
      */
-    @SuppressLint("NotifyDataSetChanged")
     fun clearAll() {
         val newData = ArrayList<GridMedia>()
         addAddItem(newData)

@@ -95,6 +95,25 @@ class Album {
         return true
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as Album
+        return equalsAlbum(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + (firstImagePath?.hashCode() ?: 0)
+        result = 31 * result + (firstMimeType?.hashCode() ?: 0)
+        result = 31 * result + (name?.hashCode() ?: 0)
+        result = 31 * result + count
+        result = 31 * result + isChecked.hashCode()
+        result = 31 * result + checkedCount
+        result = 31 * result + type.hashCode()
+        return result
+    }
+
     companion object {
 
         const val ALBUM_ID_ALL: Long = -1

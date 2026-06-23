@@ -1,10 +1,15 @@
 package com.zhongjh.multimedia.model
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.zhongjh.common.entity.LocalMedia
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * 选择数据的ViewModel，缓存相关数据给它的子Fragment共同使用
@@ -27,27 +32,29 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据更改
      */
-    private val _selectedDataChange = MutableLiveData<Int>()
-    val selectedDataChange: LiveData<Int> get() = _selectedDataChange
+    private val _selectedDataChangeEvent = MutableSharedFlow<Int>(extraBufferCapacity = 1)
+    val selectedDataChangeEvent: SharedFlow<Int> = _selectedDataChangeEvent.asSharedFlow()
 
     /**
      * 选择的数据添加
      */
     fun addSelectedData(item: LocalMedia, position: Int) {
+        Log.d("AlbumFragmentFlow","SelectedModel.addSelectedData")
         item.isChecked = true
         selectedData.add(item)
         // 通知更新
-        _selectedDataChange.postValue(position)
+        _selectedDataChangeEvent.tryEmit(position)
     }
 
     /**
      * 选择的数据删除
      */
     fun removeSelectedData(item: LocalMedia, position: Int) {
+        Log.d("AlbumFragmentFlow","SelectedModel.removeSelectedData")
         item.isChecked = false
         selectedData.remove(item)
         // 通知更新
-        _selectedDataChange.postValue(position)
+        _selectedDataChangeEvent.tryEmit(position)
     }
 
     /**
