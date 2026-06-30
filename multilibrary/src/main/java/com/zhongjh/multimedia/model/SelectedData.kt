@@ -1,18 +1,16 @@
 package com.zhongjh.multimedia.model
 
 import android.content.Context
-import android.content.res.Resources.NotFoundException
 import android.util.Log
 import com.zhongjh.common.entity.IncapableCause
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.entity.SelectedItem
 import com.zhongjh.common.enums.Constant.IMAGE
 import com.zhongjh.common.enums.Constant.IMAGE_VIDEO
 import com.zhongjh.common.enums.Constant.VIDEO
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.SelectedCountMessage
 import com.zhongjh.multimedia.settings.AlbumSpec.mediaTypeExclusive
-import com.zhongjh.multimedia.utils.LocalMediaUtils.checkedLocalMediaOf
-import com.zhongjh.multimedia.utils.LocalMediaUtils.checkedNumOf
 import com.zhongjh.multimedia.utils.LocalMediaUtils.isAcceptable
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
 import com.zhongjh.multimedia.utils.SelectableUtils.imageVideoMaxCount
@@ -27,35 +25,11 @@ import com.zhongjh.multimedia.utils.SelectableUtils.videoMaxCount
  * @author zhongjh
  */
 open class SelectedData(private val mContext: Context) {
-    /**
-     * 选择数据源
-     */
-    val localMedias: ArrayList<LocalMedia> = ArrayList()
 
     /**
-     * fileId -> 选中顺序序号（1、2、3...，0=未选中）
+     * 【唯一数据源】只保留这一个集合，存放媒体+选中顺序
      */
-    private val fileIdToIndex = mutableMapOf<Long, Int>()
-
-    /**
-     * 缓存图片计数，替代每次全量遍历setSelectCount
-     */
-    private var cacheImageCount = 0
-
-    /**
-     * 缓存视频计数，替代每次全量遍历setSelectCount
-     */
-    private var cacheVideoCount = 0
-
-    /**
-     * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
-     */
-    private var mCollectionType = COLLECTION_UNDEFINED
-
-    /**
-     * 当前选择的视频数量
-     */
-    private var mSelectedVideoCount = 0
+    val selectedItems = mutableListOf<SelectedItem>()
 
     /**
      * 当前选择的图片数量
@@ -63,50 +37,61 @@ open class SelectedData(private val mContext: Context) {
     private var mSelectedImageCount = 0
 
     /**
+     * 当前选择的视频数量
+     */
+    private var mSelectedVideoCount = 0
+
+    /**
+     * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
+     */
+    private var mCollectionType = COLLECTION_UNDEFINED
+
+    /**
      * 将资源对象添加到已选中集合
      *
      * @param item 数据
      */
     fun add(item: LocalMedia): Boolean {
-        Log.d("onSaveInstanceState", localMedias.size.toString() + " add")
-        val added = localMedias.add(item)
+        // 先判断是否已存在
+        if (isSelected(item)) {
+            return false
+        }
+
+        val newOrder = selectedItems.size + 1
+        selectedItems.add(SelectedItem(item, newOrder))
         // 如果只选中了图片Item， mCollectionType 设置为 COLLECTION_IMAGE
         // 如果只选中了图片影音资源，mCollectionType 设置为 COLLECTION_IMAGE
         // 如果两种都选择了，mCollectionType 设置为 COLLECTION_MIXED
-        if (added) {
-            // 同步序号映射
-            fileIdToIndex[item.fileId] = localMedias.size
-            // 同步图文计数缓存
-            if (item.isImage()) {
-                cacheImageCount++
-            } else if (item.isVideo()) {
-                cacheVideoCount++
-            }
+        // 同步图文计数缓存
+        if (item.isImage()) {
+            mSelectedImageCount++
+        } else if (item.isVideo()) {
+            mSelectedVideoCount++
+        }
 
-            // 如果是空的数据源
-            if (mCollectionType == COLLECTION_UNDEFINED) {
-                if (item.isImage()) {
-                    // 如果是图片，就设置图片类型
-                    mCollectionType = COLLECTION_IMAGE
-                } else if (item.isVideo()) {
-                    // 如果是视频，就设置视频类型
-                    mCollectionType = COLLECTION_VIDEO
-                }
-            } else if (mCollectionType == COLLECTION_IMAGE) {
-                // 如果当前是图片类型
-                if (item.isVideo()) {
-                    // 选择了视频，就设置混合模式
-                    mCollectionType = COLLECTION_MIXED
-                }
-            } else if (mCollectionType == COLLECTION_VIDEO) {
-                // 如果当前是图片类型
-                if (item.isImage()) {
-                    // 选择了图片，就设置混合模式
-                    mCollectionType = COLLECTION_MIXED
-                }
+        // 如果是空的数据源
+        if (mCollectionType == COLLECTION_UNDEFINED) {
+            if (item.isImage()) {
+                // 如果是图片，就设置图片类型
+                mCollectionType = COLLECTION_IMAGE
+            } else if (item.isVideo()) {
+                // 如果是视频，就设置视频类型
+                mCollectionType = COLLECTION_VIDEO
+            }
+        } else if (mCollectionType == COLLECTION_IMAGE) {
+            // 如果当前是图片类型
+            if (item.isVideo()) {
+                // 选择了视频，就设置混合模式
+                mCollectionType = COLLECTION_MIXED
+            }
+        } else if (mCollectionType == COLLECTION_VIDEO) {
+            // 如果当前是图片类型
+            if (item.isImage()) {
+                // 选择了图片，就设置混合模式
+                mCollectionType = COLLECTION_MIXED
             }
         }
-        return added
+        return true
     }
 
     /**
@@ -115,9 +100,7 @@ open class SelectedData(private val mContext: Context) {
      * @param localMediaArrayList 选择的数据源
      */
     fun addAll(localMediaArrayList: ArrayList<LocalMedia>) {
-        localMedias.addAll(localMediaArrayList)
-        // 全量重建缓存
-        rebuildAllCache()
+        localMediaArrayList.forEach { add(it) }
     }
 
     /**
@@ -127,30 +110,33 @@ open class SelectedData(private val mContext: Context) {
      * @return 是否删除成功
      */
     fun remove(item: LocalMedia): Boolean {
-        val localMedia = checkedLocalMediaOf(localMedias, item)
-        localMedia?.let {
-            val removed = localMedias.remove(localMedia)
-            if (removed) {
-                // 先扣减图文缓存计数
-                if (localMedia.isImage()) cacheImageCount--
-                else if (localMedia.isVideo()) cacheVideoCount++
-                // 移除后重建整个序号映射（保证数字连续）
-                rebuildIndexMap()
-
-                if (localMedias.isEmpty()) {
-                    // 如果删除后没有数据，设置当前类型为空
-                    mCollectionType = COLLECTION_UNDEFINED
-                } else {
-                    if (mCollectionType == COLLECTION_MIXED) {
-                        currentMaxSelectable()
-                        Log.d("currentMaxSelectable", "currentMaxSelectable")
-                    }
-                }
-            }
-            Log.d("onSaveInstanceState", localMedias.size.toString() + " remove")
-            return removed
+        val targetIndex = selectedItems.indexOfFirst {
+            it.media.fileId == item.fileId
         }
-        return true
+        if (targetIndex == -1) {
+            return false
+        }
+        val removedItem = selectedItems.removeAt(targetIndex)
+        // 先扣减图文缓存计数
+        if (removedItem.media.isImage()) {
+            mSelectedImageCount--
+        } else if (removedItem.media.isVideo()) {
+            mSelectedVideoCount--
+        }
+        // 删除后统一重排所有序号，保证数字连续
+        reIndexAllOrder()
+
+        if (selectedItems.isEmpty()) {
+            // 如果删除后没有数据，设置当前类型为空
+            mCollectionType = COLLECTION_UNDEFINED
+        } else {
+            if (mCollectionType == COLLECTION_MIXED) {
+                currentMaxSelectable()
+                Log.d("currentMaxSelectable", "currentMaxSelectable")
+            }
+        }
+        Log.d("onSaveInstanceState", selectedItems.size.toString() + " remove")
+        return false
     }
 
     /**
@@ -165,11 +151,9 @@ open class SelectedData(private val mContext: Context) {
         } else {
             collectionType
         }
-        localMedias.clear()
-        localMedias.addAll(items)
         // 全量重建缓存
-        rebuildAllCache()
-        Log.d("onSaveInstanceState", localMedias.size.toString() + " overwrite")
+        rebuildAllCache(items)
+        Log.d("onSaveInstanceState", selectedItems.size.toString() + " overwrite")
     }
 
     /**
@@ -179,17 +163,36 @@ open class SelectedData(private val mContext: Context) {
      * @return 返回是否选择
      */
     fun isSelected(item: LocalMedia): Boolean {
-        return fileIdToIndex.containsKey(item.fileId)
+        return selectedItems.any { it.media.fileId == item.fileId }
     }
 
     /**
-     * 返回选择的num
+     * 返回选择的num，0=未选中
      *
      * @param item 数据
      * @return 选择的索引，最终返回的选择了第几个
      */
     fun checkedNumOf(item: LocalMedia): Int {
-        return fileIdToIndex[item.fileId] ?: 0
+        return selectedItems.firstOrNull { it.media.fileId == item.fileId }?.order ?: 0
+    }
+
+    /**
+     * 获取数据源长度
+     *
+     * @return 数据源长度
+     */
+    fun count(): Int {
+        return selectedItems.size
+    }
+
+    /**
+     * 当前数量 和 当前选择最大数量比较 是否相等
+     *
+     * @return boolean
+     */
+    fun maxSelectableReached(): Boolean {
+        Log.d("onSaveInstanceState", selectedItems.size.toString() + " maxSelectableReached")
+        return selectedItems.size == currentMaxSelectable()
     }
 
     /**
@@ -199,14 +202,13 @@ open class SelectedData(private val mContext: Context) {
      * @return 弹窗
      */
     fun isAcceptable(item: LocalMedia): IncapableCause? {
-        Log.d("onSaveInstanceState", localMedias.size.toString() + " isAcceptable")
+        Log.d("onSaveInstanceState", selectedItems.size.toString() + " isAcceptable")
         var maxSelectableReached = false
         var maxSelectable = 0
         var type = ""
         val selectedCountMessage: SelectedCountMessage
         // 判断是否混合视频图片模式
         if (!mediaTypeExclusive) {
-            setSelectCount()
             // 混合检查
             item.mimeType?.let { mimeType ->
                 if (mimeType.startsWith(IMAGE)) {
@@ -235,22 +237,12 @@ open class SelectedData(private val mContext: Context) {
     }
 
     /**
-     * 当前数量 和 当前选择最大数量比较 是否相等
-     *
-     * @return boolean
+     * 删除中间条目后，重新统一编排所有选中序号，保证连续 1、2、3...
      */
-    fun maxSelectableReached(): Boolean {
-        Log.d("onSaveInstanceState", localMedias.size.toString() + " maxSelectableReached")
-        return localMedias.size == currentMaxSelectable()
-    }
-
-    /**
-     * 获取数据源长度
-     *
-     * @return 数据源长度
-     */
-    fun count(): Int {
-        return localMedias.size
+    private fun reIndexAllOrder() {
+        selectedItems.forEachIndexed { index, selectedItem ->
+            selectedItem.order = index + 1
+        }
     }
 
     /**
@@ -266,13 +258,7 @@ open class SelectedData(private val mContext: Context) {
     private fun newIncapableCause(item: LocalMedia, maxSelectableReached: Boolean, maxSelectable: Int, isMashup: Boolean, type: String?): IncapableCause? {
         // 检查是否超过最大设置数量
         if (maxSelectableReached) {
-            val cause = try {
-                getCause(maxSelectable, isMashup, type)
-            } catch (e: NotFoundException) {
-                getCause(maxSelectable, isMashup, type)
-            } catch (e: NoClassDefFoundError) {
-                getCause(maxSelectable, isMashup, type)
-            }
+            val cause = getCause(maxSelectable, isMashup, type)
             // 生成窗口
             return IncapableCause(cause)
         } else if (typeConflict(item)) {
@@ -299,17 +285,14 @@ open class SelectedData(private val mContext: Context) {
                     R.string.z_multi_library_error_over_count,
                     maxSelectable
                 )
-
                 IMAGE -> cause = mContext.resources.getString(
                     R.string.z_multi_library_error_over_count_image,
                     maxSelectable
                 )
-
                 VIDEO -> cause = mContext.resources.getString(
                     R.string.z_multi_library_error_over_count_video,
                     maxSelectable
                 )
-
                 else -> {}
             }
         } else {
@@ -319,15 +302,6 @@ open class SelectedData(private val mContext: Context) {
             )
         }
         return cause
-    }
-
-    /**
-     * 赋值选择的值
-     */
-    private fun setSelectCount() {
-        mSelectedImageCount = cacheImageCount
-        mSelectedVideoCount = cacheVideoCount
-        Log.d("onSaveInstanceState", localMedias.size.toString() + " getSelectCount")
     }
 
     /**
@@ -342,20 +316,13 @@ open class SelectedData(private val mContext: Context) {
             imageVideoMaxCount
         } else {
             when (mCollectionType) {
-                COLLECTION_IMAGE -> {
-                    imageMaxCount
-                }
-                COLLECTION_VIDEO -> {
-                    videoMaxCount
-                }
-                else -> {
-                    // 返回视频+图片
-                    imageVideoMaxCount
-                }
+                COLLECTION_IMAGE -> imageMaxCount
+                COLLECTION_VIDEO -> videoMaxCount
+                else -> imageVideoMaxCount
             }
         }
 
-        Log.d("onSaveInstanceState", localMedias.size.toString() + " currentMaxSelectable")
+        Log.d("onSaveInstanceState", selectedItems.size.toString() + " currentMaxSelectable")
         return leastCount
     }
 
@@ -372,29 +339,19 @@ open class SelectedData(private val mContext: Context) {
     /**
      *  重建序号映射 + 图文计数缓存
      */
-    private fun rebuildAllCache() {
-        fileIdToIndex.clear()
-        cacheImageCount = 0
-        cacheVideoCount = 0
+    private fun rebuildAllCache(items: ArrayList<LocalMedia>) {
+        selectedItems.clear()
+        mSelectedImageCount = 0
+        mSelectedVideoCount = 0
         // 根据所有已选择的数据赋值
-        localMedias.forEachIndexed { index, media ->
-            fileIdToIndex[media.fileId] = index + 1
+        items.forEachIndexed { index, media ->
+            selectedItems.add(SelectedItem(media, index + 1))
             // 同步图文计数缓存
             if (media.isImage()) {
-                cacheImageCount++
+                mSelectedImageCount++
             } else if (media.isVideo()) {
-                cacheVideoCount++
+                mSelectedVideoCount++
             }
-        }
-    }
-
-    /**
-     * 重建序号映射 fileId -> 选中数字
-     */
-    private fun rebuildIndexMap() {
-        fileIdToIndex.clear()
-        localMedias.forEachIndexed { index, media ->
-            fileIdToIndex[media.fileId] = index + 1
         }
     }
 

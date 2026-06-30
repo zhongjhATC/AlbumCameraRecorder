@@ -45,7 +45,7 @@ class AlbumAdapter(
     private var mBucketId: Long = ALBUM_ID_ALL
 
     init {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " AlbumMediaAdapter")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " AlbumMediaAdapter")
         mImageResize = imageResize
     }
 
@@ -90,7 +90,7 @@ class AlbumAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onBindViewHolder")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onBindViewHolder")
         if (getItemViewType(position) == AlbumTypes.CAMERA) {
             holder.itemView.setOnClickListener {
                 // 打开添加功能
@@ -151,7 +151,7 @@ class AlbumAdapter(
      * @param mediaGrid holder
      */
     private fun setCheckStatus(item: LocalMedia, mediaGrid: MediaGrid) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " setCheckStatus")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " setCheckStatus")
         // 是否多选时,显示数字 - true:选择数字,false:不显示数字
         if (mAlbumSpec.countable) {
             val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
@@ -188,7 +188,7 @@ class AlbumAdapter(
     }
 
     override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context, position: Int) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().localMedias.size.toString() + " onCheckViewClicked")
+        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
