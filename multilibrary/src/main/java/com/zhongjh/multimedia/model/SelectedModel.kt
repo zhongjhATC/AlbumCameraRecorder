@@ -61,7 +61,7 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      * 清空所有数据源
      */
     fun clearAllData() {
-        getSelectedData().localMedias.clear()
+        getSelectedData().clearAll()
     }
 
 

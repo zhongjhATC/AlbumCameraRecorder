@@ -436,8 +436,7 @@ class PreviewFragment : BaseFragment() {
         mViewHolder.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
                 // 确认的一刻赋值
-                val localMediaArrayList: ArrayList<LocalMedia> =
-                    mSelectedModel.getSelectedData().localMedias
+                val localMediaArrayList: ArrayList<LocalMedia> = mSelectedModel.getSelectedData().getSelectedMediaArrayList()
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
                     localMedia.isOriginal = mMainModel.getOriginalEnable()
@@ -488,7 +487,7 @@ class PreviewFragment : BaseFragment() {
     private fun setResultOkByIsCompress() {
         if (mPreviewType == PreviewType.CAMERA || mPreviewType == PreviewType.GRID || mPreviewType == PreviewType.THIRD_PARTY) {
             // 直接返回
-            setResultOk(mSelectedModel.getSelectedData().localMedias)
+            setResultOk(mSelectedModel.getSelectedData().getSelectedMediaArrayList())
         } else {
             // 其他界面就要先压缩
             compressFile()
@@ -640,7 +639,7 @@ class PreviewFragment : BaseFragment() {
         mAlbumSpec.onSelectedListener?.let {
             if (mPreviewType == PreviewType.ALBUM_ACTIVITY || mPreviewType == PreviewType.ALBUM_FRAGMENT) {
                 // 触发选择的接口事件
-                it.onSelected(mSelectedModel.getSelectedData().localMedias)
+                it.onSelected(mSelectedModel.getSelectedData().getSelectedMediaArrayList())
             }
         }
     }
@@ -704,7 +703,7 @@ class PreviewFragment : BaseFragment() {
                 val isOnlyCompressEditPicture =
                     fragment.mPreviewType == PreviewType.GRID || fragment.mPreviewType == PreviewType.THIRD_PARTY
                 return@request fragment.mAlbumCompressFileTask.compressFileTaskDoInBackground(
-                    fragment.mSelectedModel.getSelectedData().localMedias,
+                    fragment.mSelectedModel.getSelectedData().getSelectedMediaArrayList(),
                     isOnlyCompressEditPicture
                 )
             } ?: let {

@@ -76,7 +76,7 @@ class OriginalManage(
         var count = 0
         val selectedCount: Int = mSelectedModel.getSelectedData().count()
         for (i in 0 until selectedCount) {
-            val item: LocalMedia = mSelectedModel.getSelectedData().localMedias[i]
+            val item: LocalMedia = mSelectedModel.getSelectedData().selectedItems[i].media
             if (item.isImage()) {
                 val size = PhotoMetadataUtils.getSizeInMb(item.size)
                 if (size > mAlbumSpec.originalMaxSize) {

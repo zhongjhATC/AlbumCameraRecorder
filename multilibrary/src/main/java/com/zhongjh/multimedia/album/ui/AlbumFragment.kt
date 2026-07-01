@@ -356,19 +356,19 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 预览事件
         mBinding.buttonPreview.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
-                startPreviewActivityByAlbum(requireActivity(), isDisplayCamera(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.getSelectedData().localMedias)
+                startPreviewActivityByAlbum(requireActivity(), isDisplayCamera(), mGlobalSpec.cutscenesEnabled, mPreviewActivityResult, mSelectedModel.getSelectedData().getSelectedMediaArrayList())
             }
         })
 
         // 确认当前选择的图片
         mBinding.buttonApply.setOnClickListener(object : OnMoreClickListener() {
             override fun onListener(v: View) {
-                val localMediaArrayList = mSelectedModel.getSelectedData().localMedias
+                val localMediaArrayList = mSelectedModel.getSelectedData().selectedItems
                 // 设置是否原图状态
                 for (localMedia in localMediaArrayList) {
-                    localMedia.isOriginal = mMainModel.getOriginalEnable()
+                    localMedia.media.isOriginal = mMainModel.getOriginalEnable()
                 }
-                compressFile(localMediaArrayList)
+                compressFile(mSelectedModel.getSelectedData().getSelectedMediaArrayList())
             }
         })
 
@@ -791,7 +791,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // notify bottom toolbar that check state changed.
         updateBottomToolbar()
         // 触发选择的接口事件
-        mAlbumSpec.onSelectedListener?.onSelected(mSelectedModel.getSelectedData().localMedias)
+        mAlbumSpec.onSelectedListener?.onSelected(mSelectedModel.getSelectedData().getSelectedMediaArrayList())
     }
 
     /**

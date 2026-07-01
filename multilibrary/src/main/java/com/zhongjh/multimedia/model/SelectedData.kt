@@ -10,6 +10,7 @@ import com.zhongjh.common.enums.Constant.IMAGE_VIDEO
 import com.zhongjh.common.enums.Constant.VIDEO
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.SelectedCountMessage
+import com.zhongjh.multimedia.album.widget.CheckView
 import com.zhongjh.multimedia.settings.AlbumSpec.mediaTypeExclusive
 import com.zhongjh.multimedia.utils.LocalMediaUtils.isAcceptable
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
@@ -45,6 +46,24 @@ open class SelectedData(private val mContext: Context) {
      * 当前选择的所有类型，列表如果包含了图片和视频，就会变成混合类型
      */
     private var mCollectionType = COLLECTION_UNDEFINED
+
+    /**
+     * 获取原始选中媒体列表（外部业务使用）
+     */
+    fun getSelectedMediaArrayList(): ArrayList<LocalMedia> {
+        return ArrayList(selectedItems.map { it.media })
+    }
+
+    /**
+     * 清空所有选中数据
+     */
+    fun clearAll() {
+        selectedItems.clear()
+        mSelectedImageCount = 0
+        mSelectedVideoCount = 0
+        mCollectionType = COLLECTION_UNDEFINED
+        Log.d("onSaveInstanceState", "clearAll 已清空全部选中资源")
+    }
 
     /**
      * 将资源对象添加到已选中集合
@@ -136,7 +155,7 @@ open class SelectedData(private val mContext: Context) {
             }
         }
         Log.d("onSaveInstanceState", selectedItems.size.toString() + " remove")
-        return false
+        return true
     }
 
     /**
@@ -173,7 +192,7 @@ open class SelectedData(private val mContext: Context) {
      * @return 选择的索引，最终返回的选择了第几个
      */
     fun checkedNumOf(item: LocalMedia): Int {
-        return selectedItems.firstOrNull { it.media.fileId == item.fileId }?.order ?: 0
+        return selectedItems.firstOrNull { it.media.fileId == item.fileId }?.order ?: CheckView.UNCHECKED
     }
 
     /**
