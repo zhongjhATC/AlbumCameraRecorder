@@ -2,6 +2,7 @@ package com.zhongjh.common.listener
 
 import android.util.Log
 import android.view.View
+import com.zhongjh.common.utils.LogUtil
 
 /**
  * 防抖动点击
@@ -24,7 +25,7 @@ abstract class OnMoreClickListener : View.OnClickListener {
         if (currentTime - lastTime > MIN_CLICK_DELAY_TIME) {
             btnId = v.id
             lastTime = currentTime
-            Log.d("OnMoreClickListener", "" + currentTime)
+            LogUtil.d("OnMoreClickListener", "" + currentTime)
             onListener(v)
         }
     }

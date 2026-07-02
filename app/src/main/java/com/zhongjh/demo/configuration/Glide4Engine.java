@@ -21,6 +21,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.zhongjh.common.engine.ImageEngine;
 import com.zhongjh.common.utils.ActivityUtils;
+import com.zhongjh.common.utils.LogUtil;
 import com.zhongjh.demo.R;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,7 @@ public class Glide4Engine implements ImageEngine {
                 .listener(new RequestListener<Bitmap>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-                        Log.e("Glide", "图片加载失败: $imageUrl " + path, e);
+                        LogUtil.INSTANCE.e("Glide", "图片加载失败: $imageUrl " + path, e);
                         return false;
                     }
 
@@ -127,7 +128,7 @@ public class Glide4Engine implements ImageEngine {
             return;
         }
         Glide.with(context.getApplicationContext()).pauseRequests();
-        Log.d("Glide4Engine", "pauseRequests");
+        LogUtil.INSTANCE.d("Glide4Engine", "pauseRequests");
     }
 
     @Override
@@ -136,6 +137,6 @@ public class Glide4Engine implements ImageEngine {
             return;
         }
         Glide.with(context.getApplicationContext()).resumeRequests();
-        Log.d("Glide4Engine", "resumeRequests");
+        LogUtil.INSTANCE.d("Glide4Engine", "resumeRequests");
     }
 }

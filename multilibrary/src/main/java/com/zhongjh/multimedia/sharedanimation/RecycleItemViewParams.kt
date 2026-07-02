@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ListView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.utils.LogUtil
 
 /**
  * 用于在相册界面中的RecyclerView的item 过渡到 预览界面的ViewPager2的item 时，所需要的相关参数
@@ -92,7 +93,7 @@ object RecycleItemViewParams {
                 viewParam.top = 0
                 viewParam.width = 0
                 viewParam.height = 0
-                Log.d("RecycleItemViewParams", "00")
+                LogUtil.d("RecycleItemViewParams", "00")
             } else {
                 val location = IntArray(2)
                 view.getLocationOnScreen(location)
@@ -100,7 +101,7 @@ object RecycleItemViewParams {
                 viewParam.top = location[1] - statusBarHeight
                 viewParam.width = view.width
                 viewParam.height = view.height
-                Log.d("RecycleItemViewParams", "left: ${viewParam.left} viewParam.top: ${viewParam.top} viewParam.width: ${viewParam.width} viewParam.height: ${viewParam.height}")
+                LogUtil.d("RecycleItemViewParams", "left: ${viewParam.left} viewParam.top: ${viewParam.top} viewParam.width: ${viewParam.width} viewParam.height: ${viewParam.height}")
             }
             viewParams.add(viewParam)
         }

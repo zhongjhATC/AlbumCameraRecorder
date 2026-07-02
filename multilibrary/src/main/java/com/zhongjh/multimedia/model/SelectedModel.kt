@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.utils.LogUtil
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -39,7 +40,7 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      * 选择的数据添加
      */
     fun addSelectedData(item: LocalMedia, position: Int) {
-        Log.d("AlbumFragmentFlow","SelectedModel.addSelectedData")
+        LogUtil.d("AlbumFragmentFlow","SelectedModel.addSelectedData")
         item.isChecked = true
         selectedData.add(item)
         // 通知更新
@@ -50,7 +51,7 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      * 选择的数据删除
      */
     fun removeSelectedData(item: LocalMedia, position: Int) {
-        Log.d("AlbumFragmentFlow","SelectedModel.removeSelectedData")
+        LogUtil.d("AlbumFragmentFlow","SelectedModel.removeSelectedData")
         item.isChecked = false
         selectedData.remove(item)
         // 通知更新

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.enums.MimeType;
 import com.zhongjh.common.utils.FileUtils;
+import com.zhongjh.common.utils.LogUtil;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.demo.R;
 import com.zhongjh.demo.configuration.Glide4Engine;
@@ -118,7 +119,7 @@ public class MainListActivity extends AppCompatActivity {
         try (FileOutputStream out = new FileOutputStream(file)) {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
         } catch (IOException e) {
-            Log.e("MainListActivity", "copyFilesFromRaw" + e.getMessage());
+            LogUtil.INSTANCE.e("MainListActivity", "copyFilesFromRaw" + e.getMessage());
         }
         bitmap.recycle();
     }

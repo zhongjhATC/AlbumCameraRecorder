@@ -34,6 +34,7 @@ import androidx.camera.view.PreviewView;
 
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.LogUtil;
 import com.zhongjh.demo.BaseActivity;
 import com.zhongjh.demo.configuration.GifSizeFilter;
 import com.zhongjh.demo.configuration.Glide4Engine;
@@ -315,7 +316,7 @@ public class MainCustomCameraViewActivity extends BaseActivity {
 
         // ========== 4. 创建叠加效果 ==========
         OverlayEffect overlayEffect = new OverlayEffect(PREVIEW | VIDEO_CAPTURE, 0, new Handler(Looper.getMainLooper()),
-                throwable -> Log.e("initOverlayEffect", "initOverlayEffect errorListener " + throwable.getMessage()));
+                throwable -> LogUtil.INSTANCE.e("initOverlayEffect", "initOverlayEffect errorListener " + throwable.getMessage()));
 
         overlayEffect.clearOnDrawListener();
         overlayEffect.setOnDrawListener(frame -> {

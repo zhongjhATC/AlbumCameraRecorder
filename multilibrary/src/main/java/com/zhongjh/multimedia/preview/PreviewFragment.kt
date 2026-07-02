@@ -44,6 +44,7 @@ import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenWidth
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.common.utils.request
@@ -574,7 +575,7 @@ class PreviewFragment : BaseFragment() {
      */
     @Synchronized
     private fun setResultOk(localMedias: ArrayList<LocalMedia>) {
-        Log.d(TAG, "setResultOk")
+        LogUtil.d(TAG, "setResultOk")
         val intent = Intent()
         intent.putExtra(STATE_SELECTION, localMedias)
         requireActivity().setResult(RESULT_OK, intent)
@@ -719,7 +720,7 @@ class PreviewFragment : BaseFragment() {
                 fragment.setControlTouchEnable(true)
                 Toast.makeText(fragment.mContext, error.message, Toast.LENGTH_SHORT).show()
                 error.message?.let {
-                    Log.e(TAG, it)
+                    LogUtil.e(TAG, it)
                 }
             }
         }.onCancel {

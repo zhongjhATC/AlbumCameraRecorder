@@ -1,7 +1,7 @@
-package com.zhongjh.multimedia.camera.util
+package com.zhongjh.common.utils
 
 import android.util.Log
-import com.github.chrisbanes.photoview.BuildConfig
+import com.squareup.picasso.BuildConfig
 
 /**
  * 日志工具
@@ -9,29 +9,39 @@ import com.github.chrisbanes.photoview.BuildConfig
  * @author zhongjh
  */
 object LogUtil {
+    /**
+     * 调试日志总开关，发布版本改成 false 即可屏蔽所有Log
+     */
+    private const val DEBUG_LOG = false
     private const val DEFAULT_TAG = "zhongjh"
 
     fun i(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
             Log.i(tag, msg)
         }
     }
 
     fun v(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
             Log.v(tag, msg)
         }
     }
 
     fun d(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
             Log.d(tag, msg)
         }
     }
 
     fun e(tag: String, msg: String) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
             Log.e(tag, msg)
+        }
+    }
+
+    fun e(tag: String, msg: String, tr: Throwable?) {
+        if (BuildConfig.DEBUG && DEBUG_LOG) {
+            Log.e(tag, msg, tr)
         }
     }
 

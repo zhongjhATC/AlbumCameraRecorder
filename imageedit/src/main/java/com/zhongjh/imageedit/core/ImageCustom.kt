@@ -11,6 +11,7 @@ import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
 import android.util.Log
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.imageedit.core.clip.ImageClipWindow
 import com.zhongjh.imageedit.core.constants.Anchor
 import com.zhongjh.imageedit.core.homing.ImageHoming
@@ -198,7 +199,7 @@ class ImageCustom {
      * @param bitmap 要设置的位图对象
      */
     fun setBitmap(bitmap: Bitmap) {
-        Log.d(TAG, "setBitmap")
+        LogUtil.d(TAG, "setBitmap")
         if (bitmap.isRecycled) {
             return
         }
@@ -221,7 +222,7 @@ class ImageCustom {
          * @return 当前的编辑模式枚举值
          */
         get() {
-            Log.d(TAG, "getMode")
+            LogUtil.d(TAG, "getMode")
             return mMode
         }
         /**
@@ -230,7 +231,7 @@ class ImageCustom {
          * @param mode 要设置的编辑模式枚举值
          */
         set(mode) {
-            Log.d(TAG, "setMode")
+            LogUtil.d(TAG, "setMode")
 
             if (this.mMode == mode) {
                 return
@@ -271,7 +272,7 @@ class ImageCustom {
      * @param rotate 旋转角度
      */
     private fun rotateStickers(rotate: Float) {
-        Log.d(TAG, "rotateStickers")
+        LogUtil.d(TAG, "rotateStickers")
         mMatrix.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY())
         for (sticker in mBackStickers) {
             sticker.getFrame().let {
@@ -290,7 +291,7 @@ class ImageCustom {
          * @return 如果没有马赛克路径则返回true，否则返回false
          */
         get() {
-            Log.d(TAG, "isMosaicEmpty")
+            LogUtil.d(TAG, "isMosaicEmpty")
             return mMosaics.isEmpty()
         }
 
@@ -301,7 +302,7 @@ class ImageCustom {
          * @return 如果没有涂鸦路径则返回true，否则返回false
          */
         get() {
-            Log.d(TAG, "isDoodleEmpty")
+            LogUtil.d(TAG, "isDoodleEmpty")
             return mDoodles.isEmpty()
         }
 
@@ -309,7 +310,7 @@ class ImageCustom {
      * 撤销上一步涂鸦操作
      */
     fun undoDoodle() {
-        Log.d(TAG, "undoDoodle")
+        LogUtil.d(TAG, "undoDoodle")
         if (mDoodles.isNotEmpty()) {
             mDoodles.removeAt(mDoodles.size - 1)
         }
@@ -319,7 +320,7 @@ class ImageCustom {
      * 撤销上一步马赛克操作
      */
     fun undoMosaic() {
-        Log.d(TAG, "undoMosaic")
+        LogUtil.d(TAG, "undoMosaic")
         if (mMosaics.isNotEmpty()) {
             mMosaics.removeAt(mMosaics.size - 1)
         }
@@ -332,7 +333,7 @@ class ImageCustom {
          * @return 裁剪区域的RectF对象
          */
         get() {
-            Log.d(TAG, "getClipFrame")
+            LogUtil.d(TAG, "getClipFrame")
             return mClipFrame
         }
 
@@ -345,7 +346,7 @@ class ImageCustom {
      * @return 包含新的滚动位置、缩放和旋转信息的ImageHoming对象
      */
     fun clip(scrollX: Float, scrollY: Float): ImageHoming {
-        Log.d(TAG, "clip")
+        LogUtil.d(TAG, "clip")
         val frame = mClipWin.getOffsetFrame(scrollX, scrollY)
 
         mMatrix.setRotate(-rotate, mClipFrame.centerX(), mClipFrame.centerY())
@@ -362,7 +363,7 @@ class ImageCustom {
      * 恢复到裁剪前的状态
      */
     fun toBackupClip() {
-        Log.d(TAG, "toBackupClip")
+        LogUtil.d(TAG, "toBackupClip")
         mMatrix.setScale(scale, scale)
         mMatrix.postTranslate(frame.left, frame.top)
         mMatrix.mapRect(mClipFrame, mBackupClipFrame)
@@ -374,7 +375,7 @@ class ImageCustom {
      * 重置裁剪区域
      */
     fun resetClip() {
-        Log.d(TAG, "resetClip")
+        LogUtil.d(TAG, "resetClip")
         // TODO 就近旋转
         targetRotate = rotate - rotate % 360
         mClipFrame.set(frame)
@@ -387,7 +388,7 @@ class ImageCustom {
      * 马赛克效果的原理是使用低分辨率图像覆盖在原图像上，通过绘制放大后的低分辨率图像产生马赛克效果
      */
     private fun makeMosaicBitmap() {
-        Log.d(TAG, "makeMosaicBitmap")
+        LogUtil.d(TAG, "makeMosaicBitmap")
         if (mosaicImage != null) {
             return  // 如果马赛克图像已存在或原图为空，则直接返回
         }
@@ -411,7 +412,7 @@ class ImageCustom {
      * 当图像发生变化时调用的方法
      */
     private fun onImageChanged() {
-        Log.d(TAG, "onImageChanged")
+        LogUtil.d(TAG, "onImageChanged")
         isInitialHoming = false
         onLayout(mWindow.width(), mWindow.height())
 
@@ -427,7 +428,7 @@ class ImageCustom {
      * @noinspection UnusedReturnValue
      */
     private fun onClipHoming(): Boolean {
-        Log.d(TAG, "onClipHoming")
+        LogUtil.d(TAG, "onClipHoming")
         return mClipWin.homing()
     }
 
@@ -439,7 +440,7 @@ class ImageCustom {
      * @return 包含滚动位置、缩放和旋转信息的ImageHoming对象
      */
     fun getStartHoming(scrollX: Float, scrollY: Float): ImageHoming {
-        Log.d(TAG, "getStartHoming: scrollX($scrollX) scrollY($scrollY) getScale($scale) getRotate($rotate)")
+        LogUtil.d(TAG, "getStartHoming: scrollX($scrollX) scrollY($scrollY) getScale($scale) getRotate($rotate)")
         return ImageHoming(scrollX, scrollY, scale, rotate)
     }
 
@@ -452,7 +453,7 @@ class ImageCustom {
      */
     fun getEndHoming(scrollX: Float, scrollY: Float): ImageHoming {
         val homing = ImageHoming(scrollX, scrollY, scale, targetRotate)
-        Log.d(TAG, "getEndHoming: homing.x(" + homing.x + ") homing.y(" + homing.y + ") homing.scale(" + homing.scale + ") homing.rotate(" + homing.rotate + ")")
+        LogUtil.d(TAG, "getEndHoming: homing.x(" + homing.x + ") homing.y(" + homing.y + ") homing.scale(" + homing.scale + ") homing.rotate(" + homing.rotate + ")")
         if (mMode == ImageMode.CLIP) {
             val frame = RectF(mClipWin.getTargetFrame())
             frame.offset(scrollX, scrollY)
@@ -488,7 +489,7 @@ class ImageCustom {
             isRequestToBaseFitting = false
         }
 
-        Log.d(TAG, "getEndHoming: homing.x(" + homing.x + ") homing.y(" + homing.y + ") homing.scale(" + homing.scale + ") homing.rotate(" + homing.rotate + ")")
+        LogUtil.d(TAG, "getEndHoming: homing.x(" + homing.x + ") homing.y(" + homing.y + ") homing.scale(" + homing.scale + ") homing.rotate(" + homing.rotate + ")")
         return homing
     }
 
@@ -499,7 +500,7 @@ class ImageCustom {
      * @param <S>     贴纸的类型，必须是ImageSticker的子类
     </S> */
     fun <S : ImageSticker?> addSticker(sticker: S?) {
-        Log.d(TAG, "addSticker")
+        LogUtil.d(TAG, "addSticker")
         if (sticker != null) {
             moveToForeground(sticker)
         }
@@ -523,20 +524,20 @@ class ImageCustom {
         }
 
         val scale = 1f / scale
-        Log.d(TAG, "addPath getScale()" + this.scale)
-        Log.d(TAG, "addPath scale$scale")
+        LogUtil.d(TAG, "addPath getScale()" + this.scale)
+        LogUtil.d(TAG, "addPath scale$scale")
         mMatrix.setTranslate(sx, sy)
-        Log.d(TAG, "addPath sx$sx")
-        Log.d(TAG, "addPath sy$sy")
+        LogUtil.d(TAG, "addPath sx$sx")
+        LogUtil.d(TAG, "addPath sy$sy")
         mMatrix.postRotate(-rotate, mClipFrame.centerX(), mClipFrame.centerY())
-        Log.d(TAG, "addPath -getRotate()" + -rotate)
-        Log.d(TAG, "addPath mClipFrame.centerX()" + mClipFrame.centerX())
-        Log.d(TAG, "addPath mClipFrame.centerY()" + mClipFrame.centerY())
+        LogUtil.d(TAG, "addPath -getRotate()" + -rotate)
+        LogUtil.d(TAG, "addPath mClipFrame.centerX()" + mClipFrame.centerX())
+        LogUtil.d(TAG, "addPath mClipFrame.centerY()" + mClipFrame.centerY())
         mMatrix.postTranslate(-frame.left, -frame.top)
-        Log.d(TAG, "addPath -mFrame.left" + -frame.left)
-        Log.d(TAG, "addPath -mFrame.top" + -frame.top)
+        LogUtil.d(TAG, "addPath -mFrame.left" + -frame.left)
+        LogUtil.d(TAG, "addPath -mFrame.top" + -frame.top)
         mMatrix.postScale(scale, scale)
-        Log.d(TAG, "addPath scale$scale")
+        LogUtil.d(TAG, "addPath scale$scale")
         // 矩阵变换
         path.transform(mMatrix)
 
@@ -557,7 +558,7 @@ class ImageCustom {
      * @param sticker 要移动的贴纸对象
      */
     private fun moveToForeground(sticker: ImageSticker?) {
-        Log.d(TAG, "moveToForeground")
+        LogUtil.d(TAG, "moveToForeground")
         if (sticker == null) {
             return
         }
@@ -579,7 +580,7 @@ class ImageCustom {
      * @param sticker 要移动的贴纸对象
      */
     private fun moveToBackground(sticker: ImageSticker?) {
-        Log.d(TAG, "moveToBackground")
+        LogUtil.d(TAG, "moveToBackground")
         if (sticker == null) {
             return
         }
@@ -602,7 +603,7 @@ class ImageCustom {
      * 将所有贴纸固定（取消选中状态）
      */
     fun stickAll() {
-        Log.d(TAG, "stickAll")
+        LogUtil.d(TAG, "stickAll")
         moveToBackground(mForeSticker)
     }
 
@@ -612,7 +613,7 @@ class ImageCustom {
      * @param sticker 被隐藏的贴纸对象
      */
     fun onDismiss(sticker: ImageSticker?) {
-        Log.d(TAG, "onDismiss")
+        LogUtil.d(TAG, "onDismiss")
         moveToBackground(sticker)
     }
 
@@ -622,7 +623,7 @@ class ImageCustom {
      * @param sticker 显示的贴纸对象
      */
     fun onShowing(sticker: ImageSticker) {
-        Log.d(TAG, "onShowing")
+        LogUtil.d(TAG, "onShowing")
         if (mForeSticker !== sticker) {
             moveToForeground(sticker)
         }
@@ -634,7 +635,7 @@ class ImageCustom {
      * @param sticker 要移除的贴纸对象
      */
     fun onRemoveSticker(sticker: ImageSticker) {
-        Log.d(TAG, "onRemoveSticker")
+        LogUtil.d(TAG, "onRemoveSticker")
         if (mForeSticker === sticker) {
             mForeSticker = null
         } else {
@@ -649,7 +650,7 @@ class ImageCustom {
      * @param height 视图高度
      */
     fun onLayout(width: Float, height: Float) {
-        Log.d(TAG, "onLayout")
+        LogUtil.d(TAG, "onLayout")
         if (width == 0f || height == 0f) {
             return
         }
@@ -675,7 +676,7 @@ class ImageCustom {
      * @param height 视图高度
      */
     private fun onInitialHoming(width: Float, height: Float) {
-        Log.d(TAG, "onInitialHoming")
+        LogUtil.d(TAG, "onInitialHoming")
         image?.let { image ->
             frame[0f, 0f, image.width.toFloat()] = image.height.toFloat()
             mClipFrame.set(frame)
@@ -698,7 +699,7 @@ class ImageCustom {
      * 归位过程会计算窗口和裁剪框的宽高比，选择最小的缩放比例来保证图像完全可见
      */
     private fun toBaseHoming() {
-        Log.d(TAG, "toBaseHoming")
+        LogUtil.d(TAG, "toBaseHoming")
         if (mClipFrame.isEmpty) {
             // 裁剪框为空，无法执行归位操作（通常是位图无效导致）
             return
@@ -722,7 +723,7 @@ class ImageCustom {
      * 当初始归位完成时调用
      */
     private fun onInitialHomingDone() {
-        Log.d(TAG, "onInitialHomingDone")
+        LogUtil.d(TAG, "onInitialHomingDone")
         if (mMode == ImageMode.CLIP) {
             mClipWin.reset(mClipFrame, targetRotate)
         }
@@ -735,7 +736,7 @@ class ImageCustom {
      * @param canvas 目标画布对象
      */
     fun onDrawImage(canvas: Canvas) {
-        Log.d(TAG, "onDrawImage")
+        LogUtil.d(TAG, "onDrawImage")
 
         // 根据当前模式确定裁剪区域：如果正在裁剪，则使用完整图像边框；否则使用裁剪边框
         canvas.clipRect(if (mClipWin.isClipping) frame else mClipFrame)
@@ -760,7 +761,7 @@ class ImageCustom {
      * @return 图层计数，用于后续恢复画布状态
      */
     fun onDrawMosaicsPath(canvas: Canvas): Int {
-        Log.d(TAG, "onDrawMosaicsPath")
+        LogUtil.d(TAG, "onDrawMosaicsPath")
         // 保存当前图层，创建一个新的图层用于绘制马赛克
         val layerCount = canvas.saveLayer(frame, null)
 
@@ -787,7 +788,7 @@ class ImageCustom {
      * @param layerCount 之前保存的图层计数
      */
     fun onDrawMosaic(canvas: Canvas, layerCount: Int) {
-        Log.d(TAG, "onDrawMosaic")
+        LogUtil.d(TAG, "onDrawMosaic")
         mosaicImage?.let { mosaicImage ->
             // 在保存的图层上绘制马赛克图像，利用混合模式实现马赛克效果
             canvas.drawBitmap(mosaicImage, null, frame, mMosaicPaint)
@@ -802,7 +803,7 @@ class ImageCustom {
      * @param canvas 目标画布对象
      */
     fun onDrawDoodles(canvas: Canvas) {
-        Log.d(TAG, "onDrawDoodles")
+        LogUtil.d(TAG, "onDrawDoodles")
         if (!isDoodleEmpty) {
             canvas.save()
             val scale = scale
@@ -823,7 +824,7 @@ class ImageCustom {
      * @param canvas 目标画布对象
      */
     fun onDrawStickerClip(canvas: Canvas) {
-        Log.d(TAG, "onDrawStickerClip")
+        LogUtil.d(TAG, "onDrawStickerClip")
         // 设置旋转矩阵，以裁剪框中心为旋转中心
         mMatrix.setRotate(rotate, mClipFrame.centerX(), mClipFrame.centerY())
         // 根据当前是否处于裁剪模式，选择不同的裁剪区域并应用旋转变换
@@ -838,7 +839,7 @@ class ImageCustom {
      * @param canvas 目标画布对象
      */
     fun onDrawStickers(canvas: Canvas) {
-        Log.d(TAG, "onDrawStickers")
+        LogUtil.d(TAG, "onDrawStickers")
         if (mBackStickers.isEmpty()) {
             return
         }
@@ -869,7 +870,7 @@ class ImageCustom {
      * @param canvas 目标画布对象
      */
     fun onDrawShade(canvas: Canvas) {
-        Log.d(TAG, "onDrawShade")
+        LogUtil.d(TAG, "onDrawShade")
         // 仅在裁剪模式且图像处于稳定状态时绘制阴影
         if (mMode == ImageMode.CLIP && isSteady) {
             mShade.reset() // 重置阴影路径
@@ -888,7 +889,7 @@ class ImageCustom {
      * @param canvas 目标画布对象
      */
     fun onDrawClip(canvas: Canvas) {
-        Log.d(TAG, "onDrawClip")
+        LogUtil.d(TAG, "onDrawClip")
         if (mMode == ImageMode.CLIP) {
             mClipWin.onDraw(canvas)
         }
@@ -902,7 +903,7 @@ class ImageCustom {
      * @param y 触摸点的Y坐标
      */
     fun onTouchDown(x: Float, y: Float) {
-        Log.d(TAG, "onTouchDown")
+        LogUtil.d(TAG, "onTouchDown")
         isSteady = false // 标记图像进入非稳定状态
         moveToBackground(mForeSticker) // 取消当前选中的贴纸
         if (mMode == ImageMode.CLIP) {
@@ -915,7 +916,7 @@ class ImageCustom {
      * 当用户手指离开屏幕时调用，清除锚点选择
      */
     fun onTouchUp() {
-        Log.d(TAG, "onTouchUp")
+        LogUtil.d(TAG, "onTouchUp")
         if (mAnchor != null) {
             // 清除锚点选择
             mAnchor = null
@@ -926,7 +927,7 @@ class ImageCustom {
      * 当图像进入稳定状态时调用
      */
     fun onSteady() {
-        Log.d(TAG, "onSteady")
+        LogUtil.d(TAG, "onSteady")
         isSteady = true
         onClipHoming()
         mClipWin.isShowShade = true
@@ -943,7 +944,7 @@ class ImageCustom {
      * @return 包含滚动后位置信息的ImageHoming对象，如果不需要滚动则返回null
      */
     fun onScroll(scrollX: Float, scrollY: Float, dx: Float, dy: Float): ImageHoming? {
-        Log.d(TAG, "onScroll")
+        LogUtil.d(TAG, "onScroll")
         if (mMode == ImageMode.CLIP) {
             mClipWin.isShowShade = false // 滚动时隐藏阴影效果
             mAnchor?.let { anchor ->
@@ -971,7 +972,7 @@ class ImageCustom {
          * @return 目标旋转角度
          */
         get() {
-            Log.d(TAG, "getTargetRotate")
+            LogUtil.d(TAG, "getTargetRotate")
             return mTargetRotate
         }
         /**
@@ -980,7 +981,7 @@ class ImageCustom {
          * @param targetRotate 目标旋转角度
          */
         set(targetRotate) {
-            Log.d(TAG, "setTargetRotate")
+            LogUtil.d(TAG, "setTargetRotate")
             this.mTargetRotate = targetRotate
         }
 
@@ -990,7 +991,7 @@ class ImageCustom {
      * @param rotate 旋转角度增量
      */
     fun rotate(rotate: Int) {
-        Log.d(TAG, "rotate")
+        LogUtil.d(TAG, "rotate")
         mTargetRotate = (Math.round((mRotate + rotate) / 90f) * 90).toFloat()
         mClipWin.reset(mClipFrame, targetRotate)
     }
@@ -1002,7 +1003,7 @@ class ImageCustom {
          * @return 当前旋转角度
          */
         get() {
-            Log.d(TAG, "getRotate")
+            LogUtil.d(TAG, "getRotate")
             return mRotate
         }
         /**
@@ -1011,7 +1012,7 @@ class ImageCustom {
          * @param rotate 当前旋转角度
          */
         set(rotate) {
-            Log.d(TAG, "setRotate")
+            LogUtil.d(TAG, "setRotate")
             mRotate = rotate
         }
 
@@ -1022,7 +1023,7 @@ class ImageCustom {
          * @return 当前缩放比例，计算公式为：view缩放后的宽度 / 图片固定宽度
          */
         get() {
-            Log.d(TAG, "getScale")
+            LogUtil.d(TAG, "getScale")
             return frame.width() / image!!.width
         }
         /**
@@ -1031,7 +1032,7 @@ class ImageCustom {
          * @param scale 目标缩放比例
          */
         set(scale) {
-            Log.d(TAG, "setScale")
+            LogUtil.d(TAG, "setScale")
             setScale(scale, mClipFrame.centerX(), mClipFrame.centerY())
         }
 
@@ -1043,7 +1044,7 @@ class ImageCustom {
      * @param focusY 缩放焦点的Y坐标
      */
     private fun setScale(scale: Float, focusX: Float, focusY: Float) {
-        Log.d(TAG, "setScale")
+        LogUtil.d(TAG, "setScale")
         onScale(scale / this.scale, focusX, focusY)
     }
 
@@ -1057,7 +1058,7 @@ class ImageCustom {
      */
     fun onScale(factor: Float, focusX: Float, focusY: Float) {
         var factorValue = factor
-        Log.d(TAG, "onScale")
+        LogUtil.d(TAG, "onScale")
 
         if (abs(factorValue.toDouble()) == abs(SCALE_MAX.toDouble())) {
             return  // 达到最大缩放限制，停止缩放
@@ -1093,14 +1094,14 @@ class ImageCustom {
      * 缩放操作结束时调用
      */
     fun onScaleEnd() {
-        Log.d(TAG, "onScaleEnd")
+        LogUtil.d(TAG, "onScaleEnd")
     }
 
     /**
      * 归位动画开始时调用
      */
     fun onHomingStart() {
-        Log.d(TAG, "onHomingStart")
+        LogUtil.d(TAG, "onHomingStart")
         isAnimCanceled = false
     }
 
@@ -1110,7 +1111,7 @@ class ImageCustom {
      * @param fraction 动画进度，范围为0到1
      */
     fun onHoming(fraction: Float) {
-        Log.d(TAG, "onHoming")
+        LogUtil.d(TAG, "onHoming")
         mClipWin.homing(fraction)
     }
 
@@ -1125,7 +1126,7 @@ class ImageCustom {
      * @return 如果成功进行了裁剪操作则返回true，否则返回false
      */
     fun onHomingEnd(): Boolean {
-        Log.d(TAG, "onHomingEnd")
+        LogUtil.d(TAG, "onHomingEnd")
         if (mMode == ImageMode.CLIP) {
             // 裁剪模式下，检查动画是否被取消
             val clip = !isAnimCanceled
@@ -1152,7 +1153,7 @@ class ImageCustom {
      * @return 如果图像处于冻结状态则返回true，否则返回false
      */
     fun isFreezing(): Boolean {
-        Log.d(TAG, "isFreezing")
+        LogUtil.d(TAG, "isFreezing")
         return isFreezing
     }
 
@@ -1165,7 +1166,7 @@ class ImageCustom {
      * @param freezing 是否冻结图像
      */
     private fun setFreezing(freezing: Boolean) {
-        Log.d(TAG, "setFreezing")
+        LogUtil.d(TAG, "setFreezing")
         if (freezing != isFreezing) {
             // 根据冻结状态调整贴纸旋转角度：
             // - 冻结时：旋转贴纸以抵消当前图像旋转角度，保持贴纸水平显示
@@ -1179,9 +1180,9 @@ class ImageCustom {
      * 取消归位动画
      */
     fun onHomingCancel() {
-        Log.d(TAG, "onHomingCancel")
+        LogUtil.d(TAG, "onHomingCancel")
         isAnimCanceled = true
-        Log.d(TAG, "Homing cancel")
+        LogUtil.d(TAG, "Homing cancel")
     }
 
     /**
@@ -1189,7 +1190,7 @@ class ImageCustom {
      * 该方法负责释放图像编辑器使用的主要资源，特别是位图资源，防止内存泄漏
      */
     fun release() {
-        Log.d(TAG, "release")
+        LogUtil.d(TAG, "release")
         // 释放主图像资源
         image?.recycle()
         // 释放静态的默认图像资源

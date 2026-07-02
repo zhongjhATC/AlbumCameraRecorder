@@ -14,6 +14,7 @@ import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isAudio
 import com.zhongjh.common.enums.MimeType.Companion.isImageOrGif
 import com.zhongjh.common.enums.MimeType.Companion.isVideo
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.SdkVersionUtils
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
@@ -81,7 +82,7 @@ class MediaLoader(private val context: Context) {
         withContext(Dispatchers.IO) {
             val albumSelectionStr = getAlbumSelection()
             val sortOrderStr = getSortOrder()
-            Log.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
+            LogUtil.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
             context.contentResolver.query(QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr)?.use { data ->
                 if (data.count > 0) {
                     var totalCount = 0L
@@ -240,7 +241,7 @@ class MediaLoader(private val context: Context) {
             media.width = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
             media.height = data.getInt(data.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
         }
-        Log.d(TAG, "fileId:" + media.fileId)
+        LogUtil.d(TAG, "fileId:" + media.fileId)
         return media
     }
 

@@ -68,7 +68,7 @@ object UriUtils {
     @SuppressLint("ObsoleteSdkInt")
     private fun uriToFileReal(context: Context?, uri: Uri?): File? {
         if (context == null || uri == null) {
-            Log.d(TAG, " context or uri is null. -> uriToFile")
+            LogUtil.d(TAG, " context or uri is null. -> uriToFile")
             return null
         }
         val scheme = uri.scheme
@@ -77,7 +77,7 @@ object UriUtils {
             // 处理关键字的uri是否能直接使用file
             val file = uriToFilePathKeywords(context, uri, path)
             if (file != null && file.exists()) {
-                Log.d(TAG, "$uri -> $path")
+                LogUtil.d(TAG, "$uri -> $path")
                 return file
             }
         }
@@ -86,7 +86,7 @@ object UriUtils {
             if (path != null) {
                 return File(path)
             }
-            Log.d(TAG, "$uri parse failed. -> new File")
+            LogUtil.d(TAG, "$uri parse failed. -> new File")
             return null
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
             && DocumentsContract.isDocumentUri(context, uri)
@@ -97,7 +97,7 @@ object UriUtils {
             // Android 19以下直接查询数据库获取文件
             return getFileFromUri(context, uri, "uriToFile -> getFileFromUri")
         } else {
-            Log.d(TAG, "$uri parse failed. -> uriToFile")
+            LogUtil.d(TAG, "$uri parse failed. -> uriToFile")
             return null
         }
     }
@@ -131,7 +131,7 @@ object UriUtils {
                             + path.replace(external, "/")
                 )
                 if (file.exists()) {
-                    Log.d(TAG, "$uri -> $external")
+                    LogUtil.d(TAG, "$uri -> $external")
                     return file
                 }
             }
@@ -179,7 +179,7 @@ object UriUtils {
         } else if (ContentResolver.SCHEME_CONTENT == uri.scheme) {
             return getFileFromUri(context, uri, "uriToFileAndroidKitkat - content")
         } else {
-            Log.d(TAG, "$uri parse failed. -> else null")
+            LogUtil.d(TAG, "$uri parse failed. -> else null")
             return null
         }
     }
@@ -241,10 +241,10 @@ object UriUtils {
                     }
                 }
             } catch (ex: Exception) {
-                Log.d(TAG, "$uri parse failed. $ex -> uriToFileFromExternalStorageDocument - isExternalStorageDocument")
+                LogUtil.d(TAG, "$uri parse failed. $ex -> uriToFileFromExternalStorageDocument - isExternalStorageDocument")
             }
         }
-        Log.d(TAG, "$uri parse failed. -> uriToFileFromExternalStorageDocument - isExternalStorageDocument")
+        LogUtil.d(TAG, "$uri parse failed. -> uriToFileFromExternalStorageDocument - isExternalStorageDocument")
         return null
     }
 
@@ -258,7 +258,7 @@ object UriUtils {
     private fun uriToFileFromDownloadsDocument(context: Context, uri: Uri): File? {
         var id = DocumentsContract.getDocumentId(uri)
         if (TextUtils.isEmpty(id)) {
-            Log.d(TAG, "$uri parse failed(id is null). -> uriToFileFromDownloadsDocument - isDownloadsDocument")
+            LogUtil.d(TAG, "$uri parse failed(id is null). -> uriToFileFromDownloadsDocument - isDownloadsDocument")
             return null
         }
         if (id.startsWith(RAW)) {
@@ -290,7 +290,7 @@ object UriUtils {
             } catch (ignore: Exception) {
             }
         }
-        Log.d(TAG, "$uri parse failed. -> uriToFileFromDownloadsDocument - isDownloadsDocument")
+        LogUtil.d(TAG, "$uri parse failed. -> uriToFileFromDownloadsDocument - isDownloadsDocument")
         return null
     }
 
@@ -312,7 +312,7 @@ object UriUtils {
         } else if (AUDIO == type) {
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         } else {
-            Log.d(TAG, "$uri parse failed. -> uriToFileFromMediaDocument - isMediaDocument")
+            LogUtil.d(TAG, "$uri parse failed. -> uriToFileFromMediaDocument - isMediaDocument")
             return null
         }
         val selection = "_id=?"
@@ -374,7 +374,7 @@ object UriUtils {
             uri, arrayOf("_data"), selection, selectionArgs, null
         )
         if (cursor == null) {
-            Log.d(TAG, "$uri parse failed(cursor is null). -> $methodCode")
+            LogUtil.d(TAG, "$uri parse failed(cursor is null). -> $methodCode")
             return null
         }
         try {
@@ -383,15 +383,15 @@ object UriUtils {
                 if (columnIndex > -1) {
                     return File(cursor.getString(columnIndex))
                 } else {
-                    Log.d(TAG, "$uri parse failed(columnIndex: $columnIndex is wrong). -> $methodCode")
+                    LogUtil.d(TAG, "$uri parse failed(columnIndex: $columnIndex is wrong). -> $methodCode")
                     return null
                 }
             } else {
-                Log.d(TAG, "$uri parse failed(moveToFirst return false). -> $methodCode")
+                LogUtil.d(TAG, "$uri parse failed(moveToFirst return false). -> $methodCode")
                 return null
             }
         } catch (e: Exception) {
-            Log.d(TAG, "$uri parse failed. -> $methodCode")
+            LogUtil.d(TAG, "$uri parse failed. -> $methodCode")
             return null
         } finally {
             cursor.close()
@@ -406,7 +406,7 @@ object UriUtils {
      * @return file
      */
     private fun copyUri2Cache(context: Context, uri: Uri): File? {
-        Log.d("UriUtils", "copyUri2Cache() called")
+        LogUtil.d("UriUtils", "copyUri2Cache() called")
         var `is`: InputStream? = null
         try {
             `is` = context.contentResolver.openInputStream(uri)
@@ -414,14 +414,14 @@ object UriUtils {
             writeFileFromInputStream(file.absolutePath, `is`)
             return file
         } catch (e: FileNotFoundException) {
-            Log.e(TAG, "copyUri2Cache" + e.message)
+            LogUtil.e(TAG, "copyUri2Cache" + e.message)
             return null
         } finally {
             if (`is` != null) {
                 try {
                     `is`.close()
                 } catch (e: IOException) {
-                    Log.e(TAG, "copyUri2Cache" + e.message)
+                    LogUtil.e(TAG, "copyUri2Cache" + e.message)
                 }
             }
         }

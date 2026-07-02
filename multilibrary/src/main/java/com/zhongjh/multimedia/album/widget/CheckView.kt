@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.R
 
 /**
@@ -99,7 +100,7 @@ class CheckView : View {
      */
     fun setCountable(countable: Boolean) {
         mCountable = countable
-        Log.d("CheckView", "mCountable :$mCountable")
+        LogUtil.d("CheckView", "mCountable :$mCountable")
     }
 
     fun setCheckedNum(checkedNum: Int) {

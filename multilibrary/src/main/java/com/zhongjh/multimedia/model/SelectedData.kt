@@ -8,6 +8,7 @@ import com.zhongjh.common.entity.SelectedItem
 import com.zhongjh.common.enums.Constant.IMAGE
 import com.zhongjh.common.enums.Constant.IMAGE_VIDEO
 import com.zhongjh.common.enums.Constant.VIDEO
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.SelectedCountMessage
 import com.zhongjh.multimedia.album.widget.CheckView
@@ -62,7 +63,7 @@ open class SelectedData(private val mContext: Context) {
         mSelectedImageCount = 0
         mSelectedVideoCount = 0
         mCollectionType = COLLECTION_UNDEFINED
-        Log.d("onSaveInstanceState", "clearAll 已清空全部选中资源")
+        LogUtil.d("onSaveInstanceState", "clearAll 已清空全部选中资源")
     }
 
     /**
@@ -151,10 +152,10 @@ open class SelectedData(private val mContext: Context) {
         } else {
             if (mCollectionType == COLLECTION_MIXED) {
                 currentMaxSelectable()
-                Log.d("currentMaxSelectable", "currentMaxSelectable")
+                LogUtil.d("currentMaxSelectable", "currentMaxSelectable")
             }
         }
-        Log.d("onSaveInstanceState", selectedItems.size.toString() + " remove")
+        LogUtil.d("onSaveInstanceState", selectedItems.size.toString() + " remove")
         return true
     }
 
@@ -172,7 +173,7 @@ open class SelectedData(private val mContext: Context) {
         }
         // 全量重建缓存
         rebuildAllCache(items)
-        Log.d("onSaveInstanceState", selectedItems.size.toString() + " overwrite")
+        LogUtil.d("onSaveInstanceState", selectedItems.size.toString() + " overwrite")
     }
 
     /**
@@ -210,7 +211,7 @@ open class SelectedData(private val mContext: Context) {
      * @return boolean
      */
     fun maxSelectableReached(): Boolean {
-        Log.d("onSaveInstanceState", selectedItems.size.toString() + " maxSelectableReached")
+        LogUtil.d("onSaveInstanceState", selectedItems.size.toString() + " maxSelectableReached")
         return selectedItems.size == currentMaxSelectable()
     }
 
@@ -221,7 +222,7 @@ open class SelectedData(private val mContext: Context) {
      * @return 弹窗
      */
     fun isAcceptable(item: LocalMedia): IncapableCause? {
-        Log.d("onSaveInstanceState", selectedItems.size.toString() + " isAcceptable")
+        LogUtil.d("onSaveInstanceState", selectedItems.size.toString() + " isAcceptable")
         var maxSelectableReached = false
         var maxSelectable = 0
         var type = ""
@@ -341,7 +342,7 @@ open class SelectedData(private val mContext: Context) {
             }
         }
 
-        Log.d("onSaveInstanceState", selectedItems.size.toString() + " currentMaxSelectable")
+        LogUtil.d("onSaveInstanceState", selectedItems.size.toString() + " currentMaxSelectable")
         return leastCount
     }
 

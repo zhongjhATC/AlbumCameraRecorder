@@ -43,7 +43,7 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple
 import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn
 import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.IState
 import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity
-import com.zhongjh.multimedia.camera.util.LogUtil
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.model.SelectedData
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
@@ -349,19 +349,19 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
     private fun initPvLayoutPhotoVideoListener() {
         photoVideoLayout.setPhotoVideoListener(object : ClickOrLongListener {
             override fun actionDown() {
-                Log.d(TAG, "pvLayout actionDown")
+                LogUtil.d(TAG, "pvLayout actionDown")
                 // 母窗体隐藏底部滑动
                 mainActivity?.showHideTableLayout(false)
             }
 
             override fun onClick() {
-                Log.d(TAG, "pvLayout onClick")
+                LogUtil.d(TAG, "pvLayout onClick")
                 // 点击事件：通过弱引用调用拍照逻辑
                 fragmentRef.get()?.cameraPictureViewManager?.takePhoto()
             }
 
             override fun onLongClick() {
-                Log.d(TAG, "pvLayout onLongClick ")
+                LogUtil.d(TAG, "pvLayout onLongClick ")
                 // 长按事件：通过弱引用调用录像逻辑
                 fragmentRef.get()?.let { fragment ->
                     if (!fragment.isDetached) {
@@ -373,18 +373,18 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             }
 
             override fun onLongClickEnd(time: Long) {
-                Log.d(TAG, "pvLayout onLongClickEnd ")
+                LogUtil.d(TAG, "pvLayout onLongClickEnd ")
                 // 长按结束：通过弱引用调用暂停录制
                 fragmentRef.get()?.pauseRecord()
             }
 
             override fun onLongClickFinish() {
-                Log.d(TAG, "pvLayout onLongClickFinish ")
+                LogUtil.d(TAG, "pvLayout onLongClickFinish ")
                 fragmentRef.get()?.state?.onLongClickFinish()
             }
 
             override fun onLongClickError() {
-                Log.d(TAG, "pvLayout onLongClickError ")
+                LogUtil.d(TAG, "pvLayout onLongClickError ")
             }
 
             override fun onBanClickTips() {
@@ -422,25 +422,25 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             /** @noinspection unused
              */
             override fun cancel() {
-                Log.d(TAG, "cancel " + this@BaseCameraFragment.state.toString())
+                LogUtil.d(TAG, "cancel " + this@BaseCameraFragment.state.toString())
                 this@BaseCameraFragment.cameraStateManager.pvLayoutCancel()
             }
 
             override fun startProgress() {
-                Log.d(TAG, "startProgress " + this@BaseCameraFragment.state.toString())
+                LogUtil.d(TAG, "startProgress " + this@BaseCameraFragment.state.toString())
                 // 没有所需要请求的权限，就进行后面的逻辑
                 this@BaseCameraFragment.cameraStateManager.pvLayoutCommit()
             }
 
             override fun stopProgress() {
-                Log.d(TAG, "stopProgress " + this@BaseCameraFragment.state.toString())
+                LogUtil.d(TAG, "stopProgress " + this@BaseCameraFragment.state.toString())
                 this@BaseCameraFragment.cameraStateManager.stopProgress()
                 // 重置按钮
                 photoVideoLayout.resetConfirm()
             }
 
             override fun doneProgress() {
-                Log.d(TAG, "doneProgress " + this@BaseCameraFragment.state.toString())
+                LogUtil.d(TAG, "doneProgress " + this@BaseCameraFragment.state.toString())
                 photoVideoLayout.resetConfirm()
             }
         })
@@ -462,7 +462,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             }
 
             override fun onPictureSuccess(uri: Uri, path: String) {
-                Log.d(TAG, "onPictureSuccess")
+                LogUtil.d(TAG, "onPictureSuccess")
                 rotateImage(myContext, path)
                 cameraSpec.onInitCameraManager?.initWatermarkedImage(uri, path)
                 // 显示图片
@@ -477,7 +477,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             }
 
             override fun onRecordSuccess(path: String, uri: String) {
-                Log.d(TAG, "onRecordSuccess")
+                LogUtil.d(TAG, "onRecordSuccess")
                 // 处理视频文件,最后会解除《禁止点击》
                 this@BaseCameraFragment.cameraVideoViewManager.onRecordSuccess(path, uri)
             }
@@ -571,7 +571,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
      * @param newFiles 新的文件
      */
     override fun commitPictureSuccess(newFiles: ArrayList<LocalMedia>) {
-        Log.d(TAG, "mMovePictureFileTask onSuccess")
+        LogUtil.d(TAG, "mMovePictureFileTask onSuccess")
         isCommit = true
         val result = Intent()
         result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, newFiles)

@@ -34,7 +34,7 @@ object FileIOUtils {
         listener: OnProgressUpdateListener?
     ): Boolean {
         if (`is` == null || !FileUtils.createOrExistsFile(file)) {
-            Log.e("FileIOUtils", "create file <$file> failed.")
+            LogUtil.e("FileIOUtils", "create file <$file> failed.")
             return false
         }
         var os: OutputStream? = null
@@ -58,7 +58,7 @@ object FileIOUtils {
                     listener.onProgressUpdate(curSize / totalSize, file)
                 }
             }
-            Log.e("FileIOUtils", "return true")
+            LogUtil.e("FileIOUtils", "return true")
             return true
         } catch (e: IOException) {
             e.printStackTrace()

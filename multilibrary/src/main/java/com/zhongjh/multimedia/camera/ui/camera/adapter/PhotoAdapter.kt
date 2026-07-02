@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.entity.BitmapData
 import com.zhongjh.multimedia.preview.start.PreviewStartManager.startPreviewActivityByCamera
@@ -62,7 +63,7 @@ class PhotoAdapter(activity: Activity, private val globalSpec: GlobalSpec, var l
      */
     fun removePosition(bitmapData: BitmapData) {
         val position = listData.indexOf(bitmapData)
-        Log.d(tag, "removePosition $position")
+        LogUtil.d(tag, "removePosition $position")
         listData.remove(bitmapData)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, listData.size)
@@ -70,7 +71,7 @@ class PhotoAdapter(activity: Activity, private val globalSpec: GlobalSpec, var l
     }
 
     override fun getItemCount(): Int {
-        Log.d(tag, "getItemCount")
+        LogUtil.d(tag, "getItemCount")
         return listData.size
     }
 

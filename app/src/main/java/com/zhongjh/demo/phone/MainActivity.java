@@ -44,6 +44,7 @@ import androidx.camera.view.PreviewView;
 
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.enums.MimeType;
+import com.zhongjh.common.utils.LogUtil;
 import com.zhongjh.demo.BaseActivity;
 import com.zhongjh.demo.R;
 import com.zhongjh.demo.configuration.GifSizeFilter;
@@ -320,10 +321,10 @@ public class MainActivity extends BaseActivity {
             // 打印堆栈日志
             String message = throwable.getMessage();
             if (message != null) {
-                Log.e(TAG, message);
+                LogUtil.INSTANCE.e(TAG, message);
                 StackTraceElement[] stackTraceElements = throwable.getStackTrace();
                 for (StackTraceElement stackTraceElement : stackTraceElements) {
-                    Log.e(TAG, stackTraceElement.toString());
+                    LogUtil.INSTANCE.e(TAG, stackTraceElement.toString());
                 }
                 Toast.makeText(getApplication(), message, Toast.LENGTH_SHORT).show();
             }
@@ -464,12 +465,12 @@ public class MainActivity extends BaseActivity {
         cameraSetting.setOnCaptureListener(new OnCaptureListener() {
             @Override
             public void add(@NonNull List<BitmapData> captureData, int position) {
-                Log.d(TAG, "添加索引 " + position);
+                LogUtil.INSTANCE.d(TAG, "添加索引 " + position);
             }
 
             @Override
             public void remove(@NonNull List<BitmapData> captureData, int position) {
-                Log.d(TAG, "删除索引 " + position);
+                LogUtil.INSTANCE.d(TAG, "删除索引 " + position);
             }
         });
 
@@ -511,7 +512,7 @@ public class MainActivity extends BaseActivity {
                 // 图片缩放比例
                 .thumbnailScale(0.85f).setOnSelectedListener(localFiles -> {
                     // 每次选择的事件
-                    Log.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
+                    LogUtil.INSTANCE.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
                 })
                 // 开启原图
                 .originalEnable(mBinding.cbOriginalEnableTrue.isChecked())
@@ -520,7 +521,7 @@ public class MainActivity extends BaseActivity {
                 // 最大原图size,仅当originalEnable为true的时候才有效
                 .maxOriginalSize(Integer.parseInt(mBinding.etMaxOriginalSize.getText().toString())).setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
-                    Log.d("isChecked", "onCheck: isChecked=" + isChecked);
+                    LogUtil.INSTANCE.d("isChecked", "onCheck: isChecked=" + isChecked);
                 });
         return albumSetting;
     }
@@ -742,7 +743,7 @@ public class MainActivity extends BaseActivity {
 
         // ========== 4. 创建叠加效果 ==========
         OverlayEffect overlayEffect = new OverlayEffect(targets, 0, new Handler(Looper.getMainLooper()),
-                throwable -> Log.e("initOverlayEffect", "initOverlayEffect errorListener " + throwable.getMessage()));
+                throwable -> LogUtil.INSTANCE.e("initOverlayEffect", "initOverlayEffect errorListener " + throwable.getMessage()));
 
         overlayEffect.clearOnDrawListener();
         overlayEffect.setOnDrawListener(frame -> {
@@ -855,7 +856,7 @@ public class MainActivity extends BaseActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             outputStream.close();
         } catch (IOException e) {
-            Log.e(TAG, "saveWatermarkedImage IOException:" + e.getMessage());
+            LogUtil.INSTANCE.e(TAG, "saveWatermarkedImage IOException:" + e.getMessage());
         }
     }
 

@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Log
 import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -41,6 +40,7 @@ import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
 import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.request
@@ -391,7 +391,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 初始化MediaViewUtil
      */
     private fun initMediaViewUtil() {
-        Log.d("onSaveInstanceState", " initMediaViewUtil")
+        LogUtil.d("onSaveInstanceState", " initMediaViewUtil")
         val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.item_placeholder))
         val placeholder = ta.getDrawable(0)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -408,7 +408,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     private fun initObserveData() {
         // 专辑加载完毕,StateFlow只做纯UI绑定，不加载数据、不重置选中
         LifecycleFlowCollector.collectDistinct(this, mMainModel.albums) { albums ->
-            Log.d("AlbumFragmentFlow","mMainModel.albums")
+            LogUtil.d("AlbumFragmentFlow", "mMainModel.albums")
             if (albums.isNotEmpty()) {
                 // 更新专辑列表
                 mAlbumSpinner?.bindFolder(albums)
@@ -416,12 +416,12 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
         // 原图选项改变
         LifecycleFlowCollector.collectDistinct(this, mMainModel.originalEnable) { value: Boolean ->
-            Log.d("AlbumFragmentFlow","mMainModel.originalEnable")
+            LogUtil.d("AlbumFragmentFlow", "mMainModel.originalEnable")
             mBinding.original.setChecked(value)
         }
         // 预览界面的viewPage滑动时触发
         LifecycleFlowCollector.collectDistinct(this, mMainModel.onViewPageSelected) { value: Int ->
-            Log.d("AlbumFragmentFlow","mMainModel.onViewPageSelected")
+            LogUtil.d("AlbumFragmentFlow", "mMainModel.onViewPageSelected")
             smoothScrollPosition = value
             // 滑动到viewPage的一样position
             isRecyclerViewUserDragging = false
@@ -429,7 +429,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
         // 一次性初始化逻辑：仅首次加载执行，重订阅绝不触发 ==========
         LifecycleFlowCollector.collect(this, mMainModel.albumLoadFinishEvent) {
-            Log.d("AlbumFragmentFlow","mMainModel.albumLoadFinishEvent")
+            LogUtil.d("AlbumFragmentFlow", "mMainModel.albumLoadFinishEvent")
             val albums = mMainModel.albums.value
             if (albums.isNotEmpty()) {
                 // 默认选中第一个专辑
@@ -442,14 +442,14 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         }
         // 一次性初始化逻辑：手动切换专辑才重载媒体、清空选中 ==========
         LifecycleFlowCollector.collect(this, mMainModel.albumChangeEvent) { targetAlbum ->
-            Log.d("AlbumFragmentFlow","mMainModel.albumChangeEvent")
+            LogUtil.d("AlbumFragmentFlow", "mMainModel.albumChangeEvent")
             mSelectedModel.clearAllData()
             mMainModel.reloadPageMediaData(targetAlbum.id, mAlbumSpec.pageSize)
             mBinding.tvAlbumTitle.text = targetAlbum.name
         }
         // 选择数据改变
         LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) { position ->
-            Log.d("AlbumFragmentFlow","mSelectedModel.selectedDataChange")
+            LogUtil.d("AlbumFragmentFlow", "mSelectedModel.selectedDataChange")
             mMediaViewUtil?.notifyItemByLocalMedia(position)
         }
     }
@@ -698,7 +698,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     }
 
     override fun onDestroy() {
-        Log.d(tag, "AlbumFragment onDestroy")
+        LogUtil.d(tag, "AlbumFragment onDestroy")
         // 1. 释放全局静态资源（如 VideoCompressCoordinator）
         mGlobalSpec.videoCompressCoordinator?.let {
             it.onCompressDestroy(this@AlbumFragment.javaClass)
@@ -961,7 +961,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             // 结束loading
             setControlTouchEnable(true)
             Toast.makeText(mApplicationContext, error.message, Toast.LENGTH_SHORT).show()
-            Log.e(tag, error.message, error)
+            LogUtil.e(tag, error.message.toString(), error)
         }.onCancel {
             // 结束loading
             setControlTouchEnable(true)
@@ -974,7 +974,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * @param localMediaArrayList 本地数据包含别的参数
      */
     private fun setResultOk(localMediaArrayList: ArrayList<LocalMedia>) {
-        Log.d(tag, "setResultOk")
+        LogUtil.d(tag, "setResultOk")
         // 获取选择的图片的url集合
         val result = Intent()
         result.putParcelableArrayListExtra(STATE_SELECTION, localMediaArrayList)

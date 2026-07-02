@@ -18,6 +18,7 @@ import com.sdsmdg.harjot.vectormaster.VectorMasterView
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.listener.OnMoreClickListener
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.gridview.R
 import com.zhongjh.gridview.engine.ImageEngine
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
@@ -310,7 +311,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @param gridMedia 数据集合
      */
     fun addData(gridMedia: List<GridMedia>, @MediaType mediaType: Int) {
-        Log.d("$TAG Test", "addData")
+        LogUtil.d("$TAG Test", "addData")
         val position: Int = getNeedAddPosition(mediaType)
         for (item in gridMedia) {
             if (!item.isAdd) {
@@ -466,7 +467,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
      * @param gridMedia 集合里面的某个对象
      */
     private fun removePosition(gridMedia: GridMedia) {
-        Log.d(TAG, "multiMediaView.path：" + gridMedia.uri)
+        LogUtil.d(TAG, "multiMediaView.path：" + gridMedia.uri)
         val position = list.indexOf(gridMedia)
         removePosition(position)
     }

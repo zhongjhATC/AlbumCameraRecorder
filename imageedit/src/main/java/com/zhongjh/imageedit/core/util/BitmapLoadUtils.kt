@@ -7,6 +7,7 @@ import android.graphics.Point
 import android.util.Log
 import android.view.Display
 import android.view.WindowManager
+import com.zhongjh.common.utils.LogUtil
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -61,7 +62,7 @@ object BitmapLoadUtils {
             maxBitmapSize = min(maxBitmapSize.toDouble(), maxTextureSize.toDouble()).toInt()
         }
 
-        Log.d(TAG, "maxBitmapSize: $maxBitmapSize")
+        LogUtil.d(TAG, "maxBitmapSize: $maxBitmapSize")
         return maxBitmapSize
     }
 

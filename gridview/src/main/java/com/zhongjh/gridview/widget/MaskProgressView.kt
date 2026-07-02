@@ -9,6 +9,7 @@ import android.util.AttributeSet
 import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.gridview.R
 
 /**
@@ -137,7 +138,7 @@ class MaskProgressView : AppCompatImageView {
         if (percentage in 1..MAX_PROGRESS) {
             this.percentage = 100 - percentage
             this.percentageTxt = percentage
-            Log.d(TAG, "setPercentage: $percentage")
+            LogUtil.d(TAG, "setPercentage: $percentage")
             // 重画view
             invalidate()
         }

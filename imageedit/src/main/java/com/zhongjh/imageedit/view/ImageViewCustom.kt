@@ -24,6 +24,7 @@ import android.view.ScaleGestureDetector.OnScaleGestureListener
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.imageedit.core.ImageCustom
 import com.zhongjh.imageedit.core.ImageMode
 import com.zhongjh.imageedit.core.ImagePen
@@ -126,7 +127,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
          * 是否真正修正归位
          */
         get() {
-            Log.d(TAG, "isHoming")
+            LogUtil.d(TAG, "isHoming")
             return (mHomingAnimator != null
                     && mHomingAnimator!!.isRunning)
         }
@@ -136,7 +137,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 假设移动图片到某个区别或者放大缩小时，改方法用于变回原样
      */
     private fun onHoming() {
-        Log.d(TAG, "onHoming")
+        LogUtil.d(TAG, "onHoming")
         invalidate()
         stopHoming()
         startHoming(
@@ -149,7 +150,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 开始了归位动画
      */
     private fun startHoming(sHoming: ImageHoming, eHoming: ImageHoming) {
-        Log.d(TAG, "startHoming")
+        LogUtil.d(TAG, "startHoming")
         if (mHomingAnimator == null) {
             mHomingAnimator = ImageHomingAnimator()
             mHomingAnimator!!.addUpdateListener(this)
@@ -163,14 +164,14 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 停止当前的矫正区域动画
      */
     private fun stopHoming() {
-        Log.d(TAG, "stopHoming")
+        LogUtil.d(TAG, "stopHoming")
         if (mHomingAnimator != null) {
             mHomingAnimator!!.cancel()
         }
     }
 
     fun doRotate() {
-        Log.d(TAG, "doRotate")
+        LogUtil.d(TAG, "doRotate")
         if (!isHoming) {
             mImage.rotate(-90)
             onHoming()
@@ -178,47 +179,47 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     fun resetClip() {
-        Log.d(TAG, "resetClip")
+        LogUtil.d(TAG, "resetClip")
         mImage.resetClip()
         onHoming()
     }
 
     fun doClip() {
-        Log.d(TAG, "doClip")
+        LogUtil.d(TAG, "doClip")
         mImage.clip(scrollX.toFloat(), scrollY.toFloat())
         mode = mPreMode
         onHoming()
     }
 
     fun cancelClip() {
-        Log.d(TAG, "cancelClip")
+        LogUtil.d(TAG, "cancelClip")
         mImage.toBackupClip()
         mode = mPreMode
     }
 
     fun setPenColor(color: Int) {
-        Log.d(TAG, "setPenColor")
+        LogUtil.d(TAG, "setPenColor")
         mPen.color = color
     }
 
     fun isDoodleEmpty() : Boolean {
-        Log.d(TAG, "isDoodleEmpty")
+        LogUtil.d(TAG, "isDoodleEmpty")
         return mImage.isDoodleEmpty
     }
 
     fun undoDoodle() {
-        Log.d(TAG, "undoDoodle")
+        LogUtil.d(TAG, "undoDoodle")
         mImage.undoDoodle()
         invalidate()
     }
 
     fun isMosaicEmpty() : Boolean {
-        Log.d(TAG, "isMosaicEmpty")
+        LogUtil.d(TAG, "isMosaicEmpty")
         return mImage.isMosaicEmpty
     }
 
     fun undoMosaic() {
-        Log.d(TAG, "undoMosaic")
+        LogUtil.d(TAG, "undoMosaic")
         mImage.undoMosaic()
         invalidate()
     }
@@ -230,7 +231,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
          * @return 模式
          */
         get() {
-            Log.d(TAG, "getMode")
+            LogUtil.d(TAG, "getMode")
             return mImage.mode
         }
         /**
@@ -239,7 +240,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
          * @param mode 模式
          */
         set(mode) {
-            Log.d(TAG, "setMode")
+            LogUtil.d(TAG, "setMode")
             // 保存现在的编辑模式
             mPreMode = mImage.mode
 
@@ -255,7 +256,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 重新在IMGView画图
      */
     override fun onDraw(canvas: Canvas) {
-        Log.d(TAG, "onDraw")
+        LogUtil.d(TAG, "onDraw")
         onDrawImages(canvas)
     }
 
@@ -263,7 +264,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 重新在IMGView画图
      */
     private fun onDrawImages(canvas: Canvas) {
-        Log.d(TAG, "onDrawImages")
+        LogUtil.d(TAG, "onDrawImages")
         canvas.save()
 
         // clip 中心旋转
@@ -329,7 +330,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     fun saveBitmap(): Bitmap {
-        Log.d(TAG, "saveBitmap")
+        LogUtil.d(TAG, "saveBitmap")
         mImage.stickAll()
 
         val scale = 1f / mImage.scale
@@ -362,7 +363,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        Log.d(TAG, "onLayout")
+        LogUtil.d(TAG, "onLayout")
         super.onLayout(changed, left, top, right, bottom)
         if (changed) {
             mImage.onLayout((right - left).toFloat(), (bottom - top).toFloat())
@@ -370,7 +371,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     fun <V> addStickerView(stickerView: V?, params: LayoutParams?) where V : View?, V : ImageSticker? {
-        Log.d(TAG, "addStickerView")
+        LogUtil.d(TAG, "addStickerView")
         if (stickerView != null) {
             addView(stickerView, params)
 
@@ -380,7 +381,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     fun addStickerText(text: ImageText?) {
-        Log.d(TAG, "addStickerText")
+        LogUtil.d(TAG, "addStickerText")
         val textView = ImageStickerTextView(context)
 
         textView.text = text
@@ -403,7 +404,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 处理点击分发事件
      */
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        Log.d(TAG, "onInterceptTouchEvent")
+        LogUtil.d(TAG, "onInterceptTouchEvent")
         if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
             return onInterceptTouch() || super.onInterceptTouchEvent(ev)
         }
@@ -414,16 +415,16 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 处理可以直接中断当前伸缩，继续按照自己意愿伸缩，增强流畅度
      */
     private fun onInterceptTouch(): Boolean {
-        Log.d(TAG, "onInterceptTouch")
+        LogUtil.d(TAG, "onInterceptTouch")
         if (isHoming) {
             stopHoming()
-            Log.d(TAG, "onInterceptTouch true stopHoming")
+            LogUtil.d(TAG, "onInterceptTouch true stopHoming")
             return true
         } else if (mImage.mode == ImageMode.CLIP) {
-            Log.d(TAG, "onInterceptTouch true IMGMode.CLIP")
+            LogUtil.d(TAG, "onInterceptTouch true IMGMode.CLIP")
             return true
         }
-        Log.d(TAG, "onInterceptTouch false")
+        LogUtil.d(TAG, "onInterceptTouch false")
         return false
     }
 
@@ -432,7 +433,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        Log.d(TAG, "onTouchEvent")
+        LogUtil.d(TAG, "onTouchEvent")
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN ->                 // 取消延迟
                 removeCallbacks(this)
@@ -449,7 +450,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 处理触屏事件.详情
      */
     fun onTouch(event: MotionEvent): Boolean {
-        Log.d(TAG, "onTouch")
+        LogUtil.d(TAG, "onTouch")
 
         if (isHoming) {
             // Homing
@@ -489,7 +490,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 
 
     private fun onTouchNone(event: MotionEvent): Boolean {
-        Log.d(TAG, "onTouchNone")
+        LogUtil.d(TAG, "onTouchNone")
         return mGestureDetector!!.onTouchEvent(event)
     }
 
@@ -497,7 +498,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 画笔线
      */
     private fun onTouchPath(event: MotionEvent): Boolean {
-        Log.d(TAG, "onTouchPath")
+        LogUtil.d(TAG, "onTouchPath")
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 onPathBegin(event)
@@ -515,7 +516,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 钢笔初始化
      */
     private fun onPathBegin(event: MotionEvent) {
-        Log.d(TAG, "onPathBegin")
+        LogUtil.d(TAG, "onPathBegin")
         mPen.reset(event.x, event.y)
         mPen.setIdentity(event.getPointerId(0))
     }
@@ -524,7 +525,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 画线
      */
     private fun onPathMove(event: MotionEvent): Boolean {
-        Log.d(TAG, "onPathMove")
+        LogUtil.d(TAG, "onPathMove")
         if (mPen.isIdentity(event.getPointerId(0))) {
             mPen.lineTo(event.x, event.y)
             invalidate()
@@ -537,7 +538,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 画线完成
      */
     private fun onPathDone(): Boolean {
-        Log.d(TAG, "onPathDone")
+        LogUtil.d(TAG, "onPathDone")
         if (mPen.isEmpty()) {
             return false
         }
@@ -548,7 +549,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun run() {
-        Log.d(TAG, "run")
+        LogUtil.d(TAG, "run")
         // 稳定触发
         if (!onSteady()) {
             postDelayed(this, 500)
@@ -557,7 +558,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
 
     fun onSteady(): Boolean {
         if (DEBUG) {
-            Log.d(TAG, "onSteady: isHoming=" + isHoming)
+            LogUtil.d(TAG, "onSteady: isHoming=" + isHoming)
         }
         if (!isHoming) {
             mImage.onSteady()
@@ -568,14 +569,14 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun onDetachedFromWindow() {
-        Log.d(TAG, "onDetachedFromWindow")
+        LogUtil.d(TAG, "onDetachedFromWindow")
         super.onDetachedFromWindow()
         removeCallbacks(this)
         mImage.release()
     }
 
     override fun onScale(detector: ScaleGestureDetector): Boolean {
-        Log.d(TAG, "onScale")
+        LogUtil.d(TAG, "onScale")
         if (mPointerCount > 1) {
             // 当图片本身大于20倍的时候并且缩放操作要放大的时候取消缩放。缩放大于20倍的时候，返回上一次的变形，防止裁剪因为高度不大于0而导致闪退
             if (mImage.scale > SCALE_MAX && detector.scaleFactor > 1) {
@@ -593,12 +594,12 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
-        Log.d(TAG, "onScaleBegin")
+        LogUtil.d(TAG, "onScaleBegin")
         return mPointerCount > 1
     }
 
     override fun onScaleEnd(detector: ScaleGestureDetector) {
-        Log.d(TAG, "onScaleEnd")
+        LogUtil.d(TAG, "onScaleEnd")
         mImage.onScaleEnd()
     }
 
@@ -606,7 +607,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 标记着动画的更新
      */
     override fun onAnimationUpdate(animation: ValueAnimator) {
-        Log.d(TAG, "onAnimationUpdate")
+        LogUtil.d(TAG, "onAnimationUpdate")
         mImage.onHoming(animation.animatedFraction)
         toApplyHoming(animation.animatedValue as ImageHoming)
     }
@@ -618,7 +619,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 3. 移动、拉伸图片后
      */
     private fun toApplyHoming(homing: ImageHoming) {
-        Log.d(
+        LogUtil.d(
             TAG, "toApplyHoming " +
                     "homing.scale(" + homing.scale + ")homing.rotate(" + homing.rotate + ")homing.x(" + homing.x + ")homing.y" + homing.y + ")"
         )
@@ -633,9 +634,9 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 移动自身
      */
     private fun onScrollTo(x: Int, y: Int): Boolean {
-        Log.d(TAG, "onScrollTo")
-        Log.d(TAG, "onScrollTo x$x")
-        Log.d(TAG, "onScrollTo y$y")
+        LogUtil.d(TAG, "onScrollTo")
+        LogUtil.d(TAG, "onScrollTo x$x")
+        LogUtil.d(TAG, "onScrollTo y$y")
         if (scrollX != x || scrollY != y) {
             scrollTo(x, y)
             return true
@@ -644,19 +645,19 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
     }
 
     override fun <V> onDismiss(stickerView: V) where V : View, V : ImageSticker {
-        Log.d(TAG, "onDismiss")
+        LogUtil.d(TAG, "onDismiss")
         mImage.onDismiss(stickerView)
         invalidate()
     }
 
     override fun <V> onShowing(stickerView: V) where V : View, V : ImageSticker {
-        Log.d(TAG, "onShowing")
+        LogUtil.d(TAG, "onShowing")
         mImage.onShowing(stickerView)
         invalidate()
     }
 
     override fun <V> onRemove(stickerView: V): Boolean where V : View, V : ImageSticker {
-        Log.d(TAG, "onRemove")
+        LogUtil.d(TAG, "onRemove")
         mImage.onRemoveSticker(stickerView)
         stickerView.unregisterCallback(this)
         val parent = stickerView.parent
@@ -670,7 +671,7 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 标记着动画的开始
      */
     override fun onAnimationStart(animation: Animator) {
-        Log.d(TAG, "onAnimationStart")
+        LogUtil.d(TAG, "onAnimationStart")
         mImage.onHomingStart()
     }
 
@@ -678,26 +679,26 @@ class ImageViewCustom(context: Context, attrs: AttributeSet?, defStyleAttr: Int)
      * 标记着动画的结束
      */
     override fun onAnimationEnd(animation: Animator) {
-        Log.d(TAG, "onAnimationEnd")
+        LogUtil.d(TAG, "onAnimationEnd")
         if (mImage.onHomingEnd()) {
             toApplyHoming(mImage.clip(scrollX.toFloat(), scrollY.toFloat()))
         }
     }
 
     override fun onAnimationCancel(animation: Animator) {
-        Log.d(TAG, "onAnimationCancel")
+        LogUtil.d(TAG, "onAnimationCancel")
         mImage.onHomingCancel()
     }
 
     override fun onAnimationRepeat(animation: Animator) {
-        Log.d(TAG, "onAnimationRepeat")
+        LogUtil.d(TAG, "onAnimationRepeat")
         // empty implementation.
     }
 
     private fun onScroll(dx: Float, dy: Float): Boolean {
-        Log.d(TAG, "onScroll")
-        Log.d("Scroll ScrollX", scaleX.toString() + "")
-        Log.d("Scroll ScrollY", scrollY.toString() + "")
+        LogUtil.d(TAG, "onScroll")
+        LogUtil.d("Scroll ScrollX", scaleX.toString() + "")
+        LogUtil.d("Scroll ScrollY", scrollY.toString() + "")
         val homing = mImage.onScroll(scrollX.toFloat(), scrollY.toFloat(), -dx, -dy)
         if (homing != null) {
             toApplyHoming(homing)

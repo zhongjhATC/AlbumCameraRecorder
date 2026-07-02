@@ -12,10 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.enums.MimeType
-import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.FileUtils
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
@@ -28,7 +26,7 @@ import com.zhongjh.multimedia.camera.ui.camera.adapter.PhotoAdapter
 import com.zhongjh.multimedia.camera.ui.camera.adapter.PhotoAdapterListener
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
-import com.zhongjh.multimedia.camera.util.LogUtil
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
@@ -308,7 +306,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
             movePictureFileTaskInBackground()
         }?.onSuccess { data ->
             fragmentRef.get()?.let { baseCameraFragment ->
-                Log.d(TAG, "onSuccess")
+                LogUtil.d(TAG, "onSuccess")
                 baseCameraFragment.commitPictureSuccess(data)
                 // 恢复预览状态
                 baseCameraFragment.cameraStateManager.state = baseCameraFragment.cameraStateManager.preview
@@ -316,10 +314,10 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
         }?.onFail { error ->
             fragmentRef.get()?.let { baseCameraFragment ->
                 // 打印堆栈日志
-                Log.e(TAG, "getMovePictureFileTask")
+                LogUtil.e(TAG, "getMovePictureFileTask")
                 val stackTraceElements: Array<StackTraceElement> = error.stackTrace
                 for (stackTraceElement in stackTraceElements) {
-                    Log.e(TAG, stackTraceElement.toString())
+                    LogUtil.e(TAG, stackTraceElement.toString())
                 }
                 baseCameraFragment.commitFail(error)
             }
@@ -403,7 +401,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
             // 将 缓存文件 拷贝到 配置目录
             for (item in bitmapDataList) {
                 val cacheFile = File(item.absolutePath)
-                Log.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
+                LogUtil.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
                 val localMedia = LocalMedia()
                 // 压缩图片
                 val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
@@ -411,7 +409,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                 ) ?: let {
                     cacheFile
                 }
-                Log.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
+                LogUtil.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
                 localMedia.compressPath = compressionFile.absolutePath
                 localMedia.size = compressionFile.length()
                 val mediaInfo = MediaUtils.getMediaInfo(
@@ -419,7 +417,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                 )
                 localMedia.width = mediaInfo.width
                 localMedia.height = mediaInfo.height
-                Log.d(TAG, "4. 补充属性")
+                LogUtil.d(TAG, "4. 补充属性")
                 // 加入相册
                 val uri = MediaStoreUtils.displayToGallery(baseCameraFragment.myContext, cacheFile, TYPE_PICTURE, localMedia.duration, localMedia.width, localMedia.height)
                 localMedia.absolutePath = item.absolutePath

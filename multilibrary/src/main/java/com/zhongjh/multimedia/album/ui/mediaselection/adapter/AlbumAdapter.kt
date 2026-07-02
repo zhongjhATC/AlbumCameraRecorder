@@ -11,6 +11,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.IncapableCause.Companion.handleCause
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.entity.Album.Companion.ALBUM_ID_ALL
@@ -45,7 +46,7 @@ class AlbumAdapter(
     private var mBucketId: Long = ALBUM_ID_ALL
 
     init {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " AlbumMediaAdapter")
+        LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " AlbumMediaAdapter")
         mImageResize = imageResize
     }
 
@@ -90,7 +91,7 @@ class AlbumAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onBindViewHolder")
+        LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onBindViewHolder")
         if (getItemViewType(position) == AlbumTypes.CAMERA) {
             holder.itemView.setOnClickListener {
                 // 打开添加功能
@@ -107,9 +108,9 @@ class AlbumAdapter(
                 position
             }
             val item = data[realPos]
-            Log.d(tag, "position: $position")
+            LogUtil.d(tag, "position: $position")
             if (position == 0) {
-                Log.d(tag, "path: " + item.uri)
+                LogUtil.d(tag, "path: " + item.uri)
             }
             // 传递相关的值
             mediaViewHolder.mMediaGrid.preBindMedia(MediaGrid.PreBindInfo(mImageResize, placeholder!!, mAlbumSpec.countable, holder))
@@ -151,7 +152,7 @@ class AlbumAdapter(
      * @param mediaGrid holder
      */
     private fun setCheckStatus(item: LocalMedia, mediaGrid: MediaGrid) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " setCheckStatus")
+        LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " setCheckStatus")
         // 是否多选时,显示数字 - true:选择数字,false:不显示数字
         if (mAlbumSpec.countable) {
             val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
@@ -188,7 +189,7 @@ class AlbumAdapter(
     }
 
     override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context, position: Int) {
-        Log.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onCheckViewClicked")
+        LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onCheckViewClicked")
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个

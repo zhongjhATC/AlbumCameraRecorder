@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.imageedit.view.BaseImageStickerView
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -72,7 +73,7 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 记录调试信息
-                Log.d(TAG, String.format("X=%f,Y=%f", pointX, pointY))
+                LogUtil.d(TAG, String.format("X=%f,Y=%f", pointX, pointY))
 
 
                 // 计算触摸点到中心点的距离和角度
@@ -85,7 +86,7 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 记录调试信息
-                Log.d(TAG, String.format("degrees=%f", toDegrees(pointY, pointX)))
+                LogUtil.d(TAG, String.format("degrees=%f", toDegrees(pointY, pointX)))
 
 
                 // 应用旋转变换
@@ -107,7 +108,7 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 记录调试信息
-                Log.d(TAG, String.format("X=%f,Y=%f", pointX, pointY))
+                LogUtil.d(TAG, String.format("X=%f,Y=%f", pointX, pointY))
 
 
                 // 计算新的距离和角度
@@ -124,7 +125,7 @@ class ImageStickerAdjustHelper(private val mContainer: BaseImageStickerView, pri
 
 
                 // 记录调试信息
-                Log.d(TAG, "    D   = " + (degrees - mDegrees))
+                LogUtil.d(TAG, "    D   = " + (degrees - mDegrees))
 
 
                 // 应用旋转

@@ -33,6 +33,7 @@ import com.flyco.tablayout.listener.OnTabSelectListener
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.utils.AppUtils.getAppName
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.multimedia.album.ui.AlbumFragment
 import com.zhongjh.multimedia.camera.entity.TabEntity
@@ -526,7 +527,7 @@ open class MainActivity : AppCompatActivity() {
         mActivityMainZjhBinding.tableLayout.setTag(
             R.id.z_tab_layout_translation_y, abs(translationY)
         )
-        Log.d("MainActivity", abs(translationY).toString() + "")
+        LogUtil.d("MainActivity", abs(translationY).toString() + "")
     }
 
     /**
@@ -541,7 +542,7 @@ open class MainActivity : AppCompatActivity() {
             mAnimationTabLayout = ObjectAnimator.ofFloat(
                 mActivityMainZjhBinding.tableLayout, "translationY", translationY
             )
-            Log.d("MainActivity", translationY.toString() + "")
+            LogUtil.d("MainActivity", translationY.toString() + "")
         } else {
             mAnimationTabLayout = ObjectAnimator.ofFloat(
                 mActivityMainZjhBinding.tableLayout, "translationY", mTabLayoutHeight

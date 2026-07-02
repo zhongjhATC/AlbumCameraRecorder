@@ -2,6 +2,7 @@ package com.zhongjh.multimedia.album.repository
 
 import android.util.Log
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.loader.MediaLoader
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +23,7 @@ class MediaRepository(private val mediaLoader: MediaLoader) {
     }.catch { e ->
         // 统一错误处理
         emit(emptyList<LocalMedia>().toMutableList())
-        Log.e("MediaRepository", "load media failed", e)
+        LogUtil.e("MediaRepository", "load media failed", e)
     }.flowOn(Dispatchers.IO) // 数据加载在 IO 线程执行
 
     /**
@@ -32,6 +33,6 @@ class MediaRepository(private val mediaLoader: MediaLoader) {
         emit(mediaLoader.loadMediaAlbum())
     }.catch { e ->
         emit(emptyList<Album>().toMutableList())
-        Log.e("MediaRepository", "load albums failed", e)
+        LogUtil.e("MediaRepository", "load albums failed", e)
     }.flowOn(Dispatchers.IO)
 }

@@ -6,6 +6,7 @@ import android.graphics.Point
 import android.net.Uri
 import android.util.Log
 import com.zhongjh.common.utils.BasePhotoMetadataUtils
+import com.zhongjh.common.utils.LogUtil
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -50,7 +51,7 @@ class PhotoMetadataUtils private constructor() : BasePhotoMetadataUtils() {
                     try {
                         `is`.close()
                     } catch (e: IOException) {
-                        Log.e(TAG, "getBitmapBound" + e.message)
+                        LogUtil.e(TAG, "getBitmapBound" + e.message)
                     }
                 }
             }
@@ -67,7 +68,7 @@ class PhotoMetadataUtils private constructor() : BasePhotoMetadataUtils() {
             val df = NumberFormat.getNumberInstance(Locale.US) as DecimalFormat
             df.applyPattern("0.0")
             var result = df.format((sizeInBytes.toFloat() / 1024 / 1024).toDouble())
-            Log.d(TAG, "getSizeInMB: $result")
+            LogUtil.d(TAG, "getSizeInMB: $result")
             // in some case , 0.0 will be 0,0
             result = result.replace(",".toRegex(), ".")
             return result.toFloat()

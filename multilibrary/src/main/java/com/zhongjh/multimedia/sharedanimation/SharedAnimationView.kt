@@ -17,6 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenHeight
 import com.zhongjh.common.utils.DisplayMetricsUtils.getRealScreenWidth
+import com.zhongjh.common.utils.LogUtil
 
 /**
  * 一个共享动画的View
@@ -200,8 +201,8 @@ class SharedAnimationView : FrameLayout {
      */
     private fun setOriginParams() {
         targetEndLeft = 0
-        Log.d(tag, "screenRate: " + screenWidth / screenHeight.toFloat())
-        Log.d(tag, "realRate: " + realWidth / realHeight.toFloat())
+        LogUtil.d(tag, "screenRate: " + screenWidth / screenHeight.toFloat())
+        LogUtil.d(tag, "realRate: " + realWidth / realHeight.toFloat())
         // 手机比例(高比宽多)和图片比例比较
         if (screenWidth / screenHeight.toFloat() < realWidth / realHeight.toFloat()) {
             // 图片偏横向
@@ -209,16 +210,16 @@ class SharedAnimationView : FrameLayout {
             targetImageHeight = (targetImageWidth * (realHeight / realWidth.toFloat())).toInt()
             targetImageTop = (screenHeight - targetImageHeight) / 2
             targetEndLeft = 0
-            Log.d(tag, "图片偏横向 $targetImageWidth $targetImageHeight $targetImageTop 0")
+            LogUtil.d(tag, "图片偏横向 $targetImageWidth $targetImageHeight $targetImageTop 0")
         } else {
             // 图片偏竖向
             targetImageHeight = screenHeight
             targetImageWidth = (targetImageHeight * (realWidth / realHeight.toFloat())).toInt()
             targetImageTop = 0
             targetEndLeft = (screenWidth - targetImageWidth) / 2
-            Log.d(tag, "图片偏竖向 $targetImageWidth $targetImageHeight 0 $targetEndLeft")
+            LogUtil.d(tag, "图片偏竖向 $targetImageWidth $targetImageHeight 0 $targetEndLeft")
         }
-        Log.d(tag, "sharedAnimationWrapper $mOriginWidth $mOriginHeight $mOriginLeft $mOriginTop")
+        LogUtil.d(tag, "sharedAnimationWrapper $mOriginWidth $mOriginHeight $mOriginLeft $mOriginTop")
         // 设置原始参数(RecyclerView的item的参数)
         sharedAnimationWrapper.setWidth(mOriginWidth.toFloat())
         sharedAnimationWrapper.setHeight(mOriginHeight.toFloat())
@@ -248,7 +249,7 @@ class SharedAnimationView : FrameLayout {
             // 执行0-1的这个中间不停触发的动画事件addUpdateListener
             valueAnimator.addUpdateListener { animation ->
                 val value = animation.animatedValue as Float
-                Log.d(
+                LogUtil.d(
                     tag,
                     "beginShow $value $mOriginTop $targetImageTop $mOriginLeft $targetEndLeft $mOriginWidth $targetImageWidth $mOriginHeight $targetImageHeight"
                 )

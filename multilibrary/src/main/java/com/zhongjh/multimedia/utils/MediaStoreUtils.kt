@@ -17,6 +17,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.AppUtils.getAppName
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.multimedia.album.loader.MediaLoader
 import com.zhongjh.multimedia.album.loader.MediaLoader.Companion.QUERY_URI
@@ -57,7 +58,7 @@ object MediaStoreUtils {
      */
     @JvmStatic
     fun displayToGallery(context: Context, file: File, @MediaType type: Int, duration: Long, width: Int, height: Int): Uri? {
-        Log.d("displayToGallery", file.path)
+        LogUtil.d("displayToGallery", file.path)
         if (!file.exists()) {
             return null
         }
@@ -177,7 +178,7 @@ object MediaStoreUtils {
                         exif.saveAttributes()
                     }
                 } catch (e: IOException) {
-                    Log.d(TAG, e.message.toString())
+                    LogUtil.d(TAG, e.message.toString())
                     e.printStackTrace()
                 }
             }
@@ -209,7 +210,7 @@ object MediaStoreUtils {
      * @return localMedia 查询出的数据
      */
     fun getMediaDataByPath(context: Context, path: String): LocalMedia {
-        Log.d(TAG, "path:$path")
+        LogUtil.d(TAG, "path:$path")
         val cursor: Cursor? = context.contentResolver.query(
             QUERY_URI,
             MediaLoader.PROJECTION,
@@ -217,7 +218,7 @@ object MediaStoreUtils {
             arrayOf(path),
             null
         )
-        Log.d(TAG, "cursor:${cursor?.columnNames?.size}" + " cursor.count:${cursor?.count}")
+        LogUtil.d(TAG, "cursor:${cursor?.columnNames?.size}" + " cursor.count:${cursor?.count}")
         if (cursor != null && cursor.moveToFirst()) {
             val mediaLoader = MediaLoader(context)
             return mediaLoader.parse(cursor)

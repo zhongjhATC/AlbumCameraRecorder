@@ -2,6 +2,7 @@ package com.zhongjh.multimedia.camera.ui.camera.state.type
 
 import android.util.Log
 import com.zhongjh.circularprogressview.CircularProgressState
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraPictureViewManager
 import com.zhongjh.multimedia.camera.ui.camera.manager.CameraVideoViewManager
@@ -36,11 +37,11 @@ class VideoMultiple(cameraFragment: BaseCameraFragment<out CameraStateManager, o
     override fun pvLayoutCommit() {
         if (cameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.btnConfirm.mState == CircularProgressState.PLAY) {
             // 完成录制
-            Log.d(tag, "pvLayoutCommit完成录制")
+            LogUtil.d(tag, "pvLayoutCommit完成录制")
             cameraFragment.cameraManage.stopVideo()
         } else {
             // 中断操作
-            Log.d(tag, "pvLayoutCommit中断操作")
+            LogUtil.d(tag, "pvLayoutCommit中断操作")
             stopProgress()
         }
     }

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.common.entity.LocalMedia;
 import com.zhongjh.common.entity.MediaExtraInfo;
+import com.zhongjh.common.utils.LogUtil;
 import com.zhongjh.common.utils.MediaStoreCompat;
 import com.zhongjh.common.utils.MediaUtils;
 import com.zhongjh.gridview.widget.GridView;
@@ -139,61 +140,61 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void printProperty(List<? extends LocalMedia> result) {
         for (LocalMedia localMedia : result) {
             // 绝对路径,AndroidQ如果存在不属于自己App下面的文件夹则无效
-            Log.i(TAG, "onResult id:" + localMedia.getFileId());
+            LogUtil.INSTANCE.i(TAG, "onResult id:" + localMedia.getFileId());
             // 是必定可用的地址，如果对地址没有太苛刻的时候可以使用它，具体逻辑可以看该方法(比如支持压缩的话，该方法返回压缩路径)。
-            Log.d(TAG, "onResult getAvailablePath:" + localMedia.getAvailablePath());
+            LogUtil.INSTANCE.d(TAG, "onResult getAvailablePath:" + localMedia.getAvailablePath());
             // 压缩后的路径，如果开启压缩配置后，将最终原图或者编辑后的图片进行压缩，然后赋值该属性。
-            Log.d(TAG, "onResult getCompressPath:" + localMedia.getCompressPath());
+            LogUtil.INSTANCE.d(TAG, "onResult getCompressPath:" + localMedia.getCompressPath());
             // 如果该图片裁剪或者编辑过，那么该属性会有值。
-            Log.d(TAG, "onResult getEditorPath:" + localMedia.getEditorPath());
+            LogUtil.INSTANCE.d(TAG, "onResult getEditorPath:" + localMedia.getEditorPath());
             // 沙盒路径，是配合 FileProvider 后形成的路径，未压缩、未编辑前的，即是原图
-            Log.d(TAG, "onResult FileProvider:" + MediaStoreCompat.INSTANCE.getUri(this.getApplicationContext(), localMedia.getAbsolutePath()));
+            LogUtil.INSTANCE.d(TAG, "onResult FileProvider:" + MediaStoreCompat.INSTANCE.getUri(this.getApplicationContext(), localMedia.getAbsolutePath()));
             // 初始的uri路径，未压缩、未编辑前的，即是原图
-            Log.d(TAG, "onResult getUri:" + localMedia.getUri());
+            LogUtil.INSTANCE.d(TAG, "onResult getUri:" + localMedia.getUri());
             // 初始的真实路径，未压缩、未编辑前的，即是原图
-            Log.d(TAG, "onResult getAbsolutePath:" + localMedia.getAbsolutePath());
+            LogUtil.INSTANCE.d(TAG, "onResult getAbsolutePath:" + localMedia.getAbsolutePath());
             // 如果有不存在的文件,抛出错误
             if (null == localMedia.getCompressPath() || !new File(localMedia.getCompressPath()).exists()) {
-                Log.e(TAG, localMedia.getCompressPath() + " CompressPath不存在");
+                LogUtil.INSTANCE.e(TAG, localMedia.getCompressPath() + " CompressPath不存在");
             }
             if (null == localMedia.getEditorPath() || !new File(localMedia.getEditorPath()).exists()) {
-                Log.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
+                LogUtil.INSTANCE.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
             }
             if (isNoUri(localMedia.getUri())) {
-                Log.e(TAG, localMedia.getUri() + " Uri不存在");
+                LogUtil.INSTANCE.e(TAG, localMedia.getUri() + " Uri不存在");
             }
             if (!new File(localMedia.getAbsolutePath()).exists()) {
-                Log.e(TAG, localMedia.getAbsolutePath() + " AbsolutePath不存在");
+                LogUtil.INSTANCE.e(TAG, localMedia.getAbsolutePath() + " AbsolutePath不存在");
             }
 
 
-            Log.i(TAG, "onResult 视频音频长度: " + localMedia.getDuration());
-            Log.i(TAG, "onResult 角度: " + localMedia.getOrientation());
-            Log.i(TAG, "onResult 是否选中: " + localMedia.isChecked());
-            Log.i(TAG, "onResult 是否裁剪: " + localMedia.isCut());
-            Log.i(TAG, "onResult 索引: " + localMedia.getPosition());
-            Log.i(TAG, "onResult 媒体资源类型: " + localMedia.getMimeType());
-            Log.i(TAG, "onResult 宽度: " + localMedia.getWidth());
-            Log.i(TAG, "onResult 高度: " + localMedia.getHeight());
-            Log.i(TAG, "onResult 文件大小: " + localMedia.getSize());
-            Log.i(TAG, "onResult 文件名称: " + localMedia.getFileName());
-            Log.i(TAG, "onResult 父文件夹名称: " + localMedia.getParentFolderName());
-            Log.i(TAG, "onResult 专辑ID: " + localMedia.getBucketId());
-            Log.i(TAG, "onResult 相册ID: " + localMedia.getFileId());
-            Log.i(TAG, "onResult 文件创建时间: " + localMedia.getDateAddedTime());
-            Log.i(TAG, "onResult 是否选择了原图: " + localMedia.isOriginal());
+            LogUtil.INSTANCE.i(TAG, "onResult 视频音频长度: " + localMedia.getDuration());
+            LogUtil.INSTANCE.i(TAG, "onResult 角度: " + localMedia.getOrientation());
+            LogUtil.INSTANCE.i(TAG, "onResult 是否选中: " + localMedia.isChecked());
+            LogUtil.INSTANCE.i(TAG, "onResult 是否裁剪: " + localMedia.isCut());
+            LogUtil.INSTANCE.i(TAG, "onResult 索引: " + localMedia.getPosition());
+            LogUtil.INSTANCE.i(TAG, "onResult 媒体资源类型: " + localMedia.getMimeType());
+            LogUtil.INSTANCE.i(TAG, "onResult 宽度: " + localMedia.getWidth());
+            LogUtil.INSTANCE.i(TAG, "onResult 高度: " + localMedia.getHeight());
+            LogUtil.INSTANCE.i(TAG, "onResult 文件大小: " + localMedia.getSize());
+            LogUtil.INSTANCE.i(TAG, "onResult 文件名称: " + localMedia.getFileName());
+            LogUtil.INSTANCE.i(TAG, "onResult 父文件夹名称: " + localMedia.getParentFolderName());
+            LogUtil.INSTANCE.i(TAG, "onResult 专辑ID: " + localMedia.getBucketId());
+            LogUtil.INSTANCE.i(TAG, "onResult 相册ID: " + localMedia.getFileId());
+            LogUtil.INSTANCE.i(TAG, "onResult 文件创建时间: " + localMedia.getDateAddedTime());
+            LogUtil.INSTANCE.i(TAG, "onResult 是否选择了原图: " + localMedia.isOriginal());
             if (localMedia.isImageOrGif()) {
                 if (localMedia.isImage()) {
-                    Log.d(TAG, "onResult 图片类型");
+                    LogUtil.INSTANCE.d(TAG, "onResult 图片类型");
                 } else if (localMedia.isImage()) {
-                    Log.d(TAG, "onResult 图片类型");
+                    LogUtil.INSTANCE.d(TAG, "onResult 图片类型");
                 }
             } else if (localMedia.isVideo()) {
-                Log.d(TAG, "onResult 视频类型");
+                LogUtil.INSTANCE.d(TAG, "onResult 视频类型");
             } else if (localMedia.isAudio()) {
-                Log.d(TAG, "onResult 音频类型");
+                LogUtil.INSTANCE.d(TAG, "onResult 音频类型");
             }
-            Log.i(TAG, "onResult 具体类型:" + localMedia.getMimeType());
+            LogUtil.INSTANCE.i(TAG, "onResult 具体类型:" + localMedia.getMimeType());
             // 某些手机拍摄没有自带宽高，那么我们可以自己获取
             if (localMedia.getWidth() == 0 && localMedia.isVideo()) {
                 MediaExtraInfo mediaExtraInfo = MediaUtils.getVideoSize(getApplication(), localMedia.getUri());
@@ -201,7 +202,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 localMedia.setHeight(mediaExtraInfo.getHeight());
                 localMedia.setDuration(mediaExtraInfo.getDuration());
             }
-            Log.i(TAG, "onResult 宽高: " + localMedia.getWidth() + "x" + localMedia.getHeight());
+            LogUtil.INSTANCE.i(TAG, "onResult 宽高: " + localMedia.getWidth() + "x" + localMedia.getHeight());
         }
     }
 
@@ -235,17 +236,17 @@ public abstract class BaseActivity extends AppCompatActivity {
             InputStream inputStream = getContentResolver().openInputStream(Uri.parse(uri));
             if (inputStream != null) {
                 // 文件存在
-                Log.d(TAG, "文件存在");
+                LogUtil.INSTANCE.d(TAG, "文件存在");
                 inputStream.close();
                 return false;
             } else {
                 // 文件不存在
-                Log.d(TAG, "文件不存在");
+                LogUtil.INSTANCE.d(TAG, "文件不存在");
                 return true;
             }
         } catch (FileNotFoundException e) {
             // 文件不存在
-            Log.d(TAG, "文件不存在");
+            LogUtil.INSTANCE.d(TAG, "文件不存在");
             return true;
         } catch (IOException e) {
             throw new RuntimeException(e);

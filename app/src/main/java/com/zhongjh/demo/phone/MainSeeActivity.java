@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.zhongjh.common.utils.LogUtil;
 import com.zhongjh.multimedia.album.filter.BaseFilter;
 import com.zhongjh.multimedia.settings.AlbumSetting;
 import com.zhongjh.multimedia.settings.CameraSetting;
@@ -96,7 +97,7 @@ public class MainSeeActivity extends BaseActivity {
                         @Override
                         public void onError(Throwable throwable) {
                             progressDialog.hide();
-                            Log.e("MainSeeActivity", "onFail", throwable);
+                            LogUtil.INSTANCE.e("MainSeeActivity", "onFail", throwable);
                             Toast.makeText(getApplicationContext(), getResources().getString(R.string.download_failed) + ":" + throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -121,25 +122,25 @@ public class MainSeeActivity extends BaseActivity {
             @Override
             public void onItemClick(@NotNull View view, @NotNull GridMedia gridMedia) {
                 // 点击详情,通过网页形式加载的数据，是加载不了详情数据的
-                Log.i(TAG, "onResult id:" + gridMedia.getFileId());
-                Log.i(TAG, "onResult url:" + gridMedia.getUrl());
-                Log.d(TAG, "onResult 绝对路径:" + gridMedia.getAbsolutePath());
-                Log.d(TAG, "onResult Uri:" + gridMedia.getUri());
-                Log.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
-                Log.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
+                LogUtil.INSTANCE.i(TAG, "onResult id:" + gridMedia.getFileId());
+                LogUtil.INSTANCE.i(TAG, "onResult url:" + gridMedia.getUrl());
+                LogUtil.INSTANCE.d(TAG, "onResult 绝对路径:" + gridMedia.getAbsolutePath());
+                LogUtil.INSTANCE.d(TAG, "onResult Uri:" + gridMedia.getUri());
+                LogUtil.INSTANCE.d(TAG, "onResult 文件大小: " + gridMedia.getSize());
+                LogUtil.INSTANCE.d(TAG, "onResult 视频音频长度: " + gridMedia.getDuration());
                 if (gridMedia.isImageOrGif()) {
                     if (gridMedia.isImage()) {
-                        Log.d(TAG, "onResult 图片类型");
+                        LogUtil.INSTANCE.d(TAG, "onResult 图片类型");
                     } else if (gridMedia.isImage()) {
-                        Log.d(TAG, "onResult 图片类型");
+                        LogUtil.INSTANCE.d(TAG, "onResult 图片类型");
                     }
                 } else if (gridMedia.isVideo()) {
-                    Log.d(TAG, "onResult 视频类型");
+                    LogUtil.INSTANCE.d(TAG, "onResult 视频类型");
                 } else if (gridMedia.isAudio()) {
-                    Log.d(TAG, "onResult 音频类型");
+                    LogUtil.INSTANCE.d(TAG, "onResult 音频类型");
                 }
-                Log.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
-                Log.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
+                LogUtil.INSTANCE.d(TAG, "onResult 具体类型:" + gridMedia.getMimeType());
+                LogUtil.INSTANCE.d(TAG, "onResult 宽高: " + gridMedia.getWidth() + "x" + gridMedia.getHeight());
                 // 点击详情
                 mGlobalSetting.openPreviewData(MainSeeActivity.this, requestLauncherGrid, mBinding.gridView.getAllData(), mBinding.gridView.getAllData().indexOf(gridMedia), mBinding.gridView.isOperation());
             }
@@ -200,14 +201,14 @@ public class MainSeeActivity extends BaseActivity {
                 // 图片缩放比例
                 .thumbnailScale(0.85f).setOnSelectedListener(localFiles -> {
                     // 每次选择的事件
-                    Log.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
+                    LogUtil.INSTANCE.d("onSelected", "onSelected: localFiles.size()=" + localFiles.size());
                 })
                 // 开启原图
                 .originalEnable(true)
                 // 最大原图size,仅当originalEnable为true的时候才有效
                 .maxOriginalSize(1).setOnCheckedListener(isChecked -> {
                     // 是否勾选了原图
-                    Log.d("isChecked", "onCheck: isChecked=" + isChecked);
+                    LogUtil.INSTANCE.d("isChecked", "onCheck: isChecked=" + isChecked);
                 });
 
         // 录音机

@@ -7,6 +7,7 @@ import androidx.core.net.toUri
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.VideoEditListener
 import com.zhongjh.common.utils.FileUtils
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import java.io.File
@@ -74,7 +75,7 @@ class AlbumCompressFileTask(
             if (newFile.exists()) {
                 val localFile = LocalMedia(context, item, newFile, true)
                 newLocalFiles.add(localFile)
-                Log.d(tag, "存在直接使用")
+                LogUtil.d(tag, "存在直接使用")
             } else {
                 if (item.isImage()) {
                     // 处理是否压缩图片
@@ -82,7 +83,7 @@ class AlbumCompressFileTask(
                     // 移动到新的文件夹
                     FileUtils.copy(compressionFile, newFile)
                     newLocalFiles.add(LocalMedia(context, item, newFile, true))
-                    Log.d(tag, "不存在新建文件")
+                    LogUtil.d(tag, "不存在新建文件")
                 } else if (item.isVideo()) {
                     // 压缩视频
                     globalSpec.videoCompressCoordinator?.let { videoCompressCoordinator ->
@@ -94,7 +95,7 @@ class AlbumCompressFileTask(
                                         context, item, newFile, true
                                     )
                                     newLocalFiles.add(localFile)
-                                    Log.d(tag, "不存在新建文件")
+                                    LogUtil.d(tag, "不存在新建文件")
                                 }
 
                                 override fun onProgress(progress: Int, progressTime: Long) {}

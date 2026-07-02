@@ -22,6 +22,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.FileUtils.copy
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.request
@@ -201,31 +202,31 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             }
 
             override fun onLongClick() {
-                Log.d(TAG, "onLongClick")
+                LogUtil.d(TAG, "onLongClick")
                 // 录音开启
                 onRecord(true)
             }
 
             override fun onLongClickEnd(time: Long) {
-                Log.d(TAG, "onLongClickEnd")
+                LogUtil.d(TAG, "onLongClickEnd")
                 recordEnd()
             }
 
             override fun onLongClickFinish() {
-                Log.d(TAG, "onLongClickFinish")
+                LogUtil.d(TAG, "onLongClickFinish")
                 recordEnd()
             }
 
             override fun onLongClickError() {
-                Log.d(TAG, "onLongClickError")
+                LogUtil.d(TAG, "onLongClickError")
             }
 
             override fun onBanClickTips() {
-                Log.d(TAG, "onBanClickTips")
+                LogUtil.d(TAG, "onBanClickTips")
             }
 
             override fun onClickStopTips() {
-                Log.d(TAG, "onClickStopTips")
+                LogUtil.d(TAG, "onClickStopTips")
             }
         })
     }
@@ -236,7 +237,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
     private fun recordEnd() {
         soundRecordingLayout.hideBtnClickOrLong()
         soundRecordingLayout.startShowLeftRightButtonsAnimator(true)
-        Log.d(TAG, "onLongClickEnd")
+        LogUtil.d(TAG, "onLongClickEnd")
         // 录音结束
         onRecord(false)
         showRecordEndView()
@@ -362,7 +363,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
                     println("was not successful.")
                 }
             }
-            Log.d(TAG, "onRecord")
+            LogUtil.d(TAG, "onRecord")
 
             // start RecordingService
             startRecording()
@@ -411,7 +412,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
 
                 mediaPlayer.setOnPreparedListener { mediaPlayer.start() }
             } catch (e: IOException) {
-                Log.e(TAG, "prepare() failed")
+                LogUtil.e(TAG, "prepare() failed")
             }
 
             mediaPlayer.setOnCompletionListener { stopPlaying() }
@@ -553,7 +554,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
                     updateProgressUI(progress, fragment)
                     // 复制完成后恢复协程（可选，根据业务是否需要等待完成）
                     if (progress >= FULL) {
-                        Log.d(TAG, "UI进度更新continuation.resume完成：$progress%")
+                        LogUtil.d(TAG, "UI进度更新continuation.resume完成：$progress%")
                         continuation.resume(true) {}
                     }
                 }
@@ -580,11 +581,11 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             if (isFragmentValid(fragment)) {
                 // 更新进度条
                 soundRecordingLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
-                Log.d(TAG, "UI进度更新完成：$progress%")
+                LogUtil.d(TAG, "UI进度更新完成：$progress%")
                 // 更新成功
                 true
             } else {
-                Log.e(TAG, "Fragment已无效，无法更新UI")
+                LogUtil.e(TAG, "Fragment已无效，无法更新UI")
                 // 更新失败
                 false
             }
@@ -664,7 +665,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
                 chronometer.start()
                 startingTimeMillis = System.currentTimeMillis()
             } catch (e: IOException) {
-                Log.e(TAG, "prepare() failed")
+                LogUtil.e(TAG, "prepare() failed")
             }
         }
     }

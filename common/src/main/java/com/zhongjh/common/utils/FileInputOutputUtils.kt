@@ -41,7 +41,7 @@ object FileInputOutputUtils {
     @JvmStatic
     fun writeFileFromInputStream(file: File?, `is`: InputStream?, append: Boolean, listener: OnProgressUpdateListener?): Boolean {
         if (`is` == null || !createOrExistsFile(file)) {
-            Log.e("FileIOUtils", "create file <$file> failed.")
+            LogUtil.e("FileIOUtils", "create file <$file> failed.")
             return false
         }
         var os: OutputStream? = null
@@ -68,18 +68,18 @@ object FileInputOutputUtils {
             }
             return true
         } catch (e: IOException) {
-            Log.e(TAG, "writeFileFromInputStream" + e.message)
+            LogUtil.e(TAG, "writeFileFromInputStream" + e.message)
             return false
         } finally {
             try {
                 `is`.close()
             } catch (e: IOException) {
-                Log.e(TAG, "writeFileFromInputStream" + e.message)
+                LogUtil.e(TAG, "writeFileFromInputStream" + e.message)
             }
             try {
                 os?.close()
             } catch (e: IOException) {
-                Log.e(TAG, "writeFileFromInputStream" + e.message)
+                LogUtil.e(TAG, "writeFileFromInputStream" + e.message)
             }
         }
     }

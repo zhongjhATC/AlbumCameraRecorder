@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.entity.Album
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
@@ -99,7 +100,7 @@ class MediaViewUtil(
             when (state) {
                 // 监听到新的相册数据
                 is MainModel.MediaPageState.RefreshSuccess -> {
-                    Log.d("AlbumFragmentFlow","mainModel.mediaPageState")
+                    LogUtil.d("AlbumFragmentFlow","mainModel.mediaPageState")
                     // 如果没有数据，则关闭下拉加载
                     recyclerView.setEnabledLoadMore(state.refreshMediaData.data.isNotEmpty())
                     mAdapter?.setReloadPageMediaData(state.bucketId, state.refreshMediaData)

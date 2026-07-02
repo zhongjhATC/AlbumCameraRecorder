@@ -19,6 +19,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.VideoEditListener
 import com.zhongjh.common.utils.FileUtils
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.databinding.ActivityPreviewVideoZjhBinding
@@ -171,7 +172,7 @@ class PreviewVideoActivity : AppCompatActivity() {
         mGlobalSpec.videoCompressCoordinator?.let {
             // 如果开启了直接压缩
             val absolutePath = FileMediaUtil.prepareCompressFile(applicationContext, mLocalMedia.uri, File(mLocalMedia.absolutePath)).absolutePath
-            Log.d(TAG, "confirm: absolutePath = $absolutePath")
+            LogUtil.d(TAG, "confirm: absolutePath = $absolutePath")
             compress(absolutePath)
         } ?: let {
             // 否则直接提交

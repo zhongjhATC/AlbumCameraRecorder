@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
+import com.zhongjh.common.utils.LogUtil
 import java.io.FileDescriptor
 
 /**
@@ -62,7 +63,7 @@ class ImageContentDecoder(private val context: Context, uri: Uri) : BaseImageDec
         } catch (e: Exception) {
             // 记录解码过程中的异常
             // 可能的异常包括FileNotFoundException（文件不存在）、SecurityException（无权限访问）等
-            Log.e(TAG, "decode" + e.message)
+            LogUtil.e(TAG, "decode" + e.message)
         }
 
 
