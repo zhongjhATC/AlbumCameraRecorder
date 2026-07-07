@@ -207,6 +207,10 @@ class AlbumAdapter(
 
     override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context, position: Int) {
         LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onCheckViewClicked")
+        // onCheckViewClicked 末尾
+        val selectData = mSelectedModel.getSelectedData()
+        // 选择之前，是否达到上限
+        val beforeMax = selectData.maxSelectableReached()
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
@@ -226,7 +230,7 @@ class AlbumAdapter(
             }
         } else {
             // 不是多选模式
-            if (mSelectedModel.getSelectedData().isSelected(item)) {
+            if (selectData.isSelected(item)) {
                 // 如果当前已经被选中，再次选择就是取消了
                 mSelectedModel.removeSelectedData(item, position)
             } else {
@@ -239,12 +243,6 @@ class AlbumAdapter(
                 }
             }
         }
-
-        // onCheckViewClicked 末尾
-        val selectData = mSelectedModel.getSelectedData()
-        // 选择之前，是否达到上限
-        val beforeMax = selectData.maxSelectableReached()
-        refreshSelectCache()
         // 选择之后，是否达到上限
         val afterMax = selectData.maxSelectableReached()
 
