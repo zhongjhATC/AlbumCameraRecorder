@@ -30,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -448,9 +449,9 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mBinding.tvAlbumTitle.text = targetAlbum.name
         }
         // 选择数据改变
-        LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) { position ->
+        LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) {
             LogUtil.d("AlbumFragmentFlow", "mSelectedModel.selectedDataChange")
-            mMediaViewUtil?.notifyItemByLocalMedia(position)
+            mMediaViewUtil?.notifyItemByLocalMedia()
         }
     }
 
@@ -792,6 +793,20 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         updateBottomToolbar()
         // 触发选择的接口事件
         mAlbumSpec.onSelectedListener?.onSelected(mSelectedModel.getSelectedData().getSelectedMediaArrayList())
+    }
+
+    /**
+     * 刷新可见区间
+     */
+    override fun onNeedRefreshVisible() {
+        val lm = mBinding.recyclerview.layoutManager as GridLayoutManager
+        val firstVis = lm.findFirstVisibleItemPosition()
+        val lastVis = lm.findLastVisibleItemPosition()
+        // 边界保护
+        if (firstVis < 0 || lastVis < firstVis) return
+        val count = lastVis - firstVis + 1
+        // 官方范围刷新
+        mBinding.recyclerview.adapter?.notifyItemRangeChanged(firstVis, count)
     }
 
     /**

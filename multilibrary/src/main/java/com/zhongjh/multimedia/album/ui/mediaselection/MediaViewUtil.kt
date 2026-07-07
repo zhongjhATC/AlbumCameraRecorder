@@ -154,8 +154,8 @@ class MediaViewUtil(
     /**
      * 刷新列表数据
      */
-    fun notifyItemByLocalMedia(position: Int) {
-        mAdapter?.notifyCheckStateChanged(position)
+    fun notifyItemByLocalMedia() {
+        mAdapter?.notifyCheckStateChanged()
     }
 
     /**
@@ -239,6 +239,10 @@ class MediaViewUtil(
     override fun onUpdate() {
         // 通知外部活动检查状态改变
         checkStateListener?.onUpdate()
+    }
+
+    override fun onNeedRefreshVisible() {
+        checkStateListener?.onNeedRefreshVisible()
     }
 
     override fun onMediaClick(album: Album?, imageView: ImageView?, item: LocalMedia?, adapterPosition: Int) {

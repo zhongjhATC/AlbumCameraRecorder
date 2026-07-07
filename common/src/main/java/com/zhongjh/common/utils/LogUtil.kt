@@ -12,7 +12,7 @@ object LogUtil {
     /**
      * 调试日志总开关，发布版本改成 false 即可屏蔽所有Log
      */
-    private const val DEBUG_LOG = false
+    private const val DEBUG_LOG = true
     private const val DEFAULT_TAG = "zhongjh"
 
     fun i(tag: String, msg: String) {

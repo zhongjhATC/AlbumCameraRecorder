@@ -2,7 +2,6 @@ package com.zhongjh.multimedia.album.ui.mediaselection.adapter
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,9 +44,26 @@ class AlbumAdapter(
      */
     private var mBucketId: Long = ALBUM_ID_ALL
 
+    /**
+     * 缓存：fileId -> 选中序号/-1未选中，解决onBind线性遍历性能问题
+     */
+    private var fileIdCheckMap: Map<Long, Int> = emptyMap()
+
     init {
         LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " AlbumMediaAdapter")
         mImageResize = imageResize
+        // 初始化选中映射缓存
+        refreshSelectCache()
+    }
+
+    /**
+     * 刷新选中状态映射缓存，仅选中变更时调用，不全局刷新列表
+     */
+    private fun refreshSelectCache() {
+        // 遍历 selectedItems 列表里每一个 SelectedItem,然后生成Map<Long, Int>,it.media.fileId作为key,it.order作为value
+        fileIdCheckMap = mSelectedModel.getSelectedData().selectedItems.associate {
+            it.media.fileId to it.order
+        }
     }
 
     /**
@@ -60,6 +76,8 @@ class AlbumAdapter(
         this@AlbumAdapter.data = refreshMediaData.data
         this@AlbumAdapter.mBucketId = bucketId
         refreshMediaData.diffResult.dispatchUpdatesTo(this@AlbumAdapter)
+        // 刷新选中映射
+        refreshSelectCache()
     }
 
     /**
@@ -68,6 +86,8 @@ class AlbumAdapter(
     fun notifyDataInserted(data: List<LocalMedia>, startPosition: Int) {
         this@AlbumAdapter.data = data
         notifyItemInserted(startPosition)
+        // 刷新选中映射
+        refreshSelectCache()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -91,7 +111,7 @@ class AlbumAdapter(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onBindViewHolder")
+        LogUtil.d("onSaveInstanceState", fileIdCheckMap.size.toString() + " onBindViewHolder")
         if (getItemViewType(position) == AlbumTypes.CAMERA) {
             holder.itemView.setOnClickListener {
                 // 打开添加功能
@@ -152,33 +172,30 @@ class AlbumAdapter(
      * @param mediaGrid holder
      */
     private fun setCheckStatus(item: LocalMedia, mediaGrid: MediaGrid) {
-        LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " setCheckStatus")
+        LogUtil.d("onSaveInstanceState", fileIdCheckMap.size.toString() + " setCheckStatus")
         // 是否多选时,显示数字 - true:选择数字,false:不显示数字
         if (mAlbumSpec.countable) {
-            val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
-            if (checkedNum > 0) {
+            val checkedNum = fileIdCheckMap[item.fileId] ?: CheckView.UNCHECKED
+            if (checkedNum != CheckView.UNCHECKED) {
                 // 设置启用,设置数量
                 setCheckEnabled(mediaGrid, true)
                 mediaGrid.setCheckedNum(checkedNum)
             } else {
-                // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                if (mSelectedModel.getSelectedData().maxSelectableReached()) {
-                    setCheckEnabled(mediaGrid,false)
-                    mediaGrid.setCheckedNum(CheckView.UNCHECKED)
-                } else {
-                    setCheckEnabled(mediaGrid,true)
-                    mediaGrid.setCheckedNum(checkedNum)
-                }
+                // 未选中统一传UNCHECKED常量，避免0导致崩溃
+                val isMax = mSelectedModel.getSelectedData().maxSelectableReached()
+                setCheckEnabled(mediaGrid, !isMax)
+                mediaGrid.setCheckedNum(CheckView.UNCHECKED)
             }
         } else {
             // 如果被选中了，就设置选择
-            val selected = mSelectedModel.getSelectedData().isSelected(item)
+            val selected = fileIdCheckMap.containsKey(item.fileId)
             if (selected) {
                 setCheckEnabled(mediaGrid,true)
                 mediaGrid.setChecked(true)
             } else {
                 // 判断当前数量 和 当前选择最大数量比较 是否相等，相等就设置为false，否则true
-                setCheckEnabled(mediaGrid, !mSelectedModel.getSelectedData().maxSelectableReached())
+                val isMax = mSelectedModel.getSelectedData().maxSelectableReached()
+                setCheckEnabled(mediaGrid, !isMax)
                 mediaGrid.setChecked(false)
             }
         }
@@ -193,7 +210,7 @@ class AlbumAdapter(
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
-            val checkedNum = mSelectedModel.getSelectedData().checkedNumOf(item)
+            val checkedNum = fileIdCheckMap[item.fileId] ?: CheckView.UNCHECKED
             if (checkedNum == CheckView.UNCHECKED) {
                 // 如果当前数据是未选状态
                 if (assertAddSelection(context, item)) {
@@ -222,14 +239,32 @@ class AlbumAdapter(
                 }
             }
         }
+
+        // onCheckViewClicked 末尾
+        val selectData = mSelectedModel.getSelectedData()
+        // 选择之前，是否达到上限
+        val beforeMax = selectData.maxSelectableReached()
+        refreshSelectCache()
+        // 选择之后，是否达到上限
+        val afterMax = selectData.maxSelectableReached()
+
+        // 选择之前和之后是否一样,不一样
+        if (beforeMax != afterMax) {
+            mCheckStateListener?.onNeedRefreshVisible()
+            mCheckStateListener?.onUpdate()
+        } else {
+            notifyItemChanged(position)
+            mCheckStateListener?.onUpdate()
+        }
     }
 
     /**
      * 刷新数据
      */
-    fun notifyCheckStateChanged(position: Int) {
-        // 用全更新是因为选择了item1之后,不止item1会改变,其他item也会改变,所以用全更新
-        notifyDataSetChanged()
+    fun notifyCheckStateChanged() {
+        refreshSelectCache()
+        // 不使用全量刷新，通知页面刷新屏幕可见条目
+        mCheckStateListener?.onNeedRefreshVisible()
         mCheckStateListener?.onUpdate()
     }
 
@@ -298,6 +333,11 @@ class AlbumAdapter(
          * 选择选项后更新事件
          */
         fun onUpdate()
+
+        /**
+         * 通知外部需要刷新可见区间
+         */
+        fun onNeedRefreshVisible()
     }
 
     interface OnMediaClickListener {
