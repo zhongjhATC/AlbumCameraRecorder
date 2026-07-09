@@ -9,7 +9,6 @@ import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -624,7 +623,12 @@ class PreviewFragment : BaseFragment() {
                 isTrue = assertAddSelection(media)
             }
             if (isTrue) {
-                mSelectedModel.addSelectedData(media, mViewPager2.currentItem)
+                val position = if (mIsDisplayCamera) {
+                    mViewPager2.currentItem + 1
+                } else {
+                    mViewPager2.currentItem
+                }
+                mSelectedModel.addSelectedData(media, position)
                 if (mAlbumSpec.countable) {
                     mViewHolder.checkView.setCheckedNum(
                         mSelectedModel.getSelectedData().checkedNumOf(
