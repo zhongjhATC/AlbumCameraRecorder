@@ -207,10 +207,9 @@ class AlbumAdapter(
 
     override fun onCheckViewClicked(imageView: ImageView, item: LocalMedia, context: Context, position: Int) {
         LogUtil.d("onSaveInstanceState", mSelectedModel.getSelectedData().selectedItems.size.toString() + " onCheckViewClicked")
-        // onCheckViewClicked 末尾
+
         val selectData = mSelectedModel.getSelectedData()
-        // 选择之前，是否达到上限
-        val beforeMax = selectData.maxSelectableReached()
+
         // 是否多选模式,显示数字
         if (mAlbumSpec.countable) {
             // 获取当前选择的第几个
@@ -243,27 +242,26 @@ class AlbumAdapter(
                 }
             }
         }
-        // 选择之后，是否达到上限
-        val afterMax = selectData.maxSelectableReached()
-
-        // 选择之前和之后是否一样,不一样
-        if (beforeMax != afterMax) {
-            mCheckStateListener?.onNeedRefreshVisible()
-            mCheckStateListener?.onUpdate()
-        } else {
-            notifyItemChanged(position)
-            mCheckStateListener?.onUpdate()
-        }
     }
 
     /**
      * 刷新数据
      */
     fun notifyCheckStateChanged() {
+        // 缓存刷新，预览/列表点击共用一套逻辑
         refreshSelectCache()
         // 不使用全量刷新，通知页面刷新屏幕可见条目
         mCheckStateListener?.onNeedRefreshVisible()
         mCheckStateListener?.onUpdate()
+    }
+
+    /**
+     * 刷新单条数据
+     */
+    fun notifyDataItemChanged(position: Int) {
+        // 缓存刷新，预览/列表点击共用一套逻辑
+        refreshSelectCache()
+        notifyItemChanged(position)
     }
 
     /**

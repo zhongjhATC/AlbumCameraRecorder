@@ -143,19 +143,17 @@ class MediaViewUtil(
     }
 
     /**
-     * 刷新数据源
+     * 刷新当前屏幕可见区间
      */
-    fun refreshMediaGrid() {
-        mAdapter?.let { adapter ->
-            adapter.notifyItemRangeChanged(0, adapter.itemCount)
-        }
+    fun notifyRangeVisible() {
+        mAdapter?.notifyCheckStateChanged()
     }
 
     /**
-     * 刷新列表数据
+     * 只刷新单个item
      */
-    fun notifyItemByLocalMedia() {
-        mAdapter?.notifyCheckStateChanged()
+    fun notifySingleItem(position: Int) {
+        mAdapter?.notifyDataItemChanged(position)
     }
 
     /**

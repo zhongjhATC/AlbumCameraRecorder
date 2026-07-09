@@ -449,9 +449,15 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mBinding.tvAlbumTitle.text = targetAlbum.name
         }
         // 选择数据改变
-        LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) {
-            LogUtil.d("AlbumFragmentFlow", "mSelectedModel.selectedDataChange")
-            mMediaViewUtil?.notifyItemByLocalMedia()
+        LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) { event ->
+            LogUtil.d("AlbumFragmentFlow", "mSelectedModel.selectedDataChange event=$event")
+            if (event.isMaxStateChanged) {
+                // 上限状态变更，刷新屏幕所有可见条目（需要更新置灰）
+                mMediaViewUtil?.notifyRangeVisible()
+            } else {
+                // 上限无变化，仅刷新当前操作条目
+                mMediaViewUtil?.notifySingleItem(event.position)
+            }
         }
     }
 

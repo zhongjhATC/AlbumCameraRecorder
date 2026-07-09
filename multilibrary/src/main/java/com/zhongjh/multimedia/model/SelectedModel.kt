@@ -13,6 +13,16 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
+ * 选中变更事件
+ * @param position 当前操作索引
+ * @param isMaxStateChanged 是否引起「达到上限/解除上限」状态切换
+ */
+data class SelectChangeEvent(
+    val position: Int,
+    val isMaxStateChanged: Boolean
+)
+
+/**
  * 选择数据的ViewModel，缓存相关数据给它的子Fragment共同使用
  *
  * @author zhongjh
@@ -33,18 +43,26 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
     /**
      * 当前选择的数据更改
      */
-    private val _selectedDataChangeEvent = MutableSharedFlow<Int>(extraBufferCapacity = 1)
-    val selectedDataChangeEvent: SharedFlow<Int> = _selectedDataChangeEvent.asSharedFlow()
+    private val _selectedDataChangeEvent = MutableSharedFlow<SelectChangeEvent>(extraBufferCapacity = 1)
+    val selectedDataChangeEvent: SharedFlow<SelectChangeEvent> = _selectedDataChangeEvent.asSharedFlow()
 
     /**
      * 选择的数据添加
      */
     fun addSelectedData(item: LocalMedia, position: Int) {
         LogUtil.d("AlbumFragmentFlow","SelectedModel.addSelectedData")
+        val beforeMax = selectedData.maxSelectableReached()
+
         item.isChecked = true
         selectedData.add(item)
+
+        val afterMax = selectedData.maxSelectableReached()
+        val event = SelectChangeEvent(
+            position = position,
+            isMaxStateChanged = beforeMax != afterMax
+        )
         // 通知更新
-        _selectedDataChangeEvent.tryEmit(position)
+        _selectedDataChangeEvent.tryEmit(event)
     }
 
     /**
@@ -52,10 +70,19 @@ class SelectedModel(application: Application) : AndroidViewModel(application) {
      */
     fun removeSelectedData(item: LocalMedia, position: Int) {
         LogUtil.d("AlbumFragmentFlow","SelectedModel.removeSelectedData")
+        val beforeMax = selectedData.maxSelectableReached()
+
         item.isChecked = false
         selectedData.remove(item)
+
+        val afterMax = selectedData.maxSelectableReached()
+
+        val event = SelectChangeEvent(
+            position = position,
+            isMaxStateChanged = beforeMax != afterMax
+        )
         // 通知更新
-        _selectedDataChangeEvent.tryEmit(position)
+        _selectedDataChangeEvent.tryEmit(event)
     }
 
     /**
