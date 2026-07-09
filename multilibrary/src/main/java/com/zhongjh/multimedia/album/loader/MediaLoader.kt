@@ -83,6 +83,7 @@ class MediaLoader(private val context: Context) {
             val albumSelectionStr = getAlbumSelection()
             val sortOrderStr = getSortOrder()
             LogUtil.d(TAG, "查询语句: $albumSelectionStr 排序语句: $sortOrderStr")
+            LogUtil.d("readContent", "context.contentResolver.query(QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr)")
             context.contentResolver.query(QUERY_URI, PROJECTION, albumSelectionStr, getSelectionArgs(), sortOrderStr)?.use { data ->
                 if (data.count > 0) {
                     var totalCount = 0L
@@ -156,6 +157,7 @@ class MediaLoader(private val context: Context) {
                 getSelectionArgs().plusElement(bucketId.toString())
             }
             if (SdkVersionUtils.isR) {
+                LogUtil.d("readContent", "context.contentResolver.query(1")
                 context.contentResolver.query(
                     QUERY_URI, PROJECTION, createQueryArgsBundle(getSelection(bucketId), selectionArgs, pageSize, (page - 1) * pageSize, getSortOrder()), null
                 )?.use { cursor ->
@@ -171,6 +173,7 @@ class MediaLoader(private val context: Context) {
                     cursor.close()
                 }
             } else {
+                LogUtil.d("readContent", "context.contentResolver.query(2")
                 context.contentResolver.query(QUERY_URI, PROJECTION, getSelection(bucketId), selectionArgs, getSortOrder() + " limit " + pageSize + " offset " + (page - 1) * pageSize)?.use { cursor ->
                     if (cursor.count > 0) {
                         while (cursor.moveToNext()) {

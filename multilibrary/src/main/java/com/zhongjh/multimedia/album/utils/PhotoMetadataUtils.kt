@@ -39,7 +39,9 @@ class PhotoMetadataUtils private constructor() : BasePhotoMetadataUtils() {
             try {
                 val options = BitmapFactory.Options()
                 options.inJustDecodeBounds = true
+                LogUtil.d("readContent", "`is` = resolver.openInputStream(uri)")
                 `is` = resolver.openInputStream(uri)
+                LogUtil.d("readContent", "BitmapFactory.decodeStream(`is`, null, options)")
                 BitmapFactory.decodeStream(`is`, null, options)
                 val width = options.outWidth
                 val height = options.outHeight

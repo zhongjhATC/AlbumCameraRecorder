@@ -32,6 +32,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildFeatures {
+        // 关键修复：显式声明开启 buildConfig（核心！避免被 buildFeatures 隐式关闭）
+        buildConfig true
+    }
 }
 
 dependencies {

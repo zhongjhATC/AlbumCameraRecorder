@@ -35,6 +35,7 @@ class ImageContentDecoder(private val context: Context, uri: Uri) : BaseImageDec
             // ContentResolver是Android系统提供的访问ContentProvider的标准接口
             // "r"表示以只读模式打开文件描述符
             // 这是访问ContentProvider中图像资源的标准方式
+            LogUtil.d("readContent", "val parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, \"r\")")
             val parcelFileDescriptor = context.contentResolver.openFileDescriptor(uri, "r")
 
 

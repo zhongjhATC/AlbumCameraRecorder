@@ -233,6 +233,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private boolean isNoUri(String uri) {
         try {
+            LogUtil.INSTANCE.d("readContent", "InputStream inputStream = getContentResolver().openInputStream(Uri.parse(uri));");
             InputStream inputStream = getContentResolver().openInputStream(Uri.parse(uri));
             if (inputStream != null) {
                 // 文件存在

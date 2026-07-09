@@ -42,7 +42,9 @@ object BitmapUtils {
                 val options = BitmapFactory.Options()
                 options.inJustDecodeBounds = true
                 if (MimeType.isContent(path)) {
+                    LogUtil.d("readContent", "inputStream = context.contentResolver.openInputStream(Uri.parse(path))")
                     inputStream = context.contentResolver.openInputStream(Uri.parse(path))
+                    LogUtil.d("readContent", "BitmapFactory.decodeStream(inputStream, null, options)")
                     BitmapFactory.decodeStream(inputStream, null, options)
                 } else {
                     BitmapFactory.decodeFile(path, options)
@@ -51,6 +53,7 @@ object BitmapUtils {
                 options.inSampleSize = computeSize(options.outWidth, options.outHeight)
                 options.inJustDecodeBounds = false
                 if (MimeType.isContent(path)) {
+                    LogUtil.d("readContent", "context.contentResolver.openInputStream(Uri.parse(path))")
                     inputStream = context.contentResolver.openInputStream(Uri.parse(path))
                     bitmap = BitmapFactory.decodeStream(inputStream, null, options)
                 } else {
@@ -160,6 +163,7 @@ object BitmapUtils {
         var inputStream: InputStream? = null
         try {
             if (MimeType.isContent(filePath)) {
+                LogUtil.d("readContent", "inputStream = context.contentResolver.openInputStream(Uri.parse(filePath))")
                 inputStream = context.contentResolver.openInputStream(Uri.parse(filePath))
                 inputStream?.let {
                     exifInterface = ExifInterface(inputStream)

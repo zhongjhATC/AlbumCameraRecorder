@@ -1,7 +1,7 @@
 package com.zhongjh.common.utils
 
 import android.util.Log
-import com.squareup.picasso.BuildConfig
+import com.zhongjh.common.BuildConfig
 
 /**
  * 日志工具

@@ -370,9 +370,8 @@ object UriUtils {
         }
 
         // 正式的查找数据库
-        val cursor = context.contentResolver.query(
-            uri, arrayOf("_data"), selection, selectionArgs, null
-        )
+        LogUtil.d("readContent", "val cursor = context.contentResolver.query(uri, arrayOf(")
+        val cursor = context.contentResolver.query(uri, arrayOf("_data"), selection, selectionArgs, null)
         if (cursor == null) {
             LogUtil.d(TAG, "$uri parse failed(cursor is null). -> $methodCode")
             return null
@@ -409,6 +408,7 @@ object UriUtils {
         LogUtil.d("UriUtils", "copyUri2Cache() called")
         var `is`: InputStream? = null
         try {
+            LogUtil.d("readContent", "`is` = context.contentResolver.openInputStream(uri)")
             `is` = context.contentResolver.openInputStream(uri)
             val file = File(context.cacheDir, "" + System.currentTimeMillis())
             writeFileFromInputStream(file.absolutePath, `is`)

@@ -43,8 +43,10 @@ object MediaUtils {
         val retriever = MediaMetadataRetriever()
         try {
             if (MimeType.isContent(path)) {
+                LogUtil.d("readContent", "retriever.setDataSource(context, uri)")
                 retriever.setDataSource(context, Uri.parse(path))
             } else {
+                LogUtil.d("readContent", "retriever.setDataSource(path)")
                 retriever.setDataSource(path)
             }
             val orientation =
@@ -120,6 +122,7 @@ object MediaUtils {
             MediaType.TYPE_PICTURE -> {
                 // 实例化ExifInterface,作用获取图片的属性
                 var exif: ExifInterface? = null
+                LogUtil.d("readContent", "inputStream = context.contentResolver.openInputStream(uri)")
                 inputStream = context.contentResolver.openInputStream(uri)
                 if (inputStream != null) {
                     exif = ExifInterface(inputStream)
@@ -157,10 +160,12 @@ object MediaUtils {
 
             MediaType.TYPE_VIDEO -> {
                 // 实例化MediaMetadataRetriever,作用获取视频的属性
+                LogUtil.d("readContent", "val retriever = MediaMetadataRetriever()")
                 val retriever = MediaMetadataRetriever()
                     context.contentResolver.openInputStream(uri)?.use {
                         // 仅检查流是否可打开，无需读取内容，use会自动关闭流
                     } ?: return localMedia
+                LogUtil.d("readContent", "retriever.setDataSource(context, uri)")
                 retriever.setDataSource(context, uri)
                 // 获取视频的时长、角度
                 retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)

@@ -334,6 +334,7 @@ object FileUtils {
             return false
         }
         try {
+            LogUtil.d("readContent", "val os = context.contentResolver.openInputStream(srcFile)")
             val os = context.contentResolver.openInputStream(srcFile)
             return (FileIOUtils.writeFileFromIS(destFile, os, false, onProgressUpdateListener)
                     && !isMove)

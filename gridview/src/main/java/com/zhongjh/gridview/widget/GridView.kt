@@ -16,6 +16,7 @@ import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.gridview.R
 import com.zhongjh.gridview.apapter.GridAdapter
@@ -280,6 +281,7 @@ class GridView : FrameLayout, GridViewApi {
 
     override fun setItemCover(gridMedia: GridMedia, path: String) {
         val mmr = MediaMetadataRetriever()
+        LogUtil.d("readContent", "mmr.setDataSource(path)")
         mmr.setDataSource(path)
         // ms,时长
         val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
