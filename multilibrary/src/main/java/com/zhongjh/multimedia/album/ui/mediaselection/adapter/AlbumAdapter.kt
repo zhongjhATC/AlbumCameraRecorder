@@ -252,6 +252,7 @@ class AlbumAdapter(
         refreshSelectCache()
         // 不使用全量刷新，通知页面刷新屏幕可见条目
         mCheckStateListener?.onNeedRefreshVisible()
+        // 通知外部更新了选择数据
         mCheckStateListener?.onUpdate()
     }
 
@@ -262,6 +263,8 @@ class AlbumAdapter(
         // 缓存刷新，预览/列表点击共用一套逻辑
         refreshSelectCache()
         notifyItemChanged(position)
+        // 通知外部更新了选择数据
+        mCheckStateListener?.onUpdate()
     }
 
     /**
