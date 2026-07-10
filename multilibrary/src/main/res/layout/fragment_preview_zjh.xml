@@ -58,7 +58,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:gravity="center"
-            android:padding="16dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:text="@string/z_multi_library_button_edit"
