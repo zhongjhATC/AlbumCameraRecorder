@@ -496,7 +496,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
                 if (cameraGranted) {
                     // 打开系统摄像机
-                    openCameraPicture(it)
+                    openVideoRecord(it)
                 } else {
                     onRequestPermissionsResult(it)
                 }
@@ -527,7 +527,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      *
      * @param permissions 请求的权限
      */
-    private fun showPermissionTipsDialog(activity: Activity, permissions: ArrayList<String>, callback: () -> Unit) {
+    private fun showPermissionTipsDialog(activity: Activity, permissions: ArrayList<String>, requestPermissionCallback: () -> Unit, callbackOpenCamera: () -> Unit) {
         if (mIsShowDialog)
             return
         // 判断权限，权限通过才可以初始化相关
@@ -554,7 +554,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 dialog.dismiss()
                 mIsShowDialog = false
                 // 请求权限
-                callback()
+                requestPermissionCallback()
             }
             builder.setNegativeButton(getString(R.string.z_multi_library_cancel)) { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
@@ -570,7 +570,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mIsShowDialog = true
         } else {
             // 没有所需要请求的权限，就打开相机
-            openCameraPicture(activity)
+            callbackOpenCamera()
         }
     }
 
@@ -872,6 +872,9 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 // 请求权限
                 showPermissionTipsDialog(it, permissionPictures, fun() {
                     mPicturePermissionLauncher.launch(permissionPictures.toTypedArray())
+                },fun() {
+                    // 没有所需要请求的权限，就打开系统拍照
+                    openCameraPicture(it)
                 })
             } else {
                 // 没有所需要请求的权限，就打开系统拍照
@@ -889,10 +892,13 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 // 请求权限
                 showPermissionTipsDialog(it, permissionVideos, fun() {
                     mVideoPermissionLauncher.launch(permissionVideos.toTypedArray())
+                },fun() {
+                    // 没有所需要请求的权限，就打开系统录像
+                    openVideoRecord(it)
                 })
             } else {
-                // 没有所需要请求的权限，就打开系统拍照
-                openCameraPicture(it)
+                // 没有所需要请求的权限，就打开系统录像
+                openVideoRecord(it)
             }
         }
     }
@@ -916,6 +922,26 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     }
 
     /**
+     * 系统录像
+     */
+    private fun openVideoRecord(activity: Activity) {
+        val videoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        if (videoIntent.resolveActivity(activity.packageManager) != null) {
+            ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
+            cameraFile = createVideoFile()
+            val outputUri = MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath)
+            videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
+
+            // 前置摄像头
+            if (!mCameraSpec.isCameraDirectionDefaultBack) {
+                videoIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+            }
+
+            mAppCameraLauncher.launch(videoIntent)
+        }
+    }
+
+    /**
      * 系统目录，自动加入相册刷新
      */
     private fun createCameraFile(): File {
@@ -926,6 +952,20 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         val fileName = "IMAGE_" + SimpleDateFormat(
             "yyyyMMdd_HHmmssSSS", Locale.US
         ).format(System.currentTimeMillis()) + ".jpg"
+        return File(cameraDir, fileName)
+    }
+
+    /**
+     * 系统录像文件目录，DCIM/Camera，和拍照统一文件夹
+     */
+    private fun createVideoFile(): File {
+        val dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+        val cameraDir = File(dcim, "Camera")
+        if (!cameraDir.exists()) cameraDir.mkdirs()
+        // 生成唯一视频文件名 mp4格式
+        val fileName = "VIDEO_" + SimpleDateFormat(
+            "yyyyMMdd_HHmmssSSS", Locale.US
+        ).format(System.currentTimeMillis()) + ".mp4"
         return File(cameraDir, fileName)
     }
 
