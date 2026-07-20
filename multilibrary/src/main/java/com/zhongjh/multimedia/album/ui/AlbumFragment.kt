@@ -8,6 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -35,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.zhongjh.common.entity.LocalMedia
+import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
@@ -42,7 +44,6 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
 import com.zhongjh.common.utils.LogUtil
-import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.MainActivity
@@ -71,6 +72,7 @@ import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
 import com.zhongjh.multimedia.utils.LifecycleFlowCollector
+import com.zhongjh.multimedia.utils.MediaStoreUtils
 import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
@@ -195,6 +197,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     }
 
     /**
+     * 记录拍照、视频文件路径
+     */
+    private var cameraUri: Uri? = null
+
+    /**
      * 当前点击item的索引
      */
     private var currentPosition: Int = 0
@@ -218,11 +225,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 是否正在弹着dialog
      */
     private var mIsShowDialog = false
-
-    /**
-     * 记录拍照文件路径
-     */
-    private var cameraFile: File? = null
 
     /**
      * 先执行onAttach生命周期再执行onCreateView
@@ -510,9 +512,10 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 系统拍照回调
         mAppCameraLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                cameraFile?.let { file ->
+                cameraUri?.let {
+                    val path = if (MimeType.isContent(cameraUri.toString())) it.toString() else it.path
                     // 1. 通知系统扫描这张照片 → 系统相册立刻显示
-                    MediaScannerConnection.scanFile(mApplicationContext, arrayOf(file.absolutePath), null) { _, _ ->
+                    MediaScannerConnection.scanFile(mApplicationContext, arrayOf(path), null) { _, _ ->
                         // 扫描完成回调 刷新你自己App的相册列表（立刻看到刚拍的）
                         mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize)
                     }
@@ -900,6 +903,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 // 没有所需要请求的权限，就打开系统录像
                 openVideoRecord(it)
             }
+
         }
     }
 
@@ -911,13 +915,16 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         if (cameraIntent.resolveActivity(activity.packageManager) != null) {
             ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
-            cameraFile = createCameraFile()
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath))
-            if (!mCameraSpec.isCameraDirectionDefaultBack) {
-                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+            cameraUri = MediaStoreUtils.createCameraOutImageUri(mApplicationContext)
+            cameraUri?.let {
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri)
+                if (!mCameraSpec.isCameraDirectionDefaultBack) {
+                    cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+                }
+
+                mAppCameraLauncher.launch(cameraIntent)
             }
 
-            mAppCameraLauncher.launch(cameraIntent)
         }
     }
 
@@ -925,20 +932,20 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 系统录像
      */
     private fun openVideoRecord(activity: Activity) {
-        val videoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        if (videoIntent.resolveActivity(activity.packageManager) != null) {
-            ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
-            cameraFile = createVideoFile()
-            val outputUri = MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath)
-            videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
-
-            // 前置摄像头
-            if (!mCameraSpec.isCameraDirectionDefaultBack) {
-                videoIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
-            }
-
-            mAppCameraLauncher.launch(videoIntent)
-        }
+//        val videoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+//        if (videoIntent.resolveActivity(activity.packageManager) != null) {
+//            ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
+//            cameraFile = createVideoFile()
+//            val outputUri = MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath)
+//            videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
+//
+//            // 前置摄像头
+//            if (!mCameraSpec.isCameraDirectionDefaultBack) {
+//                videoIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+//            }
+//
+//            mAppCameraLauncher.launch(videoIntent)
+//        }
     }
 
     /**

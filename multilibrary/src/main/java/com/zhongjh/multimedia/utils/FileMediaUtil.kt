@@ -65,7 +65,7 @@ object FileMediaUtil {
      *
      * @return file
      */
-    fun createTempAPI29File(context: Context, fileName: String): File {
+    private fun createTempAPI29File(context: Context, fileName: String): File {
         val appContext = context.applicationContext
         val externalFilesDir: File? = appContext.getExternalFilesDir("")
         val tempCameraFile = File(externalFilesDir!!.absolutePath, DirType.TEMP_29)
@@ -100,34 +100,6 @@ object FileMediaUtil {
             newFileName = newFileNames[0] + "_CMP" + "." + newFileNames[1]
         }
         return File(tempCameraFile.absolutePath, newFileName)
-    }
-
-    /**
-     * 在Camera建立一样的文件
-     *
-     * @param context 上下文
-     * @param fileName 文件名称
-     * @param type 文件类型
-     * 获取输出路径
-     */
-    fun getOutFile(context: Context, fileName: String, @MediaType type: Int): File {
-        val appContext = context.applicationContext
-        val rootDir: File?
-        val folderDir: File
-        if (TextUtils.equals(Environment.MEDIA_MOUNTED, Environment.getExternalStorageState())) {
-            rootDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-            folderDir = File(rootDir.absolutePath + File.separator + CAMERA + File.separator)
-        } else {
-            rootDir = getRootDirFile(appContext, type)
-            folderDir = File(rootDir.absolutePath + File.separator)
-        }
-        if (rootDir?.exists() != true) {
-            rootDir?.mkdirs()
-        }
-        if (!folderDir.exists()) {
-            folderDir.mkdirs()
-        }
-        return File(folderDir.absolutePath, fileName)
     }
 
     /**
