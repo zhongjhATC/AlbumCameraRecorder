@@ -11,7 +11,6 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.TypedValue
@@ -77,9 +76,6 @@ import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 
 /**
@@ -480,8 +476,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
 
         // 拍照权限回调
         mPicturePermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionGranted ->
+            // 回调结果：true=授权成功，false=授权拒绝 录像权限通过就行,录音只影响后续是否能录上音
             activity?.let {
-                // 回调结果：true=授权成功，false=授权拒绝 录像权限通过就行,录音只影响后续是否能录上音
                 val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
                 if (cameraGranted) {
                     // 打开系统摄像机
@@ -495,6 +491,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 录像权限回调
         mVideoPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionGranted ->
             activity?.let {
+                // 不用判断录音，录音不通过大不了就没声音
                 val cameraGranted = permissionGranted[Manifest.permission.CAMERA] ?: false
                 if (cameraGranted) {
                     // 打开系统摄像机
@@ -505,7 +502,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             }
         }
 
-        // 设置界面回调
+        // 设置界面回调,不需要回调代码,用户再选择一次即可
         mAppSettingsLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
 
@@ -620,21 +617,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             dialog.show()
             mIsShowDialog = true
         }
-    }
-
-    /**
-     * 判断这些权限是否 拒绝+无需提醒的权限
-     * @param permissions 请求的权限
-     */
-    private fun isRejectWithoutReminderPermissions(activity: Activity, permissions: ArrayList<String>): Boolean {
-        var permissionsLength = 0
-        for (i in permissions.indices) {
-            // 只有当用户同时点选了拒绝开启权限和不再提醒后才会true
-            if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permissions[i])) {
-                permissionsLength++
-            }
-        }
-        return permissionsLength > 0
     }
 
     /**
@@ -947,34 +929,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                 mAppCameraLauncher.launch(videoIntent)
             }
         }
-    }
-
-    /**
-     * 系统目录，自动加入相册刷新
-     */
-    private fun createCameraFile(): File {
-        val dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-        val cameraDir = File(dcim, "Camera")
-        if (!cameraDir.exists()) cameraDir.mkdirs()
-        // 生成唯一文件名
-        val fileName = "IMAGE_" + SimpleDateFormat(
-            "yyyyMMdd_HHmmssSSS", Locale.US
-        ).format(System.currentTimeMillis()) + ".jpg"
-        return File(cameraDir, fileName)
-    }
-
-    /**
-     * 系统录像文件目录，DCIM/Camera，和拍照统一文件夹
-     */
-    private fun createVideoFile(): File {
-        val dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-        val cameraDir = File(dcim, "Camera")
-        if (!cameraDir.exists()) cameraDir.mkdirs()
-        // 生成唯一视频文件名 mp4格式
-        val fileName = "VIDEO_" + SimpleDateFormat(
-            "yyyyMMdd_HHmmssSSS", Locale.US
-        ).format(System.currentTimeMillis()) + ".mp4"
-        return File(cameraDir, fileName)
     }
 
     /**

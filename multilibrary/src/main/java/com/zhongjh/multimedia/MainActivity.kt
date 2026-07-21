@@ -414,7 +414,7 @@ open class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-            // 判断如果有录制功能则验证录音、录制
+            // 判断如果有录制功能则验证录制
             if (cameraValid()) {
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                     if (!permissions.contains(Manifest.permission.CAMERA)) {

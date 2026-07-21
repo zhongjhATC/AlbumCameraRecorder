@@ -1,12 +1,12 @@
 package com.zhongjh.multimedia.utils
 
-import com.zhongjh.multimedia.album.entity.SelectedCountMessage
-import com.zhongjh.multimedia.constants.ModuleTypes
-import com.zhongjh.multimedia.settings.GlobalSpec
 import com.zhongjh.common.enums.Constant.IMAGE
 import com.zhongjh.common.enums.Constant.IMAGE_VIDEO
 import com.zhongjh.common.enums.Constant.VIDEO
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
+import com.zhongjh.multimedia.album.entity.SelectedCountMessage
+import com.zhongjh.multimedia.constants.ModuleTypes
+import com.zhongjh.multimedia.settings.GlobalSpec
 
 /**
  * 这是一个判断能选择xx个图片、视频、音频的判断逻辑封装
@@ -97,9 +97,7 @@ object SelectableUtils {
     @JvmStatic
     fun videoValid(): Boolean {
         if (GlobalSpec.cameraSetting != null) {
-            if (GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA)
-                    .containsAll(ofVideo())
-            ) {
+            if (GlobalSpec.getMimeTypeSet(ModuleTypes.CAMERA).containsAll(ofVideo())) {
                 // 是否激活视频并且总数量大于1
                 if (GlobalSpec.maxSelectable != null) {
                     return GlobalSpec.maxSelectable!! > 0
