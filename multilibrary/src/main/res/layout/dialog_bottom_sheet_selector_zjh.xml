@@ -17,6 +17,7 @@
 
     <!-- 拍照 -->
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/layout_camera"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -42,6 +43,7 @@
 
     <!-- 录制 -->
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/layout_video"
         android:layout_width="match_parent"
         android:layout_height="56dp"

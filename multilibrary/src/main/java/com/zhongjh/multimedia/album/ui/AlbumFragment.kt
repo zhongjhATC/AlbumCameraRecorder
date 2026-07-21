@@ -36,6 +36,8 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
+import com.zhongjh.common.enums.MimeType.Companion.ofImage
+import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.AppUtils.getAppName
 import com.zhongjh.common.utils.ColorFilterUtil.setColorFilterSrcIn
@@ -57,6 +59,7 @@ import com.zhongjh.multimedia.album.ui.mediaselection.adapter.AlbumAdapter
 import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask
 import com.zhongjh.multimedia.album.widget.albumspinner.AlbumSpinner
 import com.zhongjh.multimedia.album.widget.albumspinner.OnAlbumItemClickListener
+import com.zhongjh.multimedia.constants.ModuleTypes
 import com.zhongjh.multimedia.databinding.FragmentAlbumZjhBinding
 import com.zhongjh.multimedia.model.MainModel
 import com.zhongjh.multimedia.model.OriginalManage
@@ -68,6 +71,7 @@ import com.zhongjh.multimedia.service.ForegroundService
 import com.zhongjh.multimedia.settings.AlbumSpec
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
+import com.zhongjh.multimedia.settings.GlobalSpec.getMimeTypeSet
 import com.zhongjh.multimedia.sharedanimation.RecycleItemViewParams.add
 import com.zhongjh.multimedia.utils.AttrsUtils
 import com.zhongjh.multimedia.utils.LifecycleFlowCollector
@@ -831,17 +835,27 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         val view = View.inflate(requireContext(), R.layout.dialog_bottom_sheet_selector_zjh, null)
         dialog.setContentView(view)
 
-        // 3. 点击事件
-        view.findViewById<View>(R.id.layout_camera).setOnClickListener {
-            // 请求拍照或者请求权限
-            openImageCameraOrPermission()
-            dialog.dismiss()
+        // 支持图片
+        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage())) {
+            view.findViewById<View>(R.id.layout_camera).visibility = View.VISIBLE
+            // 点击事件
+            view.findViewById<View>(R.id.layout_camera).setOnClickListener {
+                // 请求拍照或者请求权限
+                openImageCameraOrPermission()
+                dialog.dismiss()
+            }
         }
-        view.findViewById<View>(R.id.layout_video).setOnClickListener {
-            // 请求拍照或者请求录制
-            openVideoCameraOrPermission()
-            dialog.dismiss()
+
+        // 支持视频
+        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
+            view.findViewById<View>(R.id.layout_video).visibility = View.VISIBLE
+            view.findViewById<View>(R.id.layout_video).setOnClickListener {
+                // 请求拍照或者请求录制
+                openVideoCameraOrPermission()
+                dialog.dismiss()
+            }
         }
+
         // 支持拖拽关闭
         dialog.behavior.isDraggable = true
         // 4. 显示弹窗
