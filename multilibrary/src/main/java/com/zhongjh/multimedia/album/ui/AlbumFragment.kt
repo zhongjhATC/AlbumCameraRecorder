@@ -521,7 +521,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                     }
                 }
             }
-
+            ForegroundService.stopService(mApplicationContext)
         }
     }
 
@@ -916,8 +916,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         if (cameraIntent.resolveActivity(activity.packageManager) != null) {
             ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
             cameraUri = MediaStoreUtils.createCameraOutImageUri(mApplicationContext)
-            cameraUri?.let {
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraUri)
+            cameraUri?.let { uri ->
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
                 if (!mCameraSpec.isCameraDirectionDefaultBack) {
                     cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
                 }
@@ -932,20 +932,21 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 系统录像
      */
     private fun openVideoRecord(activity: Activity) {
-//        val videoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-//        if (videoIntent.resolveActivity(activity.packageManager) != null) {
-//            ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
-//            cameraFile = createVideoFile()
-//            val outputUri = MediaStoreCompat.getUri(mApplicationContext, cameraFile!!.absolutePath)
-//            videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
-//
-//            // 前置摄像头
-//            if (!mCameraSpec.isCameraDirectionDefaultBack) {
-//                videoIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
-//            }
-//
-//            mAppCameraLauncher.launch(videoIntent)
-//        }
+        // 权限已授予，打开系统录像相机
+        val videoIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        if (videoIntent.resolveActivity(activity.packageManager) != null) {
+            ForegroundService.startForegroundService(mApplicationContext, mCameraSpec.isCameraForegroundService)
+            cameraUri = MediaStoreUtils.createCameraOutVideoUri(mApplicationContext)
+            cameraUri?.let { uri ->
+                // 指定录像输出路径Uri
+                videoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+                // 前置摄像头配置
+                if (!mCameraSpec.isCameraDirectionDefaultBack) {
+                    videoIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+                }
+                mAppCameraLauncher.launch(videoIntent)
+            }
+        }
     }
 
     /**
