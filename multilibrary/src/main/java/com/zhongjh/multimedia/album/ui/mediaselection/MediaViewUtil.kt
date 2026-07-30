@@ -2,7 +2,6 @@ package com.zhongjh.multimedia.album.ui.mediaselection
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.view.GestureDetector
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
@@ -96,7 +95,7 @@ class MediaViewUtil(
             }
         })
 
-        LifecycleFlowCollector.collectDistinct(owner, mainModel.mediaPageState) { state ->
+        LifecycleFlowCollector.collect(owner, mainModel.mediaPageState) { state ->
             when (state) {
                 // 监听到新的相册数据
                 is MainModel.MediaPageState.RefreshSuccess -> {

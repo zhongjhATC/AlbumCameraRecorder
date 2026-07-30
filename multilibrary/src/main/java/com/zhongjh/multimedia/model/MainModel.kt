@@ -11,6 +11,7 @@ import com.zhongjh.multimedia.album.loader.MediaLoader
 import com.zhongjh.multimedia.album.repository.MediaRepository
 import com.zhongjh.multimedia.album.ui.mediaselection.adapter.LocalMediaCallback
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,8 +49,12 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * - 整合加载中/成功/空/错误状态
      * - 替代原 LiveData：_refreshMediaData、_addAllPageMediaData、_onFail
      */
-    private val _mediaPageState = MutableStateFlow<MediaPageState>(MediaPageState.Empty())
-    val mediaPageState: StateFlow<MediaPageState> = _mediaPageState.asStateFlow()
+    private val _mediaPageState = MutableSharedFlow<MediaPageState>(
+        replay = 0,
+        extraBufferCapacity = 3,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val mediaPageState: SharedFlow<MediaPageState> = _mediaPageState
 
     /**
      * 原图状态流（替代原 _originalEnable LiveData）
@@ -60,8 +65,12 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 预览界面滑动位置流（替代原 _onViewPageSelected LiveData）
      */
-    private val _onViewPageSelected = MutableSharedFlow<Int>()
-    val onViewPageSelected: SharedFlow<Int> = _onViewPageSelected
+    private val _onViewPageSelected = MutableSharedFlow<Int>(
+        replay = 1,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val onViewPageSelected: SharedFlow<Int> = _onViewPageSelected.asSharedFlow()
 
     /**
      * 相册列表滑动完成流（替代原 _onScrollToPositionComplete LiveData）
@@ -149,19 +158,21 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
                 // 根据数据状态发送对应状态
                 if (newMedias.isEmpty()) {
-                    _mediaPageState.value = MediaPageState.Empty("暂无媒体文件")
+                    _mediaPageState.tryEmit(MediaPageState.Empty("暂无媒体文件"))
                 } else {
                     // 发送 DiffResult 用于列表刷新
                     val refreshMediaData = RefreshMediaData()
                     refreshMediaData.data = this@MainModel.localMedias.toList()
                     refreshMediaData.diffResult = diffResult
-                    _mediaPageState.value = MediaPageState.RefreshSuccess(bucketId, refreshMediaData)
+                    _mediaPageState.tryEmit(MediaPageState.RefreshSuccess(bucketId, refreshMediaData))
                 }
             } catch (e: Exception) {
                 // 发送错误状态
-                _mediaPageState.value = MediaPageState.Error(
+                _mediaPageState.tryEmit(
+                    MediaPageState.Error(
                     userMessage = "加载媒体数据失败",
                     cause = e
+                    )
                 )
             }
         }
@@ -182,18 +193,22 @@ class MainModel(application: Application) : AndroidViewModel(application) {
                     val oldSize = localMedias.size
                     localMedias.addAll(newMedias)
                     // 发送加载更多成功状态（用于局部刷新）
-                    _mediaPageState.value = MediaPageState.LoadMoreSuccess(
+                    _mediaPageState.tryEmit(
+                        MediaPageState.LoadMoreSuccess(
                         data = localMedias.toList(),
                         startPosition = oldSize,
                         itemCount = newMedias.size
+                        )
                     )
                 }
             } catch (e: Exception) {
                 // 加载失败回滚页码
                 page -= 1
-                _mediaPageState.value = MediaPageState.Error(
+                _mediaPageState.tryEmit(
+                    MediaPageState.Error(
                     userMessage = "加载更多失败",
                     cause = e
+                    )
                 )
             }
         }
