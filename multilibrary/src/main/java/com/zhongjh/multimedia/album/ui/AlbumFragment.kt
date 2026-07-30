@@ -423,7 +423,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mBinding.original.setChecked(value)
         }
         // 预览界面的viewPage滑动时触发
-        LifecycleFlowCollector.collectDistinct(this, mMainModel.onViewPageSelected) { value: Int ->
+        LifecycleFlowCollector.collect(this, mMainModel.onViewPageSelected) { value: Int ->
             LogUtil.d("AlbumFragmentFlow", "mMainModel.onViewPageSelected")
             smoothScrollPosition = value
             // 滑动到viewPage的一样position
@@ -686,7 +686,6 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         // 2. 清理视图监听器（避免匿名类持有 Fragment 引用）
         mAlbumSpinner?.setOnAlbumItemClickListener(null)
         mBinding.recyclerview.clearOnScrollListeners()
-        mBinding.recyclerview.adapter = null
 
         // 4. 释放视图工具类（如 MediaViewUtil 包含视图引用）
         mMediaViewUtil?.onDestroyView()

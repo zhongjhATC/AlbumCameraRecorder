@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -59,8 +60,8 @@ class MainModel(application: Application) : AndroidViewModel(application) {
     /**
      * 预览界面滑动位置流（替代原 _onViewPageSelected LiveData）
      */
-    private val _onViewPageSelected = MutableStateFlow(0)
-    val onViewPageSelected: StateFlow<Int> = _onViewPageSelected.asStateFlow()
+    private val _onViewPageSelected = MutableSharedFlow<Int>()
+    val onViewPageSelected: SharedFlow<Int> = _onViewPageSelected
 
     /**
      * 相册列表滑动完成流（替代原 _onScrollToPositionComplete LiveData）
@@ -214,7 +215,7 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      * 预览界面滑动事件
      */
     fun onViewPageSelected(position: Int) {
-        _onViewPageSelected.value = position
+        _onViewPageSelected.tryEmit(position)
     }
 
     /**
