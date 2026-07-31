@@ -54,19 +54,19 @@ No longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/andr
 
 	dependencies {
 	     // If you want to simplify the code and use multilibrary, grid, and albumCameraRecorderCommon at the same
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:2027'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:combined:2028'
 
 	     // Common library, if you don't use the combined library above 
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2027'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:common:2028'
 	     // Core library for calling and displaying album, screen recording, audio recording, etc.
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2027'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:multilibrary:2028'
          // Used as a supplement, mainly for displaying relevant content after obtaining data and showing corresponding upload progress. If you only need to obtain data such as photos, videos, and audios, you don't need to use this.
-         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:2027'
+         implementation 'com.github.zhongjhATC.AlbumCameraRecorder:grid:2028'
 
          // Used for image editing
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2027'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:imageedit:2028'
 	     // Used for video editing, currently only has compression function. More functions will be added later. Since this library uses ffmpeg, it takes up 25M of file size. Choose whether to use it according to the actual situation.
-	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2027'
+	     implementation 'com.github.zhongjhATC.AlbumCameraRecorder:videoedit:2028'
         
 	}
 
