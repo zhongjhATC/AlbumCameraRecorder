@@ -69,8 +69,8 @@ class TvAlbumPermissionManager(
      * 设置富文本（下划线+可点击文本）
      */
     private fun setupRichText() {
-        val fullText = "您设置了仅访问部分多媒体【点击可修改访问权限】"
-        val clickableText = "【点击可修改访问权限】"
+        val fullText = context.getString(R.string.tip_partial_media_access)
+        val clickableText = context.getString(R.string.tip_partial_click_text)
         val startIndex = fullText.indexOf(clickableText)
         val endIndex = startIndex + clickableText.length
 

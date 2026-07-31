@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
-import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.lifecycle.AndroidViewModel
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
@@ -31,51 +29,41 @@ sealed class PermissionState {
 
 class AlbumModel(application: Application) : AndroidViewModel(application) {
 
-    /**
-     * 是否有限访问的权限
-     */
     fun isLimitedAccessPermission(): PermissionState {
-        // 满足Android 14
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            val permissions = addPermissionImagesAndVideo()
-            for (permission in permissions) {
-                // 有限访问允许
-                if (checkSelfPermission(getApplication(), Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PermissionChecker.PERMISSION_GRANTED) {
-                    if (permission == Manifest.permission.READ_MEDIA_IMAGES || permission == Manifest.permission.READ_MEDIA_VIDEO) {
-                        return PermissionState.LimitedAccess
-                    }
-                }
-            }
-        }
-        return PermissionState.FullAccess
-    }
+        // Android14以下不存在部分媒体权限
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+//            return PermissionState.FullAccess
+//        }
+        val ctx = getApplication<Application>()
+        val mimeSet = getMimeTypeSet(ModuleTypes.ALBUM)
+        val supportImage = mimeSet.containsAll(ofImage())
+        val supportVideo = mimeSet.containsAll(ofVideo())
 
-    /**
-     * 根据配置来确定添加的权限类型 - 图片、视频
-     */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private fun addPermissionImagesAndVideo(): ArrayList<String> {
-        val permissions = ArrayList<String>()
-        if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage()) && getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
-            // 如果所有功能都支持视频图片，就请求视频图片权限
-            if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-            }
-            if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-            }
-        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofImage())) {
-            // 如果所有功能只支持图片，就只请求图片权限
-            if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-            }
-        } else if (getMimeTypeSet(ModuleTypes.ALBUM).containsAll(ofVideo())) {
-            // 如果所有功能只支持视频，就只请求视频权限
-            if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
-                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
-            }
+        // 判断是否已经拿到全部需要的完整媒体权限
+        var hasFullMedia = true
+        if (supportImage) {
+            // hasFullMedia为true并且图片是全部访问,设置hasFullMedia为true,继续下一个检查
+            hasFullMedia = hasFullMedia && ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
         }
-        return permissions
+        if (supportVideo) {
+            // hasFullMedia为true并且视频是全部访问
+            hasFullMedia = hasFullMedia && ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED
+        }
+
+        // 已有全部权限 → 正常模式
+        if (hasFullMedia) {
+            return PermissionState.FullAccess
+        }
+
+        // 没有完整权限，再进一步判断
+        val hasPartial = ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_GRANTED
+        return if (hasPartial) {
+            // 用户选择【部分照片】→ LimitedAccess（展示提示条）
+            PermissionState.LimitedAccess
+        } else {
+            // 用户直接拒绝相册权限，不展示这条提示，返回 FullAccess
+            PermissionState.FullAccess
+        }
     }
 
 }

@@ -69,6 +69,9 @@
     <string name="z_load_more_failed">Load more failed</string>
     <string name="z_multi_library_camera">Using camera</string>
 
+    <string name="tip_partial_media_access">Partial media access 「Tap to adjust」</string>
+    <string name="tip_partial_click_text">「Tap to adjust」</string>
+
     <!-- endregion -->
 
     <string name="z_multi_library_light_touch_take_long_press_camera">Tap the camera, long press the camera</string>
