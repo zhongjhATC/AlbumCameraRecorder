@@ -3,11 +3,11 @@ package com.zhongjh.multimedia.camera.ui.camera.manager
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,6 +15,7 @@ import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType.Companion.TYPE_PICTURE
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.FileUtils
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.MediaUtils
 import com.zhongjh.common.utils.request
@@ -26,7 +27,6 @@ import com.zhongjh.multimedia.camera.ui.camera.adapter.PhotoAdapter
 import com.zhongjh.multimedia.camera.ui.camera.adapter.PhotoAdapterListener
 import com.zhongjh.multimedia.camera.ui.camera.impl.ICameraPicture
 import com.zhongjh.multimedia.camera.ui.camera.state.CameraStateManager
-import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.utils.FileMediaUtil.createCacheFile
 import com.zhongjh.multimedia.utils.MediaStoreUtils
 import com.zhongjh.multimedia.utils.SelectableUtils.imageMaxCount
@@ -140,7 +140,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
     override fun initPhotoEditListener() {
         fragmentRef.get()?.let { baseCameraFragment ->
             baseCameraFragment.photoVideoLayout.photoVideoLayoutViewHolder.rlEdit.setOnClickListener { view: View ->
-                val uri = Uri.parse(view.tag.toString()).toString()
+                val uri = view.tag.toString().toUri().toString()
                 photoEditFile = createCacheFile(baseCameraFragment.myContext, TYPE_PICTURE)
                 val intent = Intent()
                 intent.setClass(baseCameraFragment.myContext, ImageEditActivity::class.java)
@@ -187,7 +187,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
      * 检查当前是否可以拍照（无视频正在录制、未达到最大拍摄数量）
      * 然后通过相机管理器执行实际的拍照
      */
-    override fun takePhoto() {
+    override fun takePhoto(enableMotion: Boolean) {
         fragmentRef.get()?.let { baseCameraFragment ->
             // 如果已经有视频，则不允许拍照了
             if (baseCameraFragment.cameraVideoViewManager.videoTime <= 0) {
@@ -196,7 +196,12 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                     if (it.itemCount < imageMaxCount) {
                         // 设置不能点击，防止多次点击报错
                         baseCameraFragment.childClickableLayout.setChildClickable(false)
-                        baseCameraFragment.cameraManage.takePictures()
+                        // 根据配置判断是静态图还是动态图
+                        if (enableMotion) {
+                            baseCameraFragment.cameraManage.takeShortMotionPhotoVideo()
+                        } else {
+                            baseCameraFragment.cameraManage.takePictures()
+                        }
                     } else {
                         baseCameraFragment.photoVideoLayout.setTipAlphaAnimation(baseCameraFragment.resources.getString(R.string.z_multi_library_the_camera_limit_has_been_reached))
                     }

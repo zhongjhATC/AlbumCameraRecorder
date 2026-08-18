@@ -35,8 +35,9 @@ interface ICameraPicture {
 
     /**
      * 拍照
+     * @param enableMotion 是否动态图
      */
-    fun takePhoto()
+    fun takePhoto(enableMotion: Boolean)
 
     /**
      * 添加数据

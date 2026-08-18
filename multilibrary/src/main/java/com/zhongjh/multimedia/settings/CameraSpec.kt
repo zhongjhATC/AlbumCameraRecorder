@@ -58,6 +58,11 @@ object CameraSpec {
     var videoFormat: String? = null
 
     /**
+     * 是否开启动态图模式
+     */
+    var enableMotion = true
+
+    /**
      * 是否开启闪光灯记忆模式
      * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式），下次再打开时，依然是这个模式（例如闪光灯开启模式）
      */
@@ -148,6 +153,7 @@ object CameraSpec {
         flashMode = FLASH_MODE_OFF
         keyCodeTakePhoto = 0
         videoFormat = null
+        enableMotion = true
         enableFlashMemoryModel = false
         // 最长录制时间
         maxDuration = 10000

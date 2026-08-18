@@ -121,6 +121,11 @@ class CameraSetting : CameraSettingApi {
         return this
     }
 
+    override fun enableMotion(enableMotion: Boolean): CameraSetting {
+        mCameraSpec.enableMotion = enableMotion
+        return this
+    }
+
     override fun enableFlashMemoryModel(enableFlashMemoryModel: Boolean): CameraSetting {
         mCameraSpec.enableFlashMemoryModel = enableFlashMemoryModel
         return this

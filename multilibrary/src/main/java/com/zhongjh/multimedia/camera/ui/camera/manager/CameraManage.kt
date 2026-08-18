@@ -50,6 +50,7 @@ import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.utils.DisplayMetricsUtils
@@ -62,6 +63,9 @@ import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
@@ -71,6 +75,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 
 /**
@@ -152,6 +157,11 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * 是否启动音频
      */
     var isAudio = false
+
+    /**
+     * 动态照片倒计时任务，用于固定时长自动停止录制
+     */
+    private var motionPhotoCountDownJob: Job? = null
 
     /**
      * 输出最后一帧的状态
@@ -322,6 +332,52 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                     is VideoRecordEvent.Resume -> {
                         // 恢复录制
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * 动态照片：短时录制，点击触发，录制固定时长后自动停止
+     */
+    @SuppressLint("MissingPermission")
+    fun takeShortMotionPhotoVideo() {
+        val activity = activityRef.get() ?: return
+        // recording 如果为空则重新创建
+        recording?.resume() ?: run {
+            // 区分 Android 版本，使用兼容的文件生成逻辑
+            val mediaStoreOutput = getMediaStoreOutput(activity)
+            val pendingRecording = videoCapture?.output?.prepareRecording(activity, mediaStoreOutput)
+            if (isAudio) {
+                pendingRecording?.withAudioEnabled()
+            }
+            recording = pendingRecording?.start(ContextCompat.getMainExecutor(activity)) { videoRecordEvent ->
+                // 视频录制监控回调
+                when (videoRecordEvent) {
+                    is VideoRecordEvent.Start -> {
+                        this.listener?.onRecordStart()
+                        // =========录制真正开始后，开启倒计时，到点自动stop=========
+                        motionPhotoCountDownJob = activity.lifecycleScope.launch {
+                            // 固定录制时长，默认1500毫秒（1.5s，谷歌MotionPhoto标准）
+                            delay(1500L.milliseconds)
+                            // 时间到，停止录制
+                            recording?.stop()
+                        }
+                    }
+
+                    is VideoRecordEvent.Finalize -> {
+                        motionPhotoCountDownJob?.cancel()
+                        motionPhotoCountDownJob = null
+                        if (!isActivityPause) {
+                            // 完成录制
+                            val uri = videoRecordEvent.outputResults.outputUri
+                            UriUtils.uriToFile(activity, uri)?.absolutePath?.let {
+                                this.listener?.onMotionByRecordSuccess(it, uri)
+                            }
+                        }
+                        isActivityPause = false
+                    }
+                    else -> {}
                 }
             }
         }

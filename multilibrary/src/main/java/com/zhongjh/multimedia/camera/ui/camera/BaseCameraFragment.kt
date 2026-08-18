@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +20,7 @@ import androidx.core.app.ActivityOptionsCompat
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
+import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.multimedia.BaseFragment
 import com.zhongjh.multimedia.MainActivity
@@ -43,7 +43,6 @@ import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultiple
 import com.zhongjh.multimedia.camera.ui.camera.state.type.VideoMultipleIn
 import com.zhongjh.multimedia.camera.ui.camera.state.type.impl.IState
 import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity
-import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.model.SelectedData
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.settings.GlobalSpec
@@ -207,7 +206,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if ((keyCode and cameraSpec.keyCodeTakePhoto) > 0) {
-            cameraPictureViewManager.takePhoto()
+            cameraPictureViewManager.takePhoto(cameraSpec.enableMotion)
             return true
         }
         return super.onKeyDown(keyCode, event)
@@ -357,7 +356,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             override fun onClick() {
                 LogUtil.d(TAG, "pvLayout onClick")
                 // 点击事件：通过弱引用调用拍照逻辑
-                fragmentRef.get()?.cameraPictureViewManager?.takePhoto()
+                fragmentRef.get()?.cameraPictureViewManager?.takePhoto(cameraSpec.enableMotion)
             }
 
             override fun onLongClick() {
@@ -464,6 +463,15 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             override fun onPictureSuccess(uri: Uri, path: String) {
                 LogUtil.d(TAG, "onPictureSuccess")
                 rotateImage(myContext, path)
+                cameraSpec.onInitCameraManager?.initWatermarkedImage(uri, path)
+                // 显示图片
+                this@BaseCameraFragment.cameraPictureViewManager.addCaptureData(uri, path)
+                // 恢复点击
+                childClickableLayout.setChildClickable(true)
+            }
+
+            override fun onMotionByRecordSuccess(path: String, uri: Uri) {
+                LogUtil.d(TAG, "onMotionByRecordSuccess")
                 cameraSpec.onInitCameraManager?.initWatermarkedImage(uri, path)
                 // 显示图片
                 this@BaseCameraFragment.cameraPictureViewManager.addCaptureData(uri, path)

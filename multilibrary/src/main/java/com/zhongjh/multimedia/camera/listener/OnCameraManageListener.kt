@@ -20,6 +20,11 @@ interface OnCameraManageListener {
     fun onRecordSuccess(path: String, uri: String)
 
     /**
+     * 录像成功返回 - 用于处理生成动态图
+     */
+    fun onMotionByRecordSuccess(path: String, uri: Uri)
+
+    /**
      * 录像暂停
      *
      * @param recordedDurationNanos 当前视频持续时间：纳米单位

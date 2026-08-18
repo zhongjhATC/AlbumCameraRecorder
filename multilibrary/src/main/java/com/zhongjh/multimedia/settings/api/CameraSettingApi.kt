@@ -144,6 +144,14 @@ interface CameraSettingApi {
     fun videoFormat(videoFormat: String): CameraSetting
 
     /**
+     * 是否开启动态图模式，默认开启
+     *
+     * @param enableMotion 是否开启
+     * @return [CameraSetting] for fluent API.
+     */
+    fun enableMotion(enableMotion: Boolean): CameraSetting
+
+    /**
      * 是否开启闪光灯记忆模式，默认关闭
      * 在开启闪光某个模式（例如闪光灯开启模式）后，在界面结束时，会自动记录当前模式（例如闪光灯开启模式）
      * 下次再打开时，依然是这个模式（例如闪光灯开启模式）
