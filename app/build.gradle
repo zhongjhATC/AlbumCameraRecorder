@@ -56,6 +56,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        // 1.这样可以使用API26的java.time,如果minSdkVersion是26则不用添加
+        // 2.minifyEnabled true 是脱糖体积瘦身的核心开关,只保留用到的代码
+        coreLibraryDesugaringEnabled true
     }
 
     dataBinding {
@@ -66,6 +69,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    // 脱糖,这样可以使用API26的java.time。App库的release加上代码 minifyEnabled true 是脱糖体积瘦身的核心开关。
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'

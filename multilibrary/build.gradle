@@ -30,8 +30,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-        // 脱糖,这样可以使用API26的java.time。App库的release加上代码 minifyEnabled true 是脱糖体积瘦身的核心开关。
-        coreLibraryDesugaringEnabled true
     }
     kotlinOptions {
         jvmTarget = '1.8'
@@ -53,8 +51,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    // 脱糖,这样可以使用API26的java.time。App库的release加上代码 minifyEnabled true 是脱糖体积瘦身的核心开关。
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    // 脱糖,这样可以使用API26的java.time。App库的release加上代码 minifyEnabled true 是脱糖体积瘦身的核心开关。compileOnly，只给IDE提示，不参与脱糖任务,脱糖任务交给app库
+    compileOnly 'com.android.tools:desugar_jdk_libs:2.1.4'
     // 支持kotlin
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"
     // 生命周期

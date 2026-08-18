@@ -39,6 +39,7 @@ No longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/andr
 - Complete cache management system.
 - Complete animation effects, shared element animations, and button detail animations.
 - Performance optimization, with careful handling of memory leaks.
+- Add motion photo feature, support viewing motion photos in the system gallery.
 
 ## Import
 
@@ -74,6 +75,16 @@ No longer maintained(https://github.com/zhongjhATC/AlbumCameraRecorder/tree/andr
 
     android.enableJetifier=true
     android.useAndroidX=true
+
+#### Step 4. Add this configuration to the app module
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        // 1. This enables java.time APIs from API level 26. Not required if minSdkVersion is 26.
+        // 2. minifyEnabled true is the key switch for desugaring size‑optimization; only used code will be kept.
+        coreLibraryDesugaringEnabled true
+    }
 
 ## Screenshots
 ![Album Interface](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/album.gif)

@@ -41,6 +41,7 @@
  - 完善的缓存管理系统
  - 完善的动画效果、共享元素动画、按钮细节动画
  - 性能优化，内存泄漏这些都一一仔细处理过
+ - 添加动态图功能,并且可支持在手机系统相册查看该动态图
 
 ## 引入
 
@@ -76,6 +77,16 @@
 
     android.enableJetifier=true
     android.useAndroidX=true
+
+#### Step 4. app库添加该配置
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        // 1.这样可以使用API26的java.time,如果minSdkVersion是26则不用添加
+        // 2.minifyEnabled true 是脱糖体积瘦身的核心开关,只保留用到的代码
+        coreLibraryDesugaringEnabled true
+    }
 
 ## 快照
 ![相册界面](https://github.com/zhongjhATC/zhongjhATC.github.io/blob/main/AlbumCameraRecorder/kotlin/album.gif)
