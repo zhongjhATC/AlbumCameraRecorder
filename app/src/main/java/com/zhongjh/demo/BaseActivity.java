@@ -160,9 +160,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             if (null == localMedia.getEditorPath() || !new File(localMedia.getEditorPath()).exists()) {
                 LogUtil.INSTANCE.e(TAG, localMedia.getEditorPath() + " EditorPath不存在");
             }
-            if (isNoUri(localMedia.getUri())) {
-                LogUtil.INSTANCE.e(TAG, localMedia.getUri() + " Uri不存在");
-            }
             if (!new File(localMedia.getAbsolutePath()).exists()) {
                 LogUtil.INSTANCE.e(TAG, localMedia.getAbsolutePath() + " AbsolutePath不存在");
             }

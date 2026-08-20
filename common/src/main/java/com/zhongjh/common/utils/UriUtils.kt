@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
+import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -12,11 +13,13 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
+import androidx.core.net.toUri
 import com.zhongjh.common.utils.FileInputOutputUtils.writeFileFromInputStream
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
+import java.util.Locale
 
 /**
  * uri工具类
@@ -42,6 +45,78 @@ object UriUtils {
     private const val CACHE_PATH = "/cache_path/"
     private const val EXTERNAL_FILES_PATH = "external_files_path"
     private const val EXTERNAL_CACHE_PATH = "external_cache_path"
+
+
+    /**
+     * 根据Uri 获取本地真实文件路径
+     * 支持：SAF框架Document Uri、MediaStore媒体Uri、普通file Uri
+     * 注意：拿到路径后，一定要先判断是否是本地有效文件
+     * @param ctx 上下文
+     * @param uri 资源Uri
+     * @return 真实磁盘路径，获取失败返回空字符串
+     */
+    fun uriToPath(ctx: Context, uri: Uri): String {
+        val context = ctx.applicationContext
+
+        // 分支1：SAF DocumentProvider 文档类型Uri
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            when {
+                isExternalStorageDocument(uri) -> {
+                    val docId = DocumentsContract.getDocumentId(uri)
+                    val split = docId.split(":")
+                    val type = split[0]
+                    if ("primary".equals(type, ignoreCase = true)) {
+                        return if (SdkVersionUtils.isQ) {
+                            // Android 10+ 分区存储，使用app私有目录
+                            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() + "/" + split[1]
+                        } else {
+                            Environment.getExternalStorageDirectory().toString() + "/" + split[1]
+                        }
+                    }
+                }
+
+                isDownloadsDocument(uri) -> {
+                    val id = DocumentsContract.getDocumentId(uri)
+                    val contentUri = ContentUris.withAppendedId(
+                        "content://downloads/public_downloads".toUri(),
+                        id.toLong()
+                    )
+                    return getDataColumn(context, contentUri, null, null)
+                }
+
+                isMediaDocument(uri) -> {
+                    val docId = DocumentsContract.getDocumentId(uri)
+                    val split = docId.split(":")
+                    val type = split[0]
+                    val contentUri = when (type) {
+                        "image" -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                        "video" -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                        "audio" -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                        else -> null
+                    }
+                    contentUri?.let {
+                        val selection = "_id=?"
+                        val selectionArgs = arrayOf(split[1])
+                        return getDataColumn(context, it, selection, selectionArgs)
+                    }
+                }
+            }
+        }
+        // 分支2：普通 content:// 媒体Uri
+        else if ("content".equals(uri.scheme, ignoreCase = true)) {
+            // 谷歌相册特殊处理
+            if (isGooglePhotosUri(uri)) {
+                return uri.lastPathSegment ?: ""
+            }
+            return getDataColumn(context, uri, null, null)
+        }
+        // 分支3：file:// 本地文件Uri，直接取路径
+        else if ("file".equals(uri.scheme, ignoreCase = true)) {
+            return uri.path ?: ""
+        }
+        // 所有分支都不匹配，返回空
+        return ""
+    }
 
     /**
      * Uri转换file
@@ -428,6 +503,35 @@ object UriUtils {
     }
 
     /**
+     * 查询 _data 字段的值
+     * 作用：从MediaStore Uri里取出文件真实磁盘绝对路径
+     * @param context 上下文
+     * @param uri 媒体Uri
+     * @param selection 查询条件
+     * @param selectionArgs 查询参数
+     * @return 文件物理路径，拿不到返回空字符串
+     */
+    fun getDataColumn(context: Context, uri: Uri, selection: String?, selectionArgs: Array<String>?): String {
+        var cursor: Cursor? = null
+        val column = "_data"
+        val projection = arrayOf(column)
+        return try {
+            cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
+            if (cursor != null && cursor.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndexOrThrow(column)
+                cursor.getString(columnIndex)
+            } else {
+                ""
+            }
+        } catch (ex: IllegalArgumentException) {
+            Log.i(TAG, String.format(Locale.getDefault(), "getDataColumn: _data - [%s]", ex.message))
+            ""
+        } finally {
+            cursor?.close()
+        }
+    }
+
+    /**
      * 内部存储空间
      * 一般这类型的文件格式是如下：
      * content://com.android.externalstorage.documents/document/xxx/xxx/test.jpg
@@ -459,5 +563,12 @@ object UriUtils {
      */
     private fun isMediaDocument(uri: Uri): Boolean {
         return "com.android.providers.media.documents" == uri.authority
+    }
+
+    /**
+     * 判断Uri是否来自谷歌相册
+     */
+    private fun isGooglePhotosUri(uri: Uri): Boolean {
+        return "com.google.android.apps.photos.content" == uri.authority
     }
 }

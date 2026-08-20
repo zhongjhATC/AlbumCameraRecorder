@@ -27,6 +27,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -35,7 +36,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.zhongjh.common.entity.LocalMedia
-import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.ofImage
 import com.zhongjh.common.enums.MimeType.Companion.ofVideo
 import com.zhongjh.common.listener.OnMoreClickListener
@@ -46,6 +46,7 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
 import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
+import com.zhongjh.common.utils.UriUtils
 import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
@@ -80,6 +81,7 @@ import com.zhongjh.multimedia.utils.SettingsPermissionUtils
 import com.zhongjh.multimedia.widget.ConstraintLayoutBehavior
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import java.io.File
 
 
 /**
@@ -510,14 +512,22 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         mAppSettingsLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
 
-        // 系统拍照回调
+        // 系统拍照/录像共用回调
         mAppCameraLauncher = this.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                cameraUri?.let {
-                    val path = if (MimeType.isContent(cameraUri.toString())) it.toString() else it.path
-                    // 1. 通知系统扫描这张照片 → 系统相册立刻显示
-                    MediaScannerConnection.scanFile(mApplicationContext, arrayOf(path), null) { _, _ ->
-                        // 扫描完成回调 刷新你自己App的相册列表（立刻看到刚拍的）
+                val realUri: Uri? = result.data?.data ?: cameraUri
+
+                realUri?.let { uri ->
+                    // ========== 修复核心：把Uri转为本地真实磁盘路径 ==========
+                    val realFilePath = UriUtils.uriToPath(mApplicationContext, uri)
+
+                    if (realFilePath.isNotEmpty() && File(realFilePath).exists()) {
+                        // 存在真实路径，走媒体扫描
+                        MediaScannerConnection.scanFile(mApplicationContext, arrayOf(realFilePath), null) { _, _ ->
+                            mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize)
+                        }
+                    } else {
+                        // Android10+ 拿不到真实路径兜底：不扫描，直接刷新（可适当delay）
                         mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize)
                     }
                 }
@@ -718,7 +728,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         albumChecks.add(album)
         mAlbumSpinner?.updateCheckStatus(albumChecks)
         val displayName = album.name
-        if (mBinding.tvAlbumTitle.visibility == View.VISIBLE) {
+        if (mBinding.tvAlbumTitle.isVisible) {
             mBinding.tvAlbumTitle.text = displayName
         } else {
             mBinding.tvAlbumTitle.alpha = 0.0f
@@ -797,7 +807,9 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         val firstVis = lm.findFirstVisibleItemPosition()
         val lastVis = lm.findLastVisibleItemPosition()
         // 边界保护
-        if (firstVis < 0 || lastVis < firstVis) return
+        if (firstVis !in 0..lastVis) {
+            return
+        }
         val count = lastVis - firstVis + 1
         // 官方范围刷新
         mBinding.recyclerview.adapter?.notifyItemRangeChanged(firstVis, count)
