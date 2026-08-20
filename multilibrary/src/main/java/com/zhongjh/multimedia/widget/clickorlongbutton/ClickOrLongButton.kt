@@ -110,6 +110,21 @@ class ClickOrLongButton : View {
     private var btnPressTime: Long = 0
     private var outBlackCircleRadiusInc = 0
 
+
+    // region ===================================== loading相关参数  =====================================
+
+    /**
+     * 是否显示loading动画，用于动态照片生成过程
+     */
+    private var isShowLoading = false
+
+    /**
+     * loading旋转角度
+     */
+    private var loadingRotateDegree = 0f
+
+    // endregion ===================================== loading相关参数  =====================================
+
     /**
      * 为了确保整个按钮的逻辑从按下-放开手都是流畅的，会用 按下+1，放开手+1，最后等于2的方式执行
      * 如果中间中断或者重置，那就直接减1，就说明中断流程
