@@ -27,7 +27,8 @@ android {
         versionName rootProject.ext.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
-        vectorDrawables.useSupportLibrary = true // 添加多密度矢量图形
+        // 添加多密度矢量图形
+        vectorDrawables.useSupportLibrary = true
         ndk {
             // 设置支持的SO库架构
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
