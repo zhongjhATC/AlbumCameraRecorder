@@ -63,6 +63,8 @@ public class MainUpperLimitActivity extends BaseActivity {
         mBinding.tvMessage.append("\n");
         mBinding.tvMessage.append("5. 如果其中一个例如图片为null，那么图片可选择无限，但是受限于总上限。");
 
+        // 设置图片加载引擎
+        mBinding.gridView.setImageEngine(new Glide4Engine());
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 

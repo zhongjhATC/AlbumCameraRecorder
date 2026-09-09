@@ -1,6 +1,7 @@
 package com.zhongjh.gridview.api
 
 import androidx.lifecycle.LifecycleOwner
+import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 
@@ -11,6 +12,19 @@ import com.zhongjh.common.entity.LocalMedia
  * @date 2019/3/21
  */
 interface GridViewApi {
+
+    /**
+     * 提供图像引擎。
+     *
+     *
+     * 有两个内置图像引擎：
+     * 1. [com.zhongjh.common.engine.impl.GlideEngine]
+     * 2. [com.zhongjh.common.engine.impl.PicassoEngine]
+     * 你可以实现你自己的图像引擎。
+     *
+     * @param imageEngine [ImageEngine]
+     */
+    fun setImageEngine(imageEngine: ImageEngine)
 
     /**
      * 设置进度

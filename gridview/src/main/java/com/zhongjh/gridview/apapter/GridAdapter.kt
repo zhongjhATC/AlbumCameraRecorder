@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sdsmdg.harjot.vectormaster.VectorMasterView
+import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.gridview.R
-import com.zhongjh.gridview.engine.ImageEngine
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
 import com.zhongjh.gridview.provider.RoundViewOutlineProvider
@@ -147,10 +147,8 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
             }
 
             if (gridMedia.isAudio()) {
-                photoAdapterEntity.imageEngine.loadResourceId(
+                photoAdapterEntity.imageEngine.loadDrawableImage(
                     mContext,
-                    mItemHeight,
-                    photoAdapterEntity.placeholder,
                     holder.mpvImage,
                     R.drawable.baseline_audio_file_24_zhongjh
                 )
@@ -265,7 +263,7 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         if (lastIsAddItem(list)) {
             // 创建原列表的副本，然后删除副本的最后一个元素
             val newList = ArrayList(list)
-            newList.removeLast()
+            newList.removeAt(newList.lastIndex)
             return newList
         }
         return ArrayList(list)
@@ -570,9 +568,9 @@ class GridAdapter(private val mContext: Context, private val mGridLayoutManage: 
         ) {
             // 加载图片
             if (!TextUtils.isEmpty(gridMedia.getAvailablePath())) {
-                imageEngine.loadPath(context, height, placeholder, mpvImage, gridMedia.getAvailablePath())
+                imageEngine.loadThumbnail(context, height, placeholder, mpvImage, gridMedia.getAvailablePath())
             } else if (!TextUtils.isEmpty(gridMedia.url)) {
-                imageEngine.loadUrl(context, height, placeholder, mpvImage, gridMedia.url!!)
+                imageEngine.loadUrlImage(context, height, height, mpvImage, gridMedia.url!!)
             }
         }
 

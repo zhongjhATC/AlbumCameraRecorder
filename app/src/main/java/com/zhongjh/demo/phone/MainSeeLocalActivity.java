@@ -74,6 +74,8 @@ public class MainSeeLocalActivity extends BaseActivity {
         // noinspection deprecation
         progressDialog = new ProgressDialog(MainSeeLocalActivity.this);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main_see);
+        // 设置图片加载引擎
+        mBinding.gridView.setImageEngine(new Glide4Engine());
         mBinding.gridView.setGridViewListener((new GridViewListener() {
 
             /** @noinspection unused*/

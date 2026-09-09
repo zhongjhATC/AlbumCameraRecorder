@@ -1,7 +1,7 @@
 package com.zhongjh.gridview.entity
 
 import android.graphics.drawable.Drawable
-import com.zhongjh.gridview.engine.ImageEngine
+import com.zhongjh.common.engine.ImageEngine
 import kotlin.properties.Delegates
 
 /**

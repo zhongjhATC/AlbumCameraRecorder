@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
@@ -21,7 +22,6 @@ import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.gridview.R
 import com.zhongjh.gridview.apapter.GridAdapter
 import com.zhongjh.gridview.api.GridViewApi
-import com.zhongjh.gridview.engine.ImageEngine
 import com.zhongjh.gridview.entity.Masking
 import com.zhongjh.gridview.entity.PhotoAdapterEntity
 import com.zhongjh.gridview.listener.GridViewListener
@@ -105,9 +105,6 @@ class GridView : FrameLayout, GridViewApi {
         // 获取添加图片
         photoAdapterEntity.addDrawable =
             gridViewStyle.getDrawable(R.styleable.GridView_imageAddDrawable)
-        // 获取显示图片的类
-        val imageEngineStr =
-            gridViewStyle.getString(R.styleable.GridView_imageEngine)
         // 获取最多显示多少个方框
         photoAdapterEntity.maxMediaCount =
             gridViewStyle.getInteger(
@@ -121,7 +118,6 @@ class GridView : FrameLayout, GridViewApi {
         photoAdapterEntity.deleteImage =
             gridViewStyle.getDrawable(R.styleable.GridView_imageDeleteDrawable)
         photoAdapterEntity.masking = initMaskLayerProperty(gridViewStyle, colorPrimary)
-        initException(imageEngineStr)
         if (drawable == null) {
             drawable = ContextCompat.getDrawable(context, R.color.z_thumbnail_placeholder)
         }
@@ -172,18 +168,8 @@ class GridView : FrameLayout, GridViewApi {
         return Masking(maskingColor, maskingTextSize, maskingTextColor, maskingTextContent)
     }
 
-    /**
-     * 处理异常
-     */
-    private fun initException(imageEngineStr: String?) {
-        if (imageEngineStr == null) {
-            // 必须定义image_engine属性，指定某个显示图片类
-            throw NullPointerException("The image_engine attribute must be defined to specify a class for displaying images")
-        } else {
-            // 完整类名
-            val imageEngineClass: Class<*> = Class.forName(imageEngineStr)
-            photoAdapterEntity.imageEngine = imageEngineClass.newInstance() as ImageEngine
-        }
+    override fun setImageEngine(imageEngine: ImageEngine) {
+        photoAdapterEntity.imageEngine = imageEngine
     }
 
     override fun setPercentage(owner: LifecycleOwner, multiMedia: GridMedia, percentage: Int) {

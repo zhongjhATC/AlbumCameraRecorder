@@ -70,6 +70,8 @@ public class MainSeeActivity extends BaseActivity {
         // noinspection deprecation
         progressDialog = new ProgressDialog(MainSeeActivity.this);
         progressDialog.setTitle("下载中");
+        // 设置图片加载引擎
+        mBinding.gridView.setImageEngine(new Glide4Engine());
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 
             /** @noinspection unused*/
