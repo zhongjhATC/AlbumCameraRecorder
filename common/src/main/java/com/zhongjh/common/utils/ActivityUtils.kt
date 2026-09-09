@@ -32,9 +32,8 @@ object ActivityUtils {
     private fun isDestroy(activity: Activity?): Boolean {
         activity?.let {
             return activity.isFinishing || activity.isDestroyed
-        } ?: let {
-            return true
         }
+        return true
     }
 
 }
