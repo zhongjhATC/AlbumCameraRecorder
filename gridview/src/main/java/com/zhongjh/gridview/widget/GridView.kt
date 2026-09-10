@@ -322,6 +322,10 @@ class GridView : FrameLayout, GridViewApi {
         mGridAdapter.listener = null
     }
 
+    override fun getRecyclerView(): RecyclerView {
+        return mViewHolder.rlGrid
+    }
+
     /**
      * 设置最多显示多少个图片/视频/语音
      */

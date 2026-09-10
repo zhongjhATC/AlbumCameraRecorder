@@ -1,6 +1,7 @@
 package com.zhongjh.gridview.api
 
 import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.RecyclerView
 import com.zhongjh.common.engine.ImageEngine
 import com.zhongjh.common.entity.GridMedia
 import com.zhongjh.common.entity.LocalMedia
@@ -125,4 +126,9 @@ interface GridViewApi {
      * 销毁所有相关正在执行的东西
      */
     fun onDestroy()
+
+    /**
+     * 获取列表
+     */
+    fun getRecyclerView(): RecyclerView
 }

@@ -1,0 +1,265 @@
+package com.zhongjh.demo;
+
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+
+
+import static org.hamcrest.Matchers.allOf;
+
+import android.os.SystemClock;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.InjectEventSecurityException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.Until;
+
+import com.zhongjh.demo.phone.MainListActivity;
+import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton;
+
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+public class AlbumUiTest {
+
+    private ActivityScenario<MainListActivity> scenario;
+    private UiDevice uiDevice;
+
+    // 每个@Test执行前，启动MainActivity
+    @Before
+    public void beforeTest() {// 获取当前被测App包名
+        scenario = ActivityScenario.launch(MainListActivity.class);
+        uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    }
+
+    // 每个@Test执行完毕，关闭Activity
+    @After
+    public void afterTest() {
+        scenario.close();
+    }
+
+    // UI测试用例：点击打开相册按钮
+    @Test
+    public void testClickOpenAlbumButton() throws Exception {
+        // 1. 点击按钮，触发app请求权限，弹出系统权限弹窗
+        onView(withId(R.id.btnSimple)).perform(click());
+
+        // 点击GridView第0项（第一个格子）
+        clickGridViewItem(0);
+
+        // 通过所有权限
+        passAllPermissions();
+
+        // 等待相册页面加载出来，给页面渲染时间
+        Thread.sleep(2000);
+
+        // 返回
+        uiDevice.pressBack();
+
+        // 勾选去掉相册功能
+        onView(withId(R.id.cbAlbum))
+                .check(matches(isChecked()))
+                .perform(click());
+
+        // 重新进去
+        clickGridViewItem(0);
+
+        // 拍满照片
+        for (int i = 0; i < 5; i++) {
+            takePhoto();
+        }
+
+        // 然后删光照片
+        // 接着录像
+        // 再录像
+        // 满了后然后返回
+        // 再录像一个点击确认
+
+        // 授权完成，弹窗关闭,查看界面是否正常
+        Thread.sleep(2000);
+    }
+
+    /**
+     * 点击gridView
+     *
+     * @param position 索引
+     */
+    private void clickGridViewItem(int position) {
+        onView(withId(R.id.gridView))
+                .check(matches(isDisplayed()))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(FrameLayout.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "获取自定义GridView内部RecyclerView并点击第0个item";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        // view就是com.zhongjh.gridview.widget.GridView实例
+                        com.zhongjh.gridview.widget.GridView gridView = (com.zhongjh.gridview.widget.GridView) view;
+                        RecyclerView recyclerView = gridView.getRecyclerView();
+                        // 点击第0项，修改数字切换不同item
+                        actionOnItemAtPosition(position, click()).perform(uiController, recyclerView);
+                    }
+                });
+    }
+
+    /**
+     * 通过所有权限
+     */
+    private void passAllPermissions() {
+        // 等待 3秒，通过摄像头权限，匹配包含 "允许"
+        UiObject2 permissionBtn = uiDevice.wait(
+                Until.findObject(By.textContains("允许")),
+                3000
+        );
+        if (permissionBtn != null) {
+            permissionBtn.click();
+        }
+        // 等待 3秒，通过麦克风权限，匹配包含 "允许"
+        UiObject2 permissionBtn2 = uiDevice.wait(
+                Until.findObject(By.textContains("允许")),
+                3000
+        );
+        if (permissionBtn2 != null) {
+            permissionBtn2.click();
+        }
+
+        // 等待 3秒，通过相册权限，匹配包含 "允许"
+        UiObject2 permissionBtn3 = uiDevice.wait(
+                Until.findObject(By.textContains("允许")),
+                3000
+        );
+        if (permissionBtn3 != null) {
+            permissionBtn3.click();
+        }
+    }
+
+    /**
+     * 拍照
+     */
+    private void takePhoto() {
+        Matcher<View> pvLayoutMatcher = allOf(
+                withId(R.id.pvLayout),
+                isInFragment(BaseCameraFragment.class),
+                isDisplayed()
+        );
+
+        onView(allOf(
+                isAssignableFrom(ClickOrLongButton.class),
+                hasAncestor(pvLayoutMatcher),
+                isDisplayed()
+        )).perform(click());
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 递归遍历子View，根据Class查找目标控件
+     */
+    private View findChildByClass(View root, Class<?> clazz) {
+        if (clazz.isInstance(root)) {
+            return root;
+        }
+        if (root instanceof ViewGroup) {
+            ViewGroup vg = (ViewGroup) root;
+            for (int i = 0; i < vg.getChildCount(); i++) {
+                View child = vg.getChildAt(i);
+                View target = findChildByClass(child, clazz);
+                if (target != null) {
+                    return target;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Matcher：判断该View属于指定Fragment类
+     */
+    public static Matcher<View> isInFragment(final Class<? extends Fragment> fragmentClass) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            protected boolean matchesSafely(View view) {
+                Fragment fragment = findFragmentContainingView(view);
+                return fragmentClass.isInstance(fragment);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("view is inside fragment " + fragmentClass.getName());
+            }
+        };
+    }
+
+    /**
+     * 根据View查找所属Fragment
+     */
+    private static Fragment findFragmentContainingView(View view) {
+        return FragmentManager.findFragment(view);
+    }
+
+    public static Matcher<View> hasAncestor(final Matcher<View> ancestorMatcher) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public boolean matchesSafely(View view) {
+                ViewParent parent = view.getParent();
+                while (parent != null) {
+                    // 关键：只有parent是View才做匹配；ViewRootImpl直接跳出循环
+                    if (parent instanceof View) {
+                        View parentView = (View) parent;
+                        if (ancestorMatcher.matches(parentView)) {
+                            return true;
+                        }
+                    } else {
+                        // 遇到ViewRootImpl，到达视图树顶端，终止遍历
+                        break;
+                    }
+                    parent = parent.getParent();
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("has ancestor matches ");
+                ancestorMatcher.describeTo(description);
+            }
+        };
+    }
+
+
+}

@@ -72,9 +72,15 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // 脱糖,这样可以使用API26的java.time。App库的release加上代码 minifyEnabled true 是脱糖体积瘦身的核心开关。
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.5.2'
+
+    // 单元测试
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.5.1'
+
 
     // 基本库
     implementation "androidx.core:core-ktx:$rootProject.ext.ktx_version"

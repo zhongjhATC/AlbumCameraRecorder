@@ -569,7 +569,7 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
             flashSaveCache()
             cameraSpec.onCaptureListener = null
             cameraSpec.onInitCameraManager = null
-        } catch (ignored: NullPointerException) {
+        } catch (_: NullPointerException) {
         }
     }
 
