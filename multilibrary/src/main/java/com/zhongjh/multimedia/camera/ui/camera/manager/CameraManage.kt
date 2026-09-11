@@ -376,6 +376,8 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                             }
                         }
                         isActivityPause = false
+                        // 动态照片录制结束,清空引用。这样拍第二张的时候可以重新实例化recording
+                        recording = null
                     }
                     else -> {}
                 }
