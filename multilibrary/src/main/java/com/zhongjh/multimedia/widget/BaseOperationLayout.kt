@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.view.isGone
 import com.zhongjh.circularprogressview.CircularProgress
 import com.zhongjh.circularprogressview.CircularProgressListener
 import com.zhongjh.multimedia.R
@@ -284,7 +285,7 @@ abstract class BaseOperationLayout : FrameLayout {
      */
     fun startOperationBtnAnimatorMulti() {
         // 如果本身隐藏的，就显示出来
-        if (viewHolder.btnConfirm.visibility == GONE) {
+        if (viewHolder.btnConfirm.isGone) {
             // 显示提交按钮
             viewHolder.btnConfirm.visibility = VISIBLE
             // 动画未结束前不能让它们点击
@@ -390,7 +391,7 @@ abstract class BaseOperationLayout : FrameLayout {
     }
 
     /**
-     * 提示文本框 - 浮现渐现动画
+     * 提示文本框 - 渐隐动画
      */
     fun startTipAlphaAnimation() {
         if (isFirst) {
@@ -402,7 +403,7 @@ abstract class BaseOperationLayout : FrameLayout {
     }
 
     /**
-     * 提示文本框 - 浮现渐现动画，显示新的文字
+     * 提示文本框 - 渐现显示新的文字+渐隐动画，
      *
      * @param tip 提示文字
      */
