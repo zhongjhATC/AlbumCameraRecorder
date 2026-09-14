@@ -229,20 +229,7 @@ public class AlbumUiTest {
     /**
      * 录像
      */
-    private void recordVideo() {
-//        Matcher<View> pvLayoutMatcher = allOf(
-//                withId(R.id.pvLayout),
-//                isInFragment(BaseCameraFragment.class),
-//                isDisplayed()
-//        );
-//
-//        // 长按触发录像，保持录像3秒
-//        onView(allOf(
-//                isAssignableFrom(ClickOrLongButton.class),
-//                hasAncestor(pvLayoutMatcher),
-//                isDisplayed()
-//        )).perform(longPressInstrumentation(3500));
-
+    private void recordVideo() throws InterruptedException {
         Matcher<View> pvLayoutMatcher = allOf(
                 withId(R.id.pvLayout),
                 isInFragment(BaseCameraFragment.class),
@@ -254,79 +241,42 @@ public class AlbumUiTest {
                 isDisplayed()
         );
 
-        // ========== 1. 先通过Espresso找到按钮，设置最大录制时长15s，并且拿到按钮屏幕坐标 ==========
-        final float[] touchPos = new float[2];
-        onView(btnMatcher).perform(new ViewAction() {
+        // 2. 获取按钮屏幕中心点
+        float[] centerPos = getViewScreenCenter(btnMatcher);
+        float x = centerPos[0];
+        float y = centerPos[1];
+
+        // 3. 执行系统长按
+        GestureInstrumentUtil.longPress(x, y, 5000);
+    }
+
+    /**
+     * 通用工具：获取view屏幕中心点坐标，返回 [x,y]
+     */
+    private float[] getViewScreenCenter(Matcher<View> viewMatcher) throws InterruptedException {
+        final float[] pos = new float[2];
+        onView(viewMatcher).perform(new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return isEnabled();
+                return isDisplayed();
             }
 
             @Override
             public String getDescription() {
-                return "设置按钮录制上限并获取触摸坐标";
+                return "获取View屏幕中心点";
             }
 
             @Override
             public void perform(UiController uiController, View view) {
-                ClickOrLongButton btn = (ClickOrLongButton) view;
-                // 设置最大录制时长15秒，大于长按总时长6500ms，命中onLongClickEnd
-                btn.setDuration(15000);
-
-                // 获取控件屏幕中心点
                 int[] location = new int[2];
                 view.getLocationOnScreen(location);
-                touchPos[0] = location[0] + view.getWidth() / 2f;
-                touchPos[1] = location[1] + view.getHeight() / 2f;
+                pos[0] = location[0] + view.getWidth() / 2f;
+                pos[1] = location[1] + view.getHeight() / 2f;
             }
         });
-
-        // ========== 2. Instrumentation 系统触摸注入（当前运行在Instrumentation测试线程，不会报主线程异常） ==========
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        float x = touchPos[0];
-        float y = touchPos[1];
-        long downTime = SystemClock.uptimeMillis();
-        final long holdMs = 6500;
-        long endTime = downTime + holdMs;
-
-        // ACTION_DOWN 按下
-        instrumentation.sendPointerSync(MotionEvent.obtain(
-                downTime,
-                SystemClock.uptimeMillis(),
-                MotionEvent.ACTION_DOWN,
-                x, y, 0
-        ));
-
-        // 循环发送微小MOVE事件，维持触摸会话，驱动环形进度动画
-        while (SystemClock.uptimeMillis() < endTime) {
-            long currentTs = SystemClock.uptimeMillis();
-            instrumentation.sendPointerSync(MotionEvent.obtain(
-                    downTime,
-                    currentTs,
-                    MotionEvent.ACTION_MOVE,
-                    x + 0.02f,
-                    y + 0.02f,
-                    0
-            ));
-            // 测试线程休眠50ms，APP主线程持续正常运行
-            SystemClock.sleep(50);
-        }
-
-        // ACTION_UP 抬起手指
-        instrumentation.sendPointerSync(MotionEvent.obtain(
-                downTime,
-                SystemClock.uptimeMillis(),
-                MotionEvent.ACTION_UP,
-                x, y, 0
-        ));
-
-        // 等待录像保存
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        return pos;
     }
+
 
     /**
      * Matcher：判断该View属于指定Fragment类
