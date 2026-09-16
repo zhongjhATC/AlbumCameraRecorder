@@ -7,13 +7,12 @@ import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtP
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
-import android.app.Instrumentation;
 import android.os.SystemClock;
-import android.view.MotionEvent;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -22,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -30,8 +30,10 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
+import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.demo.phone.MainListActivity;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment;
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton;
 
 import org.hamcrest.Description;
@@ -48,7 +50,8 @@ public class AlbumUiTest {
 
     // 每个@Test执行前，启动MainActivity
     @Before
-    public void beforeTest() {// 获取当前被测App包名
+    public void beforeTest() {
+        // 获取当前被测App包名
         scenario = ActivityScenario.launch(MainListActivity.class);
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     }
@@ -65,44 +68,121 @@ public class AlbumUiTest {
         // 1. 点击按钮，触发app请求权限，弹出系统权限弹窗
         onView(withId(R.id.btnSimple)).perform(click());
 
-        // 点击GridView第0项（第一个格子）
+        // 九宫界面 - 点击GridView第0项（第一个格子）
         clickGridViewItem(0);
 
-        // 通过所有权限
+        // 三合一界面 - 通过所有权限
         passAllPermissions();
 
-        // 等待相册页面加载出来，给页面渲染时间
+        // 等待2秒让界面渲染一会
         Thread.sleep(2000);
 
-        // 返回
+        // 三合一界面 - 返回
         uiDevice.pressBack();
 
-        // 勾选去掉相册功能
+        // 九宫界面 - 勾选去掉相册功能
         onView(withId(R.id.cbAlbum))
                 .check(matches(isChecked()))
                 .perform(click());
 
-        // 重新进去
+        // 九宫界面 - 重新进去
         clickGridViewItem(0);
 
-        // 拍满照片
+        // 三合一界面(录制) - 拍满照片
         for (int i = 0; i < 5; i++) {
             takePhoto();
         }
 
-        // 然后删光照片
+        // 三合一界面(录制) - 然后删光照片
         for (int i = 4; i >= 0; i--) {
-            clickGridViewItemByDelete();
+            deleteGridViewItemByCameraFragment();
         }
 
-        // 接着录像
-        recordVideo();
+        // 三合一界面(录制) - 接着录像
+        recordVideo(5500);
 
-        // 再录像
-        // 满了后然后返回
-        // 再录像一个点击确认
+        // 三合一界面(录制) - 再录像,满了会进入到录像预览界面
+        recordVideo(4000);
 
-        // 授权完成，弹窗关闭,查看界面是否正常
+        // 录像预览界面 - 然后点击左上角按钮返回
+        closeByCameraFragment();
+
+        // 九宫界面 - 重新进去
+        clickGridViewItem(0);
+
+        // 三合一界面(录制) - 再重新录像直到自动满
+        recordVideo(12000);
+
+        // 录像预览界面 - 点击确定
+        onView(withId(R.id.btnConfirm)).perform(click());
+
+        // 九宫界面 - 删除录像
+        deleteGridViewItemByMainFragment();
+
+        // 九宫界面 - 重新进去
+        clickGridViewItem(0);
+
+        // 三合一界面(录制) - 接着录像到一半
+        recordVideo(5500);
+
+        // 三合一界面(录制) - 点击确定
+        btnConfirm();
+
+        // 录像预览界面 - 点击确定
+        onView(withId(R.id.btnConfirm)).perform(click());
+
+        // 九宫界面 - 删除录像
+        deleteGridViewItemByMainFragment();
+
+        // 九宫界面 - 勾选去掉录音功能
+        onView(withId(R.id.cbRecorder))
+                .check(matches(isChecked()))
+                .perform(click());
+
+        // 九宫界面 - 重新进去
+        clickGridViewItem(0);
+
+        // 三合一界面(录制) - 再重新录像直到自动满
+        recordVideo(12000);
+
+        // 录像预览界面 - 点击确定
+        onView(withId(R.id.btnConfirm)).perform(click());
+
+        // 九宫界面 - 删除录像
+        deleteGridViewItemByMainFragment();
+
+        // 九宫界面 - 勾选去掉拍摄功能
+        onView(withId(R.id.cbCamera))
+                .check(matches(isChecked()))
+                .perform(click());
+
+        // 九宫界面 - 选择录音功能
+        onView(withId(R.id.cbRecorder))
+                .check(matches(isNotChecked()))
+                .perform(click());
+
+        // 九宫界面 - 重新进去
+        clickGridViewItem(0);
+
+        // 三合一界面(录音) - 再重新录音直到自动满
+        recordAudio(12000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 九宫界面 - 删除录音
+        deleteGridViewItemByMainFragment();
+
+        // 九宫界面 - 重新进去
+        clickGridViewItem(0);
+
+        // 三合一界面(录音) - 再重新录音一半
+        recordAudio(7000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 等待2秒让界面渲染一会
         Thread.sleep(2000);
     }
 
@@ -139,7 +219,7 @@ public class AlbumUiTest {
     /**
      * 点击录制界面-gridView的删除事件
      */
-    private void clickGridViewItemByDelete() {
+    private void deleteGridViewItemByCameraFragment() {
         onView(withId(R.id.rlPhoto))
                 .check(matches(isDisplayed()))
                 .perform(new ViewAction() {
@@ -166,6 +246,44 @@ public class AlbumUiTest {
                         if (holder != null) {
                             // 这里换成你item里面按钮的id
                             View btnDelete = holder.itemView.findViewById(com.zhongjh.multimedia.R.id.imgCancel);
+                            btnDelete.performClick();
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 点击主界面-gridView的删除事件
+     */
+    private void deleteGridViewItemByMainFragment() {
+        onView(withId(R.id.gridView))
+                .check(matches(isDisplayed()))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(FrameLayout.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "获取自定义GridView内部RecyclerView并点击-gridView的删除事件";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        // view就是com.zhongjh.gridview.widget.GridView实例
+                        com.zhongjh.gridview.widget.GridView gridView = (com.zhongjh.gridview.widget.GridView) view;
+                        RecyclerView recyclerView = gridView.getRecyclerView();
+
+                        int position = 0;
+                        // 滚动到目标position，确保item被渲染
+                        recyclerView.scrollToPosition(position);
+                        uiController.loopMainThreadForAtLeast(500);
+
+                        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+                        if (holder != null) {
+                            // 这里换成你item里面按钮的id
+                            View btnDelete = holder.itemView.findViewById(com.zhongjh.gridview.R.id.imgClose);
                             btnDelete.performClick();
                         }
                     }
@@ -229,7 +347,7 @@ public class AlbumUiTest {
     /**
      * 录像
      */
-    private void recordVideo() throws InterruptedException {
+    private void recordVideo(long holdMs) throws InterruptedException {
         Matcher<View> pvLayoutMatcher = allOf(
                 withId(R.id.pvLayout),
                 isInFragment(BaseCameraFragment.class),
@@ -247,7 +365,83 @@ public class AlbumUiTest {
         float y = centerPos[1];
 
         // 3. 执行系统长按
-        GestureInstrumentUtil.longPress(x, y, 5000);
+        GestureInstrumentUtil.longPress(x, y, holdMs);
+    }
+
+    /**
+     * 录像 - 确定
+     */
+    private void btnConfirm() {
+        Matcher<View> pvLayoutMatcher = allOf(
+                withId(R.id.pvLayout),
+                isInFragment(BaseCameraFragment.class),
+                isDisplayed()
+        );
+
+        onView(allOf(
+                withId(R.id.btnConfirm),
+                isAssignableFrom(CircularProgress.class),
+                hasAncestor(pvLayoutMatcher),
+                isDisplayed()
+        )).perform(click());
+    }
+
+    /**
+     * 录音
+     */
+    private void recordAudio(long holdMs) throws InterruptedException {
+        Matcher<View> pvLayoutMatcher = allOf(
+                withId(R.id.pvLayout),
+                isInFragment(BaseSoundRecordingFragment.class),
+                isDisplayed()
+        );
+        Matcher<View> btnMatcher = allOf(
+                isAssignableFrom(ClickOrLongButton.class),
+                hasAncestor(pvLayoutMatcher),
+                isDisplayed()
+        );
+
+        // 2. 获取按钮屏幕中心点
+        float[] centerPos = getViewScreenCenter(btnMatcher);
+        float x = centerPos[0];
+        float y = centerPos[1];
+
+        // 3. 执行系统长按
+        GestureInstrumentUtil.longPress(x, y, holdMs);
+    }
+
+    /**
+     * 录音 - 确定
+     */
+    private void btnConfirmByAudio() {
+        Log.d("TEST_LOG", "===== 进入 btnConfirmByAudio =====");
+        Matcher<View> pvLayoutMatcher = allOf(
+                withId(R.id.pvLayout),
+                isInFragment(BaseSoundRecordingFragment.class),
+                isDisplayed()
+        );
+        Matcher<View> confirmMatcher = allOf(
+                withId(R.id.btnConfirm),
+                isAssignableFrom(CircularProgress.class),
+                hasAncestor(pvLayoutMatcher),
+                isDisplayed()
+        );
+        Log.d("TEST_LOG", "准备执行 onView 查找 btnConfirm");
+        onView(confirmMatcher).perform(click());
+        Log.d("TEST_LOG", "===== btnConfirmByAudio 执行完成，click 调用完毕 =====");
+    }
+
+    /**
+     * 关闭界面,点击左上角按钮
+     * 相册界面
+     */
+    private void closeByCameraFragment() {
+        Matcher<View> imgClose = allOf(
+                withId(R.id.imgClose),
+                isInFragment(BaseCameraFragment.class),
+                isDisplayed()
+        );
+        onView(imgClose).perform(click());
     }
 
     /**
@@ -276,7 +470,6 @@ public class AlbumUiTest {
         });
         return pos;
     }
-
 
     /**
      * Matcher：判断该View属于指定Fragment类

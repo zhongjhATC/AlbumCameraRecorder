@@ -50,6 +50,8 @@ android {
 }
 
 dependencies {
+    // 用于自动化UI测试，提供IdlingResource，用于等待异步操作完成
+    implementation 'androidx.test.espresso:espresso-idling-resource:3.7.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // 脱糖,这样可以使用API26的java.time。App库的release加上代码 minifyEnabled true 是脱糖体积瘦身的核心开关。compileOnly，只给IDE提示，不参与脱糖任务,脱糖任务交给app库
     compileOnly 'com.android.tools:desugar_jdk_libs:2.1.4'
@@ -88,7 +90,7 @@ dependencies {
     api "androidx.camera:camera-effects:${camerax_version}"
 
     // 自制按钮进度 https://github.com/zhongjhATC/CircularProgressView
-    api 'com.github.zhongjhATC:CircularProgressView:2.2'
+    api 'com.github.zhongjhATC:CircularProgressView:2.3'
 
     // 圆环进度,官方的不能控制线条粗细,不能改成圆角等 https://github.com/rahatarmanahmed/CircularProgressView
     api 'com.github.rahatarmanahmed:circularprogressview:2.5.0'

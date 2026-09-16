@@ -8,7 +8,6 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +17,8 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.idling.CountingIdlingResource
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.enums.MimeType
@@ -27,6 +28,7 @@ import com.zhongjh.common.utils.MediaStoreCompat
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.BaseFragment
+import com.zhongjh.multimedia.BuildConfig
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.listener.ClickOrLongListener
@@ -48,6 +50,7 @@ import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import kotlin.coroutines.resumeWithException
+import androidx.core.content.edit
 
 abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView {
 
@@ -64,6 +67,11 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
 
     lateinit var myContext: Context
         private set
+
+    /**
+     * 录音Idling资源，仅DEBUG测试使用，Release包不会创建
+     */
+    private var audioRecordIdlingResource: CountingIdlingResource? = null
 
     /**
      * 完成压缩-复制的异步线程
@@ -119,6 +127,14 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
         if (context is MainActivity) {
             this.mainActivityRef = WeakReference(context)
             this.myContext = context.applicationContext
+        }
+        // DEBUG模式才创建IdlingResource
+        if (BuildConfig.DEBUG) {
+            audioRecordIdlingResource = CountingIdlingResource("AudioRecordIdling")
+            // ✅ Fragment 挂载时自动注册
+            audioRecordIdlingResource?.let {
+                IdlingRegistry.getInstance().register(it)
+            }
         }
     }
 
@@ -204,7 +220,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             override fun onLongClick() {
                 LogUtil.d(TAG, "onLongClick")
                 // 录音开启
-                onRecord(true)
+                onRecord()
             }
 
             override fun onLongClickEnd(time: Long) {
@@ -239,7 +255,13 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
         soundRecordingLayout.startShowLeftRightButtonsAnimator(true)
         LogUtil.d(TAG, "onLongClickEnd")
         // 录音结束
-        onRecord(false)
+        chronometer.stop()
+        timeWhenPaused = 0
+
+        stopRecording()
+        // allow the screen to turn off again once recording is finished
+        mainActivity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         showRecordEndView()
     }
 
@@ -247,7 +269,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
      * 播放事件
      */
     private fun initRlSoundRecordingClickListener() {
-        soundRecordingLayout.soundRecordingLayoutViewHolder.rlEdit.setOnClickListener { view: View? ->
+        soundRecordingLayout.soundRecordingLayoutViewHolder.rlEdit.setOnClickListener { _: View? ->
             initAudio()
             // 播放
             onPlay(isPlaying)
@@ -305,7 +327,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             val filePath = sharePreferences?.getString("audio_path", "") as String
             val elapsed = sharePreferences.getLong("elapsed", 0)
             // 可选：若不再使用，清除临时数据
-            sharePreferences.edit().clear().apply()
+            sharePreferences.edit { clear() }
             val file = File(filePath)
             localMedia.absolutePath = filePath
             localMedia.uri = MediaStoreCompat.getUri(myContext, filePath).toString()
@@ -326,6 +348,31 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // ========== 按生命周期顺序销毁 ==========
+        // 第1步：先取消所有可能操作view的协程。
+        // lifecycleScope要到onDestroy才取消，若不在这里手动取消，
+        // onDestroyView之后协程仍会继续执行copyFileWithProgress -> updateProgressUI -> addProgress，
+        // 进度达到100会触发progressComplete()启动完成动画，
+        // 而第2步中soundRecordingLayout.onDestroy()已将CircularProgress的listener置空，
+        // 动画200ms结束后回调onDone()就会抛NPE。
+        moveRecordFileJob?.cancel()
+        moveRecordFileJob = null
+        stopRecordingJob?.cancel()
+        stopRecordingJob = null
+
+        // 第2步：再销毁view相关资源（此时已无协程会操作CircularProgress）
+        // 如果页面销毁时还处于忙碌状态，强制释放，避免测试卡死
+        if (BuildConfig.DEBUG) {
+            audioRecordIdlingResource?.let {
+                IdlingRegistry.getInstance().unregister(it)
+
+                // 兜底：把计数清零，防止残留busy状态
+                while (!it.isIdleNow) {
+                    it.decrement()
+                }
+            }
+        }
+
         mediaPlayer?.let {
             stopPlaying()
         }
@@ -333,7 +380,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
         recorder?.let {
             try {
                 it.stop()
-            } catch (e: RuntimeException) {
+            } catch (_: RuntimeException) {
                 // 捕获异常，避免崩溃
             }
             it.release()
@@ -348,35 +395,24 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
     /**
      * 录音开始或者停止
      * // recording pause
-     *
-     * @param start   录音开始或者停止
      * @noinspection SameParameterValue
      */
-    private fun onRecord(start: Boolean) {
-        if (start) {
-            // 创建文件
-            val folder = File(mainActivity?.getExternalFilesDir(null).toString() + "/SoundRecorder")
-            if (!folder.exists()) {
-                // folder /SoundRecorder doesn't exist, create the folder
-                val wasSuccessful = folder.mkdir()
-                if (!wasSuccessful) {
-                    println("was not successful.")
-                }
+    private fun onRecord() {
+        // 创建文件
+        val folder = File(mainActivity?.getExternalFilesDir(null).toString() + "/SoundRecorder")
+        if (!folder.exists()) {
+            // folder /SoundRecorder doesn't exist, create the folder
+            val wasSuccessful = folder.mkdir()
+            if (!wasSuccessful) {
+                println("was not successful.")
             }
-            LogUtil.d(TAG, "onRecord")
-
-            // start RecordingService
-            startRecording()
-            // keep screen on while recording
-            mainActivity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        } else {
-            chronometer.stop()
-            timeWhenPaused = 0
-
-            stopRecording()
-            // allow the screen to turn off again once recording is finished
-            mainActivity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
+        LogUtil.d(TAG, "onRecord")
+
+        // start RecordingService
+        startRecording()
+        // keep screen on while recording
+        mainActivity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
     /**
@@ -411,7 +447,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
                 mediaPlayer.prepare()
 
                 mediaPlayer.setOnPreparedListener { mediaPlayer.start() }
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 LogUtil.e(TAG, "prepare() failed")
             }
 
@@ -579,9 +615,19 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
     private suspend fun updateProgressUI(progress: Int, fragment: BaseSoundRecordingFragment): Boolean =
         withContext(Dispatchers.Main) { // 切换到主线程并挂起，等待执行完成
             if (isFragmentValid(fragment)) {
-                // 更新进度条
-                soundRecordingLayout.soundRecordingLayoutViewHolder.btnConfirm.addProgress(progress)
-                LogUtil.d(TAG, "UI进度更新完成：$progress%")
+                val btnConfirm = soundRecordingLayout.soundRecordingLayoutViewHolder.btnConfirm
+                // 仅在累计进度不会达到满进度时才更新UI。
+                // 原因：addProgress累计达到100会触发库内部progressComplete()启动完成动画(mAnimaScaleShowDone)，
+                // 而该动画的onAnimationEnd是经Handler异步post回调的（Animation.cancel()同样只是post消息），
+                // 之后走销毁流程时CircularProgress.onDestroy()会置空listener，
+                // 异步的onAnimationEnd消息在listener置空之后才执行 -> mCircularProgressListener.onDone()抛NPE。
+                // 迁移完成后界面即将finish，无需显示完成动画，直接跳过，从源头避免动画启动。
+                if (btnConfirm.getCurrentProgress() + progress < FULL) {
+                    btnConfirm.addProgress(progress)
+                    LogUtil.d(TAG, "UI进度更新完成：$progress%")
+                } else {
+                    LogUtil.d(TAG, "进度将达到100%($progress%)，跳过UI更新，避免完成动画在销毁时触发NPE")
+                }
                 // 更新成功
                 true
             } else {
@@ -623,7 +669,7 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             recorder?.let {
                 try {
                     it.stop()
-                } catch (ignored: RuntimeException) {
+                } catch (_: RuntimeException) {
                     // 防止立即录音完成
                 }
                 it.release()
@@ -632,18 +678,27 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
             return@request true
         }.onSuccess {
             soundRecordingLayout.isEnabled = true
+            // ========== IdlingResource ========== decrement 移到 stopRecordingJob 的回调中，确保 Espresso 等待按钮重新启用。
+            audioRecordIdlingResource?.decrement()
         }.onFail {
             soundRecordingLayout.isEnabled = true
+            // ========== IdlingResource ========== decrement 移到 stopRecordingJob 的回调中，确保 Espresso 等待按钮重新启用。
+            audioRecordIdlingResource?.decrement()
         }.onCancel {
             soundRecordingLayout.isEnabled = true
+            // ========== IdlingResource ========== decrement 移到 stopRecordingJob 的回调中，确保 Espresso 等待按钮重新启用。
+            audioRecordIdlingResource?.decrement()
         }.launch()
     }
 
     // region 有关录音相关方法
+
     /**
      * 开始录音
      */
     private fun startRecording() {
+        // ========== IdlingResource 录音开始 +1 ==========
+        audioRecordIdlingResource?.increment()
         // 设置音频路径
         recorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaRecorder(myContext)
@@ -664,8 +719,10 @@ abstract class BaseSoundRecordingFragment : BaseFragment(), ISoundRecordingView 
                 chronometer.base = SystemClock.elapsedRealtime()
                 chronometer.start()
                 startingTimeMillis = System.currentTimeMillis()
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 LogUtil.e(TAG, "prepare() failed")
+                // 启动失败，要释放！成对
+                audioRecordIdlingResource?.decrement()
             }
         }
     }
