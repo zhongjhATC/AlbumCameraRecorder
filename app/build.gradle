@@ -122,9 +122,9 @@ dependencies {
     // 异常捕获 https://github.com/Ereza/CustomActivityOnCrash
     api 'cat.ereza:customactivityoncrash:2.3.0'
 
-    // 显示fps https://github.com/SilenceDut/fpsviewer
-    debugImplementation "com.github.silencedut.fpsviewer:fpsviewer:0.8.2"
-    releaseImplementation "com.github.silencedut.fpsviewer:fpsviewer-no-op:0.8.2"
+//    // 显示fps https://github.com/SilenceDut/fpsviewer
+//    debugImplementation "com.github.silencedut.fpsviewer:fpsviewer:0.8.2"
+//    releaseImplementation "com.github.silencedut.fpsviewer:fpsviewer-no-op:0.8.2"
 
 
 }

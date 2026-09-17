@@ -54,8 +54,8 @@ public class MainSimpleActivity extends BaseActivity {
 
         mBinding.gridView.setMaxMediaCount(null, MAX_IMAGE_SELECTABLE, MAX_VIDEO_SELECTABLE, MAX_AUDIO_SELECTABLE);
 
-        // 设置图片加载引擎
-        mBinding.gridView.setImageEngine(new Glide4Engine());
+//        // 设置图片加载引擎
+//        mBinding.gridView.setImageEngine(new Glide4Engine());
         // 以下为点击事件
         mBinding.gridView.setGridViewListener(new GridViewListener() {
 

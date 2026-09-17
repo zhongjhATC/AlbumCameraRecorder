@@ -60,6 +60,8 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mBinding = ActivityMainSuperSimpleBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        // 设置图片加载引擎
+        mBinding.gridView.setImageEngine(new Glide4Engine());
         init();
     }
 

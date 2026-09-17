@@ -11,9 +11,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
@@ -21,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -43,6 +42,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class AlbumUiTest {
 
     private ActivityScenario<MainListActivity> scenario;
@@ -50,22 +53,49 @@ public class AlbumUiTest {
 
     // 每个@Test执行前，启动MainActivity
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException, InterruptedException {
         // 获取当前被测App包名
         scenario = ActivityScenario.launch(MainListActivity.class);
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+
+        // logcat -c 清空缓冲区
+        Process clearProc = Runtime.getRuntime().exec("logcat -c");
+        clearProc.waitFor();
     }
 
     // 每个@Test执行完毕，关闭Activity
     @After
-    public void afterTest() {
+    public void afterTest() throws IOException {
         scenario.close();
+
+        // logcat -d 一次性读取缓冲区（非持续监听）
+        Process logcatProc = Runtime.getRuntime().exec(new String[]{"logcat", "-d"});
+        BufferedReader reader = new BufferedReader(new InputStreamReader(logcatProc.getInputStream()));
+        StringBuilder crashLog = new StringBuilder();
+        String line;
+        boolean hasFatalCrash = false;
+
+        while ((line = reader.readLine()) != null) {
+            // 匹配java崩溃关键词 FATAL EXCEPTION
+            if (line.contains("FATAL EXCEPTION")) {
+                hasFatalCrash = true;
+            }
+            if (hasFatalCrash) {
+                crashLog.append(line).append("\n");
+            }
+        }
+        reader.close();
+
+        // 如果捕获到崩溃，直接抛出异常，终止测试并打印完整崩溃堆栈
+        if (hasFatalCrash) {
+            throw new AssertionError("✅【检测到被测App崩溃 FATAL EXCEPTION】\n崩溃堆栈：\n" + crashLog);
+        }
     }
 
     // UI测试用例：点击打开相册按钮
     @Test
     public void testClickOpenAlbumButton() throws Exception {
-        // 1. 点击按钮，触发app请求权限，弹出系统权限弹窗
+        // 1. 点击按钮进入简单版用例
         onView(withId(R.id.btnSimple)).perform(click());
 
         // 九宫界面 - 点击GridView第0项（第一个格子）
@@ -77,8 +107,23 @@ public class AlbumUiTest {
         // 等待2秒让界面渲染一会
         Thread.sleep(2000);
 
-        // 三合一界面 - 返回
+        // 三合一界面 - 返回到简单版界面
         uiDevice.pressBack();
+
+        // 简单版界面 - 返回首页
+        uiDevice.pressBack();
+
+//        testSimple();
+        testSuperSimple();
+        Thread.sleep(2000);
+    }
+
+    /**
+     * 简单版用例
+     */
+    private void testSimple() throws Exception {
+        // 1. 点击按钮进入简单版用例
+        onView(withId(R.id.btnSimple)).perform(click());
 
         // 九宫界面 - 勾选去掉相册功能
         onView(withId(R.id.cbAlbum))
@@ -182,8 +227,59 @@ public class AlbumUiTest {
         // 三合一界面(录音) - 点击确定回到九宫界面
         btnConfirmByAudio();
 
+        // 九宫界面 - 返回
+        uiDevice.pressBack();
+    }
+
+    /**
+     * 超级简单版用例
+     */
+    private void testSuperSimple() throws Exception {
+        // 1. 点击按钮进入超级简单版用例
+        onView(withId(R.id.btnSuperSimple)).perform(click());
+
+        // 九宫界面 - 点击GridView第0项（第一个格子）
+        clickGridViewItem(0);
+
         // 等待2秒让界面渲染一会
         Thread.sleep(2000);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 等待2秒让界面渲染一会
+        Thread.sleep(2000);
+
+        // 三合一界面(录制) - 接着录像到一半
+        recordVideo(5500);
+
+        // 三合一界面(录制) - 点击确定到录像预览界面
+        btnConfirm();
+
+        // 录像预览界面 - 点击确定回到九宫界面
+        onView(withId(R.id.btnConfirm))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 九宫界面 - 点击GridView第1项（第二个格子）
+        clickGridViewItem(1);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 等待2秒让界面渲染一会
+        Thread.sleep(2000);
+
+        // 三合一界面(录制) - 接着录像到一半
+        recordVideo(5500);
+
+        // 三合一界面(录制) - 点击确定到录像预览界面
+        btnConfirm();
+
+        // 录像预览界面 - 点击确定回到九宫界面
+        onView(withId(R.id.btnConfirm))
+                .check(matches(isDisplayed()))
+                .perform(click());
     }
 
     /**
@@ -442,6 +538,34 @@ public class AlbumUiTest {
                 isDisplayed()
         );
         onView(imgClose).perform(click());
+    }
+
+    /**
+     * 点击主界面的tab
+     */
+    private void clickMainTab(int position) {
+        onView(allOf(withId(com.zhongjh.multimedia.R.id.tableLayout), isDisplayed())).perform(new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isDisplayed();
+            }
+
+            @Override
+            public String getDescription() {
+                return "点击CommonTabLayout第二个tab(index=1)";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                com.flyco.tablayout.CommonTabLayout tabLayout = (com.flyco.tablayout.CommonTabLayout) view;
+                // 【重点修复】CommonTabLayout的第0个子View就是mTabsContainer
+                ViewGroup tabsContainer = (ViewGroup) tabLayout.getChildAt(0);
+                // 取对应索引tabItem
+                View targetTab = tabsContainer.getChildAt(position);
+                // 触发点击
+                targetTab.performClick();
+            }
+        });
     }
 
     /**

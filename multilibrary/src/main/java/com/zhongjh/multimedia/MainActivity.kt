@@ -332,7 +332,7 @@ open class MainActivity : AppCompatActivity() {
     private fun requestPermissionsDialog() {
         // 判断权限，权限通过才可以初始化相关
         val needPermissions = getNeedPermissions()
-        if (needPermissions.size > 0) {
+        if (needPermissions.isNotEmpty()) {
             // 动态消息
             val message = StringBuilder()
             message.append(getString(R.string.z_multi_library_to_use_this_feature))

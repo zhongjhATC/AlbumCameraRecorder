@@ -5,7 +5,6 @@ import android.content.Context;
 
 import androidx.multidex.MultiDex;
 
-import com.silencedut.fpsviewer.FpsViewer;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.zhongjh.demo.phone.ErrorActivity;
 import com.zhongjh.demo.phone.MainListActivity;
@@ -32,8 +31,8 @@ public class MyApplication extends Application {
         MultiDex.install(base);
         initCrash();
 
-        // 记录fps
-        FpsViewer.getViewer().initViewer(this,null);
+//        // 记录fps
+//        FpsViewer.getViewer().initViewer(this,null);
     }
 
     /**
