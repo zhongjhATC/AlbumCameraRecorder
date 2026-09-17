@@ -162,7 +162,7 @@ public class AlbumUiTest {
         onView(withId(R.id.btnConfirm)).perform(click());
 
         // 九宫界面 - 删除录像
-        deleteGridViewItemByMainFragment();
+        deleteGridViewItemByMainFragment(0);
 
         // 九宫界面 - 重新进去
         clickGridViewItem(0);
@@ -177,7 +177,7 @@ public class AlbumUiTest {
         onView(withId(R.id.btnConfirm)).perform(click());
 
         // 九宫界面 - 删除录像
-        deleteGridViewItemByMainFragment();
+        deleteGridViewItemByMainFragment(0);
 
         // 九宫界面 - 勾选去掉录音功能
         onView(withId(R.id.cbRecorder))
@@ -194,7 +194,7 @@ public class AlbumUiTest {
         onView(withId(R.id.btnConfirm)).perform(click());
 
         // 九宫界面 - 删除录像
-        deleteGridViewItemByMainFragment();
+        deleteGridViewItemByMainFragment(0);
 
         // 九宫界面 - 勾选去掉拍摄功能
         onView(withId(R.id.cbCamera))
@@ -216,7 +216,7 @@ public class AlbumUiTest {
         btnConfirmByAudio();
 
         // 九宫界面 - 删除录音
-        deleteGridViewItemByMainFragment();
+        deleteGridViewItemByMainFragment(0);
 
         // 九宫界面 - 重新进去
         clickGridViewItem(0);
@@ -280,6 +280,59 @@ public class AlbumUiTest {
         onView(withId(R.id.btnConfirm))
                 .check(matches(isDisplayed()))
                 .perform(click());
+
+        // 九宫界面 - 点击GridView（第三个格子）
+        clickGridViewItem(2);
+
+        // 三合一界面 - 点击tab跳转录音功能
+        clickMainTab(2);
+
+        // 三合一界面(录音) - 再重新录音直到自动满
+        recordAudio(12000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 九宫界面 - 点击GridView（第四个格子）
+        clickGridViewItem(3);
+
+        // 三合一界面(录音) - 再重新录音
+        recordAudio(6000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 九宫界面 - 点击GridView（第五个格子）
+        clickGridViewItem(4);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 拍满照片
+        for (int i = 0; i < 10; i++) {
+            takePhoto();
+        }
+
+        // 三合一界面(录制) - 点击确定回到九宫界面
+        btnConfirm();
+
+        // 九宫界面 - 删除最后照片
+        deleteGridViewItemByMainFragment(9);
+
+        // 九宫界面 - 点击GridView（最后一个格子）
+        clickGridViewItem(9);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 拍照片
+        takePhoto();
+
+        // 三合一界面(录制) - 点击确定回到九宫界面
+        btnConfirm();
+
+        // 等待2秒让界面渲染一会
+        Thread.sleep(2000);
     }
 
     /**
@@ -351,7 +404,7 @@ public class AlbumUiTest {
     /**
      * 点击主界面-gridView的删除事件
      */
-    private void deleteGridViewItemByMainFragment() {
+    private void deleteGridViewItemByMainFragment(int position) {
         onView(withId(R.id.gridView))
                 .check(matches(isDisplayed()))
                 .perform(new ViewAction() {
@@ -371,7 +424,6 @@ public class AlbumUiTest {
                         com.zhongjh.gridview.widget.GridView gridView = (com.zhongjh.gridview.widget.GridView) view;
                         RecyclerView recyclerView = gridView.getRecyclerView();
 
-                        int position = 0;
                         // 滚动到目标position，确保item被渲染
                         recyclerView.scrollToPosition(position);
                         uiController.loopMainThreadForAtLeast(500);
