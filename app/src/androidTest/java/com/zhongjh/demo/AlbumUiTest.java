@@ -247,9 +247,6 @@ public class AlbumUiTest {
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
 
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
-
         // 三合一界面(录制) - 接着录像到一半
         recordVideo(5500);
 
@@ -264,11 +261,11 @@ public class AlbumUiTest {
         // 九宫界面 - 点击GridView第1项（第二个格子）
         clickGridViewItem(1);
 
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
         // 等待2秒让界面渲染一会
         Thread.sleep(2000);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
 
         // 三合一界面(录制) - 接着录像到一半
         recordVideo(5500);
@@ -283,6 +280,7 @@ public class AlbumUiTest {
 
         // 九宫界面 - 点击GridView（第三个格子）
         clickGridViewItem(2);
+
 
         // 三合一界面 - 点击tab跳转录音功能
         clickMainTab(2);
@@ -478,12 +476,15 @@ public class AlbumUiTest {
                 isInFragment(BaseCameraFragment.class),
                 isDisplayed()
         );
-
-        onView(allOf(
+        Matcher<View> btnMatcher = allOf(
                 isAssignableFrom(ClickOrLongButton.class),
                 hasAncestor(pvLayoutMatcher),
                 isDisplayed()
-        )).perform(click());
+        );
+
+        onView(btnMatcher)
+                .check(matches(isDisplayed()))
+                .perform(click());
 
         try {
             Thread.sleep(3000);
@@ -506,6 +507,8 @@ public class AlbumUiTest {
                 hasAncestor(pvLayoutMatcher),
                 isDisplayed()
         );
+
+        onView(btnMatcher).check(matches(isDisplayed()));
 
         // 2. 获取按钮屏幕中心点
         float[] centerPos = getViewScreenCenter(btnMatcher);
@@ -548,6 +551,8 @@ public class AlbumUiTest {
                 hasAncestor(pvLayoutMatcher),
                 isDisplayed()
         );
+
+        onView(btnMatcher).check(matches(isDisplayed()));
 
         // 2. 获取按钮屏幕中心点
         float[] centerPos = getViewScreenCenter(btnMatcher);
@@ -616,6 +621,13 @@ public class AlbumUiTest {
                 View targetTab = tabsContainer.getChildAt(position);
                 // 触发点击
                 targetTab.performClick();
+
+                // 等待2秒让界面渲染一会
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
