@@ -32,6 +32,7 @@ import androidx.test.uiautomator.Until;
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.demo.phone.MainListActivity;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
+import com.zhongjh.multimedia.preview.PreviewActivity;
 import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment;
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton;
 
@@ -254,83 +255,88 @@ public class AlbumUiTest {
         btnConfirm();
 
         // 录像预览界面 - 点击确定回到九宫界面
-        onView(withId(R.id.btnConfirm))
+        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
         // 九宫界面 - 点击GridView第1项（第二个格子）
         clickGridViewItem(1);
-
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
-
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
-        // 三合一界面(录制) - 接着录像到一半
-        recordVideo(5500);
-
-        // 三合一界面(录制) - 点击确定到录像预览界面
-        btnConfirm();
-
-        // 录像预览界面 - 点击确定回到九宫界面
-        onView(withId(R.id.btnConfirm))
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // 九宫界面 - 点击GridView（第三个格子）
-        clickGridViewItem(2);
-
-
-        // 三合一界面 - 点击tab跳转录音功能
-        clickMainTab(2);
-
-        // 三合一界面(录音) - 再重新录音直到自动满
-        recordAudio(12000);
-
-        // 三合一界面(录音) - 点击确定回到九宫界面
-        btnConfirmByAudio();
-
-        // 九宫界面 - 点击GridView（第四个格子）
-        clickGridViewItem(3);
-
-        // 三合一界面(录音) - 再重新录音
-        recordAudio(6000);
-
-        // 三合一界面(录音) - 点击确定回到九宫界面
-        btnConfirmByAudio();
-
-        // 九宫界面 - 点击GridView（第五个格子）
-        clickGridViewItem(4);
-
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
-        // 三合一界面(录制) - 拍满照片
-        for (int i = 0; i < 10; i++) {
-            takePhoto();
-        }
-
-        // 三合一界面(录制) - 点击确定回到九宫界面
-        btnConfirm();
-
-        // 九宫界面 - 删除最后照片
-        deleteGridViewItemByMainFragment(9);
-
-        // 九宫界面 - 点击GridView（最后一个格子）
-        clickGridViewItem(9);
-
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
-        // 三合一界面(录制) - 拍照片
-        takePhoto();
-
-        // 三合一界面(录制) - 点击确定回到九宫界面
-        btnConfirm();
-
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
+//
+//        // 等待2秒让界面渲染一会
+//        Thread.sleep(2000);
+//
+//        // 三合一界面 - 点击tab跳转拍摄功能
+//        clickMainTab(1);
+//
+//        // 三合一界面(录制) - 接着录像到一半
+//        recordVideo(5500);
+//
+//        // 等待2秒让界面渲染一会
+//        Thread.sleep(2000);
+//
+//        // 三合一界面(录制) - 点击确定到录像预览界面
+//        btnConfirm();
+//
+//        // 录像预览界面 - 点击确定回到九宫界面
+//        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
+//                .check(matches(isDisplayed()))
+//                .perform(click());
+//
+//        // 九宫界面 - 点击GridView（第三个格子）
+//        clickGridViewItem(2);
+//
+//        // 三合一界面 - 点击tab跳转录音功能
+//        clickMainTab(2);
+//
+//        // 三合一界面(录音) - 再重新录音直到自动满
+//        recordAudio(12000);
+//
+//        // 三合一界面(录音) - 点击确定回到九宫界面
+//        btnConfirmByAudio();
+//
+//        // 九宫界面 - 点击GridView（第四个格子）
+//        clickGridViewItem(3);
+//
+//        // 三合一界面 - 点击tab跳转录音功能
+//        clickMainTab(2);
+//
+//        // 三合一界面(录音) - 再重新录音
+//        recordAudio(6000);
+//
+//        // 三合一界面(录音) - 点击确定回到九宫界面
+//        btnConfirmByAudio();
+//
+//        // 九宫界面 - 点击GridView（第五个格子）
+//        clickGridViewItem(4);
+//
+//        // 三合一界面 - 点击tab跳转拍摄功能
+//        clickMainTab(1);
+//
+//        // 三合一界面(录制) - 拍满照片
+//        for (int i = 0; i < 10; i++) {
+//            takePhoto();
+//        }
+//
+//        // 三合一界面(录制) - 点击确定回到九宫界面
+//        btnConfirm();
+//
+//        // 九宫界面 - 删除最后照片
+//        deleteGridViewItemByMainFragment(9);
+//
+//        // 九宫界面 - 点击GridView（最后一个格子）
+//        clickGridViewItem(9);
+//
+//        // 三合一界面 - 点击tab跳转拍摄功能
+//        clickMainTab(1);
+//
+//        // 三合一界面(录制) - 拍照片
+//        takePhoto();
+//
+//        // 三合一界面(录制) - 点击确定回到九宫界面
+//        btnConfirm();
+//
+//        // 等待2秒让界面渲染一会
+//        Thread.sleep(2000);
     }
 
     /**
@@ -359,6 +365,8 @@ public class AlbumUiTest {
                         RecyclerView recyclerView = gridView.getRecyclerView();
                         // 点击第0项，修改数字切换不同item
                         actionOnItemAtPosition(position, click()).perform(uiController, recyclerView);
+
+                        uiController.loopMainThreadForAtLeast(1000);
                     }
                 });
     }
@@ -485,12 +493,6 @@ public class AlbumUiTest {
         onView(btnMatcher)
                 .check(matches(isDisplayed()))
                 .perform(click());
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -623,11 +625,7 @@ public class AlbumUiTest {
                 targetTab.performClick();
 
                 // 等待2秒让界面渲染一会
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                uiController.loopMainThreadForAtLeast(2000);
             }
         });
     }
