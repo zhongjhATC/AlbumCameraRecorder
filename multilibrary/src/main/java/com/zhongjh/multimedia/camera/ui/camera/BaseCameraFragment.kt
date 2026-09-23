@@ -17,12 +17,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
 import androidx.core.app.ActivityOptionsCompat
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.idling.CountingIdlingResource
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.multimedia.BaseFragment
+import com.zhongjh.multimedia.BuildConfig
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.constants.FlashCacheUtils.getFlashModel
@@ -136,6 +139,12 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
     private var isShowContinueTip = false
 
     /**
+     * 拍照/提交Idling资源，仅DEBUG测试使用，Release包不会创建
+     * 跟踪 movePictureFile 异步保存生命周期，让 Espresso 等待 finish 回九宫
+     */
+    private var cameraIdlingResource: CountingIdlingResource? = null
+
+    /**
      * 设置状态管理,处理不同状态下进行相关逻辑
      * 有以下状态：
      * [Preview]、[PictureSingle]、[PictureMultiple]、[VideoMultiple]、[VideoMultipleIn]
@@ -178,6 +187,13 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
         if (context is MainActivity) {
             this.mainActivityRef = WeakReference(context)
             this.myContext = context.applicationContext
+        }
+        // DEBUG模式才创建IdlingResource
+        if (BuildConfig.DEBUG) {
+            cameraIdlingResource = CountingIdlingResource("CameraIdling")
+            cameraIdlingResource?.let {
+                IdlingRegistry.getInstance().register(it)
+            }
         }
     }
 
@@ -243,6 +259,16 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
         onDestroy(isCommit)
         photoVideoLayout.onDestroy()
         cameraManage.onDestroy()
+        // 如果页面销毁时还处于忙碌状态，强制释放，避免测试卡死
+        if (BuildConfig.DEBUG) {
+            cameraIdlingResource?.let {
+                IdlingRegistry.getInstance().unregister(it)
+                // 兜底：把计数清零，防止残留busy状态
+                while (!it.isIdleNow) {
+                    it.decrement()
+                }
+            }
+        }
         super.onDestroyView()
     }
 
@@ -585,6 +611,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
         result.putParcelableArrayListExtra(SelectedData.STATE_SELECTION, newFiles)
         mainActivity?.setResult(Activity.RESULT_OK, result)
         mainActivity?.finish()
+        // ========== IdlingResource 提交完成 -1 ==========
+        cameraIdlingResource?.decrement()
     }
 
     /**
@@ -595,6 +623,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
     override fun commitFail(throwable: Throwable) {
         photoVideoLayout.setTipAlphaAnimation(throwable.message)
         setUiEnableTrue()
+        // ========== IdlingResource 提交失败 -1 ==========
+        cameraIdlingResource?.decrement()
     }
 
     override fun cancel() {
@@ -733,9 +763,20 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
      * 在 doInBackground 线程里面也执行了 runOnUiThread 跳转UI的最终事件
      */
     fun movePictureFile() {
+        // ========== IdlingResource 提交开始 +1 ==========
+        // movePictureFile 异步保存到 commitPictureSuccess/commitFail 才回九宫，
+        // 期间 Espresso 必须等待，否则会提前推进到下一步（找不到九宫 gridView）。
+        cameraIdlingResource?.increment()
         showProgress()
         // 开始迁移文件
         cameraPictureViewManager.newMovePictureFileTask()
+    }
+
+    /**
+     * 释放拍照/提交Idling资源计数（供 CameraPictureViewManager 在 onCancel 时回调）
+     */
+    internal fun decrementCameraIdling() {
+        cameraIdlingResource?.decrement()
     }
 
     /**
