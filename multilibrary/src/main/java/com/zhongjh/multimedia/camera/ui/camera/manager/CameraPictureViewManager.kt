@@ -326,10 +326,6 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                 }
                 baseCameraFragment.commitFail(error)
             }
-        }?.onCancel {
-            // Job 被取消时（如用户中途按取消按钮），commitPictureSuccess/commitFail 都不会回调，
-            // 这里单独 decrement，避免 IdlingResource 残留 busy 状态卡死 Espresso
-            fragmentRef.get()?.decrementCameraIdling()
         }?.launch()
     }
 
