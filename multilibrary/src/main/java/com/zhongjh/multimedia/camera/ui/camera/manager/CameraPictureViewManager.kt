@@ -198,7 +198,7 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                         baseCameraFragment.childClickableLayout.setChildClickable(false)
                         // 根据配置判断是静态图还是动态图
                         if (enableMotion) {
-                            baseCameraFragment.cameraManage.takeShortMotionPhotoVideo()
+                            baseCameraFragment.cameraManage.takeMotion()
                         } else {
                             baseCameraFragment.cameraManage.takePictures()
                         }

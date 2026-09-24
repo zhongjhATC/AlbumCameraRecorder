@@ -4,10 +4,13 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Point
 import android.graphics.PorterDuff
 import android.hardware.display.DisplayManager
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
@@ -49,6 +52,7 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.zhongjh.common.enums.MediaType
@@ -59,13 +63,22 @@ import com.zhongjh.multimedia.camera.entity.OverlayEffectEntity
 import com.zhongjh.multimedia.camera.listener.OnCameraManageListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXOrientationEventListener
 import com.zhongjh.multimedia.camera.listener.OnCameraXPreviewViewTouchListener
+import com.zhongjh.multimedia.camera.ui.camera.motion.FrameExporter
+import com.zhongjh.multimedia.camera.ui.camera.motion.model.CapturedFrame
+import com.zhongjh.multimedia.camera.ui.camera.motion.model.ColorSpaceInfo
+import com.zhongjh.multimedia.camera.ui.camera.motion.model.ExportConfig
+import com.zhongjh.multimedia.camera.ui.camera.motion.model.ExportFormat
+import com.zhongjh.multimedia.camera.ui.camera.motion.model.ExportResult
+import com.zhongjh.multimedia.camera.ui.camera.motion.model.VideoMetadata
 import com.zhongjh.multimedia.camera.widget.FocusView
 import com.zhongjh.multimedia.settings.CameraSpec
 import com.zhongjh.multimedia.utils.FileMediaUtil
 import com.zhongjh.multimedia.utils.MediaStoreUtils.DCIM_CAMERA
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
@@ -341,7 +354,7 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * 动态照片：短时录制，点击触发，录制固定时长后自动停止
      */
     @SuppressLint("MissingPermission")
-    fun takeShortMotionPhotoVideo() {
+    fun takeMotion() {
         val activity = activityRef.get() ?: return
         // recording 如果为空则重新创建
         recording?.resume() ?: run {
@@ -371,8 +384,16 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                         if (!isActivityPause) {
                             // 完成录制
                             val uri = videoRecordEvent.outputResults.outputUri
-                            UriUtils.uriToFile(activity, uri)?.absolutePath?.let {
-                                this.listener?.onMotionByRecordSuccess(it, uri)
+                            // 启动协程，调用suspend convertToMotion
+                            activity.lifecycleScope.launch {
+                                // 这里进入协程，可以调用suspend函数
+                                val motionPhotoUri = convertToMotion(uri)
+                                // 执行完成后，回到主线程
+                                motionPhotoUri?.let { motionUri ->
+                                    UriUtils.uriToFile(activity, motionUri.toUri())?.absolutePath?.let { path ->
+                                        listener?.onMotionByRecordSuccess(path, motionUri.toUri())
+                                    }
+                                }
                             }
                         }
                         isActivityPause = false
@@ -911,6 +932,103 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
             MediaStoreOutputOptions.Builder(activity.contentResolver, MediaStore.Video.Media.EXTERNAL_CONTENT_URI).setContentValues(contentValues).build()
         }
     }
+
+    /**
+     * 转换成动态图片（MotionPhoto，返回输出Uri；失败返回null）
+     */
+    private suspend fun convertToMotion(uri: Uri): String? {
+        val activity = activityRef.get() ?: return null
+        return withContext(Dispatchers.IO) {
+            val frameExporter = FrameExporter(activity.applicationContext)
+            // ========== 前置步骤：解析视频，拿到封面帧、元数据 ==========
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(activity, uri)
+
+            // 获取视频总时长（毫秒 → 转微秒），我们取视频中间时间点作为封面
+            val durationMsStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+            val durationMs = durationMsStr?.toLongOrNull() ?: 0L
+            val durationUs = durationMs * 1000
+            // 封面取视频中点
+            val coverTimestampUs = durationUs / 2
+
+            // 抽取封面Bitmap（OPTION_CLOSEST 取最接近该时间的帧）
+            val coverBitmap: Bitmap? = retriever.getFrameAtTime(
+                coverTimestampUs,
+                MediaMetadataRetriever.OPTION_CLOSEST
+            )
+            retriever.release()
+
+            if (coverBitmap == null) {
+                // 抽帧失败
+                return@withContext null
+            }
+
+            // ----------------------
+            // 1.组装 CapturedFrame
+            // 注意：真实项目这里要用MediaExtractor解析视频流，拿到准确ColorSpaceInfo；
+            // 这里简易默认SDR；如果是HDR视频，必须解析流得到正确ColorSpaceInfo，否则导出色彩异常
+            // ----------------------
+            val frame = CapturedFrame(
+                timestampUs = coverTimestampUs,
+                width = coverBitmap.width,
+                height = coverBitmap.height,
+                colorSpace = ColorSpaceInfo(), // 默认SDR；HDR需要MediaExtractor解析MediaFormat
+                metadata = VideoMetadata(
+                    rotation = 0, // 视频旋转角度，需要解析视频流获取
+                    videoWidth = coverBitmap.width,
+                    videoHeight = coverBitmap.height,
+                    durationMs = durationMs
+                    // dateTime、gps、make、model 录制时如果有就填充，没有留null
+                )
+            )
+
+            // ----------------------
+            // 2.组装导出配置
+            // ----------------------
+            val exportConfig = ExportConfig(
+                format = ExportFormat.JPEG,
+                quality = 95,
+                preserveMetadata = true, // 保留EXIF元数据
+                motionPhoto = true, // 开启动态照片
+                motionDurationBeforeS = 1.5f, // 封面往前1.5秒短视频
+                motionDurationAfterS = 1.5f, // 封面往后1.5秒短视频
+                muteAudio = false, // 保留音频
+                maxResolution = 4096 // 最大输出边长限制
+            )
+
+            // ----------------------
+            // 3.调用 FrameExporter 核心导出方法
+            // customExportTreeUri = null → 输出到系统图库；传SAF Uri则输出到自定义文件夹
+            // ----------------------
+            val exportResult: ExportResult = frameExporter.exportMotionPhoto(
+                videoUri = uri,
+                bitmap = coverBitmap,
+                frame = frame,
+                config = exportConfig,
+                customExportTreeUri = null
+            )
+
+            // 用完手动回收封面bitmap
+            coverBitmap.recycle()
+
+            // ----------------------
+            // 4.返回结果，不在内部更新UI
+            // ----------------------
+            return@withContext when (exportResult) {
+                is ExportResult.Success -> {
+                    val outputUri = exportResult.outputPath
+                    // 这里如果需要日志、audioDropped判断，可以加log，不做UI
+                    outputUri
+                }
+                is ExportResult.Error -> {
+                    // exportResult.message / exportResult.cause
+                    null
+                }
+            }
+        }
+    }
+
+
 
     /**
      * 拍照回调
