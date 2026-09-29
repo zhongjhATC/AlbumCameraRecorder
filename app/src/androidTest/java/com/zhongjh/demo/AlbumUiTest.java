@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -31,6 +30,7 @@ import androidx.test.uiautomator.Until;
 
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.demo.phone.MainListActivity;
+import com.zhongjh.multimedia.MainActivity;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
 import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment;
@@ -242,75 +242,29 @@ public class AlbumUiTest {
         // 1. 点击按钮进入超级简单版用例
         onView(withId(R.id.btnSuperSimple)).perform(click());
 
-        // 录制三个视频
-        recordThreeVideosBySuperSimple();
+        // 录制两个视频
+        recordTwoVideosBySuperSimple();
 
-        // 九宫界面 - 点击GridView（第三个格子）
-        clickGridViewItem(2);
+        // 录音两个音频
+        recordTwoAudioBySuperSimple();
 
-        // 三合一界面 - 点击tab跳转录音功能
-        clickMainTab(2);
+        // 拍满照片，然后删除一个，再选择照片，反正最后拉满所有数据
+        takePhotoBySuperSimple();
 
-        // 三合一界面(录音) - 再重新录音直到自动满
-        recordAudio(12000);
-
-        // 三合一界面(录音) - 点击确定回到九宫界面
-        btnConfirmByAudio();
-
-        // 九宫界面 - 点击GridView（第四个格子）
-        clickGridViewItem(3);
-
-        // 三合一界面 - 点击tab跳转录音功能
-        clickMainTab(2);
-
-        // 三合一界面(录音) - 再重新录音
-        recordAudio(6000);
-
-        // 三合一界面(录音) - 点击确定回到九宫界面
-        btnConfirmByAudio();
-
-        // 九宫界面 - 点击GridView（第五个格子）
-        clickGridViewItem(4);
-
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
-        // 三合一界面(录制) - 拍满照片
-        for (int i = 0; i < 6; i++) {
-            takePhoto();
-        }
-
-        // 三合一界面(录制) - 点击确定回到九宫界面
-        btnConfirm();
-
-        // 九宫界面 - 删除最后照片
-        deleteGridViewItemByMainFragment(9);
-
-//        // 九宫界面 - 点击GridView（最后一个格子）
-//        clickGridViewItem(9);
-//        // 三合一界面 - 点击tab跳转拍摄功能
-//        clickMainTab(1);
-//
-//        // 三合一界面(录制) - 拍照片
-//        takePhoto();
-//
-//        // 三合一界面(录制) - 点击确定回到九宫界面
-//        btnConfirm();
-//
         // 等待2秒让界面渲染一会
         Thread.sleep(5000);
     }
 
     /**
-     * 录制三个视频
+     * 录制两个视频
      * 来自超级简单版用例
      */
-    private void recordThreeVideosBySuperSimple() throws InterruptedException {
+    private void recordTwoVideosBySuperSimple() throws InterruptedException {
         // 九宫界面 - 点击GridView第0项（第一个格子）
         clickGridViewItem(0);
 
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
+        // 等待 三合一界面
+        waitForActivity(MainActivity.class, 20000);
 
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
@@ -336,17 +290,14 @@ public class AlbumUiTest {
         // 九宫界面 - 点击GridView第1项（第二个格子）
         clickGridViewItem(1);
 
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
+        // 等待 三合一界面
+        waitForActivity(MainActivity.class, 20000);
 
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
 
         // 三合一界面(录制) - 接着录像到一半
         recordVideo(5500);
-
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
 
         // 三合一界面(录制) - 点击确定到录像预览界面
         btnConfirm();
@@ -362,6 +313,83 @@ public class AlbumUiTest {
         // 等预览界面关闭回到九宫页面
         uiDevice.wait(Until.hasObject(By.res(
                 InstrumentationRegistry.getInstrumentation().getTargetContext().getResources().getResourceName(R.id.gridView))), 10000);
+    }
+
+    /**
+     * 录制两个音频
+     * 来自超级简单版用例
+     */
+    private void recordTwoAudioBySuperSimple() throws InterruptedException {
+        // 九宫界面 - 点击GridView（第三个格子）
+        clickGridViewItem(2);
+
+        // 等待 三合一界面
+        waitForActivity(MainActivity.class, 20000);
+
+        // 三合一界面 - 点击tab跳转录音功能
+        clickMainTab(2);
+
+        // 三合一界面(录音) - 再重新录音直到自动满
+        recordAudio(12000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 九宫界面 - 点击GridView（第四个格子）
+        clickGridViewItem(3);
+
+        // 等待 三合一界面
+        waitForActivity(MainActivity.class, 20000);
+
+        // 三合一界面 - 点击tab跳转录音功能
+        clickMainTab(2);
+
+        // 三合一界面(录音) - 再重新录音
+        recordAudio(6000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+    }
+
+    /**
+     * 拍照操作
+     * 来自超级简单版用例
+     */
+    private void takePhotoBySuperSimple() {
+        // 九宫界面 - 点击GridView（第五个格子）
+        clickGridViewItem(4);
+
+        // 等待 三合一界面
+        waitForActivity(MainActivity.class, 20000);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 拍满照片
+        for (int i = 0; i < 6; i++) {
+            takePhoto();
+        }
+
+        // 三合一界面(录制) - 点击确定回到九宫界面
+        btnConfirm();
+
+        // 九宫界面 - 删除最后照片
+        deleteGridViewItemByMainFragment(9);
+
+        // 九宫界面 - 点击GridView（第十个格子）
+        clickGridViewItem(9);
+
+        // 等待 三合一界面
+        waitForActivity(MainActivity.class, 20000);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 拍照片
+        takePhoto();
+
+        // 三合一界面(录制) - 点击确定回到九宫界面
+        btnConfirm();
     }
 
     /**

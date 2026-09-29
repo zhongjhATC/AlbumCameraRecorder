@@ -108,11 +108,11 @@ public class MainSuperSimpleActivity extends AppCompatActivity {
         mGlobalSetting
                 // for glide-V4
                 .imageEngine(new Glide4Engine())
-                // 最大5张图片、最大3个视频、最大1个音频
+                // 最大5张图片、最大2个视频、最大2个音频
                 .maxSelectablePerMediaType(null,
                         6,
-                        3,
-                        3,
+                        2,
+                        2,
                         0,
                         0,
                         0);
