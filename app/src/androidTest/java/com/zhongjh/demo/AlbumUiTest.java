@@ -32,7 +32,7 @@ import androidx.test.uiautomator.Until;
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.demo.phone.MainListActivity;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.preview.PreviewActivity;
+import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
 import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment;
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton;
 
@@ -234,11 +234,78 @@ public class AlbumUiTest {
 
     /**
      * 超级简单版用例
+     * 视频三个
+     * 语音三个
+     * 拍照六个
      */
     private void testSuperSimple() throws Exception {
         // 1. 点击按钮进入超级简单版用例
         onView(withId(R.id.btnSuperSimple)).perform(click());
 
+        // 录制三个视频
+        recordThreeVideosBySuperSimple();
+
+        // 九宫界面 - 点击GridView（第三个格子）
+        clickGridViewItem(2);
+
+        // 三合一界面 - 点击tab跳转录音功能
+        clickMainTab(2);
+
+        // 三合一界面(录音) - 再重新录音直到自动满
+        recordAudio(12000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 九宫界面 - 点击GridView（第四个格子）
+        clickGridViewItem(3);
+
+        // 三合一界面 - 点击tab跳转录音功能
+        clickMainTab(2);
+
+        // 三合一界面(录音) - 再重新录音
+        recordAudio(6000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
+
+        // 九宫界面 - 点击GridView（第五个格子）
+        clickGridViewItem(4);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 拍满照片
+        for (int i = 0; i < 6; i++) {
+            takePhoto();
+        }
+
+        // 三合一界面(录制) - 点击确定回到九宫界面
+        btnConfirm();
+
+        // 九宫界面 - 删除最后照片
+        deleteGridViewItemByMainFragment(9);
+
+//        // 九宫界面 - 点击GridView（最后一个格子）
+//        clickGridViewItem(9);
+//        // 三合一界面 - 点击tab跳转拍摄功能
+//        clickMainTab(1);
+//
+//        // 三合一界面(录制) - 拍照片
+//        takePhoto();
+//
+//        // 三合一界面(录制) - 点击确定回到九宫界面
+//        btnConfirm();
+//
+        // 等待2秒让界面渲染一会
+        Thread.sleep(5000);
+    }
+
+    /**
+     * 录制三个视频
+     * 来自超级简单版用例
+     */
+    private void recordThreeVideosBySuperSimple() throws InterruptedException {
         // 九宫界面 - 点击GridView第0项（第一个格子）
         clickGridViewItem(0);
 
@@ -254,89 +321,47 @@ public class AlbumUiTest {
         // 三合一界面(录制) - 点击确定到录像预览界面
         btnConfirm();
 
+        // 等待 录像预览界面
+        waitForActivity(PreviewVideoActivity.class, 20000);
+
         // 录像预览界面 - 点击确定回到九宫界面
         onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
+        // 等预览界面关闭回到九宫页面
+        uiDevice.wait(Until.hasObject(By.res(
+                InstrumentationRegistry.getInstrumentation().getTargetContext().getResources().getResourceName(R.id.gridView))), 10000);
+
         // 九宫界面 - 点击GridView第1项（第二个格子）
         clickGridViewItem(1);
-//
-//        // 等待2秒让界面渲染一会
-//        Thread.sleep(2000);
-//
-//        // 三合一界面 - 点击tab跳转拍摄功能
-//        clickMainTab(1);
-//
-//        // 三合一界面(录制) - 接着录像到一半
-//        recordVideo(5500);
-//
-//        // 等待2秒让界面渲染一会
-//        Thread.sleep(2000);
-//
-//        // 三合一界面(录制) - 点击确定到录像预览界面
-//        btnConfirm();
-//
-//        // 录像预览界面 - 点击确定回到九宫界面
-//        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
-//                .check(matches(isDisplayed()))
-//                .perform(click());
-//
-//        // 九宫界面 - 点击GridView（第三个格子）
-//        clickGridViewItem(2);
-//
-//        // 三合一界面 - 点击tab跳转录音功能
-//        clickMainTab(2);
-//
-//        // 三合一界面(录音) - 再重新录音直到自动满
-//        recordAudio(12000);
-//
-//        // 三合一界面(录音) - 点击确定回到九宫界面
-//        btnConfirmByAudio();
-//
-//        // 九宫界面 - 点击GridView（第四个格子）
-//        clickGridViewItem(3);
-//
-//        // 三合一界面 - 点击tab跳转录音功能
-//        clickMainTab(2);
-//
-//        // 三合一界面(录音) - 再重新录音
-//        recordAudio(6000);
-//
-//        // 三合一界面(录音) - 点击确定回到九宫界面
-//        btnConfirmByAudio();
-//
-//        // 九宫界面 - 点击GridView（第五个格子）
-//        clickGridViewItem(4);
-//
-//        // 三合一界面 - 点击tab跳转拍摄功能
-//        clickMainTab(1);
-//
-//        // 三合一界面(录制) - 拍满照片
-//        for (int i = 0; i < 10; i++) {
-//            takePhoto();
-//        }
-//
-//        // 三合一界面(录制) - 点击确定回到九宫界面
-//        btnConfirm();
-//
-//        // 九宫界面 - 删除最后照片
-//        deleteGridViewItemByMainFragment(9);
-//
-//        // 九宫界面 - 点击GridView（最后一个格子）
-//        clickGridViewItem(9);
-//
-//        // 三合一界面 - 点击tab跳转拍摄功能
-//        clickMainTab(1);
-//
-//        // 三合一界面(录制) - 拍照片
-//        takePhoto();
-//
-//        // 三合一界面(录制) - 点击确定回到九宫界面
-//        btnConfirm();
-//
-//        // 等待2秒让界面渲染一会
-//        Thread.sleep(2000);
+
+        // 等待2秒让界面渲染一会
+        Thread.sleep(2000);
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 接着录像到一半
+        recordVideo(5500);
+
+        // 等待2秒让界面渲染一会
+        Thread.sleep(2000);
+
+        // 三合一界面(录制) - 点击确定到录像预览界面
+        btnConfirm();
+
+        // 等待 录像预览界面
+        waitForActivity(PreviewVideoActivity.class, 20000);
+
+        // 录像预览界面 - 点击确定回到九宫界面
+        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 等预览界面关闭回到九宫页面
+        uiDevice.wait(Until.hasObject(By.res(
+                InstrumentationRegistry.getInstrumentation().getTargetContext().getResources().getResourceName(R.id.gridView))), 10000);
     }
 
     /**
@@ -411,7 +436,7 @@ public class AlbumUiTest {
      * 点击主界面-gridView的删除事件
      */
     private void deleteGridViewItemByMainFragment(int position) {
-        onView(withId(R.id.gridView))
+        onView(allOf(withId(R.id.gridView),isDisplayed()))
                 .check(matches(isDisplayed()))
                 .perform(new ViewAction() {
                     @Override
@@ -430,16 +455,26 @@ public class AlbumUiTest {
                         com.zhongjh.gridview.widget.GridView gridView = (com.zhongjh.gridview.widget.GridView) view;
                         RecyclerView recyclerView = gridView.getRecyclerView();
 
-                        // 滚动到目标position，确保item被渲染
-                        recyclerView.scrollToPosition(position);
-                        uiController.loopMainThreadForAtLeast(500);
+                        // ===== 核心：actionOnItemAtPosition 返回ViewAction，直接执行 =====
+                        ViewAction action = actionOnItemAtPosition(position, new ViewAction() {
+                            @Override
+                            public Matcher<View> getConstraints() {
+                                return isDisplayed();
+                            }
 
-                        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
-                        if (holder != null) {
-                            // 这里换成你item里面按钮的id
-                            View btnDelete = holder.itemView.findViewById(com.zhongjh.gridview.R.id.imgClose);
-                            btnDelete.performClick();
-                        }
+                            @Override
+                            public String getDescription() {
+                                return "点击item内部imgClose删除按钮";
+                            }
+
+                            @Override
+                            public void perform(UiController ui, View itemView) {
+                                View btnDelete = itemView.findViewById(com.zhongjh.gridview.R.id.imgClose);
+                                btnDelete.performClick();
+                            }
+                        });
+                        // 执行action，传入rv和uiController
+                        action.perform(uiController, recyclerView);
                     }
                 });
     }
@@ -522,6 +557,24 @@ public class AlbumUiTest {
     }
 
     /**
+     * 等待指定Activity启动(注意，只针对onCreate，所以返回上一个Activity用这个函数是不生效的)并进入前台（用于跨Activity的异步切换等待）。
+     * 比如 相机Activity 跳转到 预览Activity
+     * 相机页面的录像压缩是异步的，预览Activity要几秒后才启动；且预览页和相机页的btnConfirm是同一个资源id，必须等预览Activity切到前台再点确定，否则会让自动化测试点击相机Activity的btnConfirm
+     *
+     * @param activityClass 目标Activity的Class，按其全限定名匹配
+     * @param timeoutMs     超时毫秒，超时后该方法直接返回（不抛异常），由日志记录是否等到
+     */
+    private void waitForActivity(Class<? extends android.app.Activity> activityClass, long timeoutMs) {
+        // 注册Activity监听器：block=false 表示只观察不拦截Activity启动
+        android.app.Instrumentation.ActivityMonitor monitor =
+                InstrumentationRegistry.getInstrumentation().addMonitor(activityClass.getName(), null, false);
+        // 阻塞当前(instrumentation)线程直到目标Activity被实例化，或超时返回null
+        android.app.Activity activity = monitor.waitForActivityWithTimeout(timeoutMs);
+        // 用完务必移除，避免影响后续测试
+        InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
+    }
+
+    /**
      * 录像 - 确定
      */
     private void btnConfirm() {
@@ -569,7 +622,6 @@ public class AlbumUiTest {
      * 录音 - 确定
      */
     private void btnConfirmByAudio() {
-        Log.d("TEST_LOG", "===== 进入 btnConfirmByAudio =====");
         Matcher<View> pvLayoutMatcher = allOf(
                 withId(R.id.pvLayout),
                 isInFragment(BaseSoundRecordingFragment.class),
@@ -581,9 +633,7 @@ public class AlbumUiTest {
                 hasAncestor(pvLayoutMatcher),
                 isDisplayed()
         );
-        Log.d("TEST_LOG", "准备执行 onView 查找 btnConfirm");
         onView(confirmMatcher).perform(click());
-        Log.d("TEST_LOG", "===== btnConfirmByAudio 执行完成，click 调用完毕 =====");
     }
 
     /**
