@@ -17,12 +17,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.ImageCapture
 import androidx.core.app.ActivityOptionsCompat
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.idling.CountingIdlingResource
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.listener.OnMoreClickListener
 import com.zhongjh.common.utils.BitmapUtils.rotateImage
 import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.multimedia.BaseFragment
+import com.zhongjh.multimedia.BuildConfig
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.camera.constants.FlashCacheUtils.getFlashModel
@@ -136,6 +139,13 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
     private var isShowContinueTip = false
 
     /**
+     * 拍照/提交Idling资源，仅DEBUG测试使用，Release包不会创建。
+     * 拍照(takePhoto->onPictureSuccess/onMotionByRecordSuccess)和提交(movePictureFile->commitPictureSuccess/commitFail)
+     * 都是异步的，Espresso需要据此等待，否则会抢跑导致漏拍、界面未切换等问题
+     */
+    private var cameraIdlingResource: CountingIdlingResource? = null
+
+    /**
      * 设置状态管理,处理不同状态下进行相关逻辑
      * 有以下状态：
      * [Preview]、[PictureSingle]、[PictureMultiple]、[VideoMultiple]、[VideoMultipleIn]
@@ -178,6 +188,14 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
         if (context is MainActivity) {
             this.mainActivityRef = WeakReference(context)
             this.myContext = context.applicationContext
+        }
+        // DEBUG模式才创建IdlingResource
+        if (BuildConfig.DEBUG) {
+            cameraIdlingResource = CountingIdlingResource("CameraIdling")
+            cameraIdlingResource?.let {
+                IdlingRegistry.getInstance().register(it)
+                LogUtil.d("CAMERA_IDLING", "onAttach: IdlingResource 已注册, isIdleNow=${it.isIdleNow}")
+            }
         }
     }
 
@@ -243,6 +261,18 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
         onDestroy(isCommit)
         photoVideoLayout.onDestroy()
         cameraManage.onDestroy()
+        // 如果页面销毁时还处于忙碌状态，强制释放，避免测试卡死。
+        // commitPictureSuccess只调finish()不decrement，就是靠这里在Activity销毁时释放，
+        // 保证Espresso等到界面真正切换完成（finish后onDestroyView执行时，上一个界面已resume）
+        if (BuildConfig.DEBUG) {
+            cameraIdlingResource?.let {
+                IdlingRegistry.getInstance().unregister(it)
+                while (!it.isIdleNow) {
+                    it.decrement()
+                }
+                LogUtil.d("CAMERA_IDLING", "onDestroyView: 兜底释放完成")
+            }
+        }
         super.onDestroyView()
     }
 
@@ -468,6 +498,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
                 this@BaseCameraFragment.cameraPictureViewManager.addCaptureData(uri, path)
                 // 恢复点击
                 childClickableLayout.setChildClickable(true)
+                // 拍照完成，解除 IdlingResource 占用（必须在恢复点击之后 decrement）
+                decrementCameraIdling("onPictureSuccess")
             }
 
             override fun onMotionByRecordSuccess(path: String, uri: Uri) {
@@ -477,6 +509,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
                 this@BaseCameraFragment.cameraPictureViewManager.addCaptureData(uri, path)
                 // 恢复点击
                 childClickableLayout.setChildClickable(true)
+                // 动态照片完成，解除 IdlingResource 占用（必须在恢复点击之后 decrement）
+                decrementCameraIdling("onMotionByRecordSuccess")
             }
 
             override fun bindSucceed() {
@@ -499,6 +533,8 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
              */
             override fun onError(errorCode: Int, message: String?, cause: Throwable?) {
                 Toast.makeText(this@BaseCameraFragment.myContext, message, Toast.LENGTH_LONG).show()
+                // 拍照失败也要解除 IdlingResource 占用，避免 Espresso 卡死
+                decrementCameraIdling("onError")
             }
         })
     }
@@ -593,8 +629,10 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
      * @param throwable 异常
      */
     override fun commitFail(throwable: Throwable) {
+        LogUtil.d("CAMERA_IDLING", "commitFail: ${throwable.message}")
         photoVideoLayout.setTipAlphaAnimation(throwable.message)
         setUiEnableTrue()
+        decrementCameraIdling("commitFail")
     }
 
     override fun cancel() {
@@ -733,9 +771,42 @@ abstract class BaseCameraFragment<StateManager : CameraStateManager, PictureView
      * 在 doInBackground 线程里面也执行了 runOnUiThread 跳转UI的最终事件
      */
     fun movePictureFile() {
+        cameraIdlingResource?.let {
+            it.increment()
+            LogUtil.d("CAMERA_IDLING", "movePictureFile: increment, isIdleNow=${it.isIdleNow}")
+        }
         showProgress()
         // 开始迁移文件
         cameraPictureViewManager.newMovePictureFileTask()
+    }
+
+    /**
+     * 增加拍照Idling资源计数（供 CameraPictureViewManager.takePhoto 调用）。
+     * takePhoto 是异步的：cameraManage.takePictures/takeMotion -> onPictureSuccess/onMotionByRecordSuccess 回调才完成。
+     * Espresso 点击拍照后必须等待该回调完成才能进行下一次点击，否则会抢跑导致漏拍。
+     */
+    internal fun incrementCameraIdling() {
+        cameraIdlingResource?.let {
+            it.increment()
+            LogUtil.d("CAMERA_IDLING", "takePhoto increment: isIdleNow=${it.isIdleNow}")
+        }
+    }
+
+    /**
+     * 释放拍照/提交Idling资源计数。
+     * label 用于日志区分来源（onPictureSuccess / onMotionByRecordSuccess / onError / onCancel / commitFail 等）。
+     * 必须做幂等防护：onDestroyView 的兜底清零是同步的，而协程 onCancel 回调是之后排队到主线程执行的，
+     * 两条路径可能重复 decrement 导致 counter=-1 崩溃（CountingIdlingResource: Counter has been corrupted）
+     */
+    internal fun decrementCameraIdling(label: String = "") {
+        cameraIdlingResource?.let {
+            if (!it.isIdleNow) {
+                it.decrement()
+                LogUtil.d("CAMERA_IDLING", "decrement[$label]: isIdleNow=${it.isIdleNow}")
+            } else {
+                LogUtil.d("CAMERA_IDLING", "decrement[$label]: 已是idle，跳过")
+            }
+        }
     }
 
     /**

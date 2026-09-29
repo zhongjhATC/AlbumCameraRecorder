@@ -196,6 +196,9 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                     if (it.itemCount < imageMaxCount) {
                         // 设置不能点击，防止多次点击报错
                         baseCameraFragment.childClickableLayout.setChildClickable(false)
+                        // 拍照是异步的(takePictures/takeMotion -> onPictureSuccess/onMotionByRecordSuccess 回调)，
+                        // 占用 IdlingResource，让 Espresso 等待回调完成后再进行下一次点击，否则抢跑导致漏拍。
+                        baseCameraFragment.incrementCameraIdling()
                         // 根据配置判断是静态图还是动态图
                         if (enableMotion) {
                             baseCameraFragment.cameraManage.takeMotion()
@@ -326,6 +329,10 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                 }
                 baseCameraFragment.commitFail(error)
             }
+        }?.onCancel {
+            // Job 被取消时（如用户中途按取消按钮），commitPictureSuccess/commitFail 都不会回调，
+            // 这里单独 decrement，避免 IdlingResource 残留 busy 状态卡死 Espresso
+            fragmentRef.get()?.decrementCameraIdling("onCancel-movePictureFile")
         }?.launch()
     }
 
