@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -30,9 +31,7 @@ import androidx.test.uiautomator.Until;
 
 import com.zhongjh.circularprogressview.CircularProgress;
 import com.zhongjh.demo.phone.MainListActivity;
-import com.zhongjh.multimedia.MainActivity;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
-import com.zhongjh.multimedia.camera.ui.preview.video.PreviewVideoActivity;
 import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment;
 import com.zhongjh.multimedia.widget.clickorlongbutton.ClickOrLongButton;
 
@@ -114,9 +113,9 @@ public class AlbumUiTest {
         // 简单版界面 - 返回首页
         uiDevice.pressBack();
 
-//        testSimple();
+        testSimple();
         testSuperSimple();
-        Thread.sleep(2000);
+        Thread.sleep(10000);
     }
 
     /**
@@ -250,9 +249,6 @@ public class AlbumUiTest {
 
         // 拍满照片，然后删除一个，再选择照片，反正最后拉满所有数据
         takePhotoBySuperSimple();
-
-        // 等待2秒让界面渲染一会
-        Thread.sleep(5000);
     }
 
     /**
@@ -264,7 +260,7 @@ public class AlbumUiTest {
         clickGridViewItem(0);
 
         // 等待 三合一界面
-        waitForActivity(MainActivity.class, 20000);
+        waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
@@ -276,7 +272,7 @@ public class AlbumUiTest {
         btnConfirm();
 
         // 等待 录像预览界面
-        waitForActivity(PreviewVideoActivity.class, 20000);
+        waitPreviewVideoActivityReady();
 
         // 录像预览界面 - 点击确定回到九宫界面
         onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
@@ -291,7 +287,7 @@ public class AlbumUiTest {
         clickGridViewItem(1);
 
         // 等待 三合一界面
-        waitForActivity(MainActivity.class, 20000);
+        waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
@@ -303,7 +299,7 @@ public class AlbumUiTest {
         btnConfirm();
 
         // 等待 录像预览界面
-        waitForActivity(PreviewVideoActivity.class, 20000);
+        waitPreviewVideoActivityReady();
 
         // 录像预览界面 - 点击确定回到九宫界面
         onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
@@ -324,7 +320,7 @@ public class AlbumUiTest {
         clickGridViewItem(2);
 
         // 等待 三合一界面
-        waitForActivity(MainActivity.class, 20000);
+        waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转录音功能
         clickMainTab(2);
@@ -339,7 +335,7 @@ public class AlbumUiTest {
         clickGridViewItem(3);
 
         // 等待 三合一界面
-        waitForActivity(MainActivity.class, 20000);
+        waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转录音功能
         clickMainTab(2);
@@ -360,7 +356,7 @@ public class AlbumUiTest {
         clickGridViewItem(4);
 
         // 等待 三合一界面
-        waitForActivity(MainActivity.class, 20000);
+        waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
@@ -380,7 +376,7 @@ public class AlbumUiTest {
         clickGridViewItem(9);
 
         // 等待 三合一界面
-        waitForActivity(MainActivity.class, 20000);
+        waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转拍摄功能
         clickMainTab(1);
@@ -585,21 +581,23 @@ public class AlbumUiTest {
     }
 
     /**
-     * 等待指定Activity启动(注意，只针对onCreate，所以返回上一个Activity用这个函数是不生效的)并进入前台（用于跨Activity的异步切换等待）。
-     * 比如 相机Activity 跳转到 预览Activity
-     * 相机页面的录像压缩是异步的，预览Activity要几秒后才启动；且预览页和相机页的btnConfirm是同一个资源id，必须等预览Activity切到前台再点确定，否则会让自动化测试点击相机Activity的btnConfirm
-     *
-     * @param activityClass 目标Activity的Class，按其全限定名匹配
-     * @param timeoutMs     超时毫秒，超时后该方法直接返回（不抛异常），由日志记录是否等到
+     * 等待三合一界面(MainActivity)渲染完成。
      */
-    private void waitForActivity(Class<? extends android.app.Activity> activityClass, long timeoutMs) {
-        // 注册Activity监听器：block=false 表示只观察不拦截Activity启动
-        android.app.Instrumentation.ActivityMonitor monitor =
-                InstrumentationRegistry.getInstrumentation().addMonitor(activityClass.getName(), null, false);
-        // 阻塞当前(instrumentation)线程直到目标Activity被实例化，或超时返回null
-        android.app.Activity activity = monitor.waitForActivityWithTimeout(timeoutMs);
-        // 用完务必移除，避免影响后续测试
-        InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
+    private void waitMainActivityReady() {
+        String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
+                .getResources().getResourceName(com.zhongjh.multimedia.R.id.tableLayout);
+        boolean ok = uiDevice.wait(Until.hasObject(By.res(res)), 10000);
+        Log.d("TEST_LOG", "waitMainActivityReady(tableLayout)=" + ok);
+    }
+
+    /**
+     * 等待视频预览界面(MainActivity)渲染完成。
+     */
+    private void waitPreviewVideoActivityReady() {
+        String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
+                .getResources().getResourceName(com.zhongjh.multimedia.R.id.vvPreview);
+        boolean ok = uiDevice.wait(Until.hasObject(By.res(res)), 10000);
+        Log.d("TEST_LOG", "waitMainActivityReady(tableLayout)=" + ok);
     }
 
     /**
