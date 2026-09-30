@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
@@ -139,6 +141,7 @@ public class AlbumUiTest {
 //        testSimple();
 //        testSuperSimple();
 //        testSee();
+        testPreview();
         Thread.sleep(10000);
     }
 
@@ -296,6 +299,26 @@ public class AlbumUiTest {
 
         // 3. 不停点击赋值、重置看看有什么问题
         repeatClickAssignResetAndDetectBugs();
+    }
+
+    /**
+     * 预览 - 用例
+     */
+    private void testPreview() throws InterruptedException {
+        // 点击按钮进入默认数据用例
+        onView(withId(R.id.btnPreview)).perform(click());
+
+        // 等待图片/视频预览界面
+        waitPreviewActivityReady();
+
+        // 测试滑动顺便看数据,为什么这个是用字符串寻找ViewPager2是因为这个是动态生成的组件
+        onView(withContentDescription("ViewPager2")).perform(ViewActions.swipeLeft());
+
+        // 观察
+        Thread.sleep(4000);
+
+        // 返回上一页
+        uiDevice.pressBack();
     }
 
     /**
@@ -680,8 +703,15 @@ public class AlbumUiTest {
     private void waitMainActivityReady() {
         String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
                 .getResources().getResourceName(com.zhongjh.multimedia.R.id.tableLayout);
-        boolean ok = uiDevice.wait(Until.hasObject(By.res(res)), 10000);
-        Log.d("TEST_LOG", "waitMainActivityReady(tableLayout)=" + ok);
+        uiDevice.wait(Until.hasObject(By.res(res)), 10000);
+    }
+
+    /**
+     * 等待图片/视频预览界面(PreviewActivity)渲染完成。
+     */
+    private void waitPreviewActivityReady() {
+        boolean isOK = uiDevice.wait(Until.hasObject(By.desc("ViewPager2")), 10000);
+        Log.d("TEST_LOG", "waitPreviewActivityReady isOK" + isOK);
     }
 
     /**
@@ -690,8 +720,7 @@ public class AlbumUiTest {
     private void waitPreviewVideoActivityReady() {
         String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
                 .getResources().getResourceName(com.zhongjh.multimedia.R.id.vvPreview);
-        boolean ok = uiDevice.wait(Until.hasObject(By.res(res)), 10000);
-        Log.d("TEST_LOG", "waitMainActivityReady(tableLayout)=" + ok);
+        uiDevice.wait(Until.hasObject(By.res(res)), 10000);
     }
 
     /**

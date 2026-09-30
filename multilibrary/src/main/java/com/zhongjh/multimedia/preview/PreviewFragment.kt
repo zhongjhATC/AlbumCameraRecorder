@@ -346,6 +346,8 @@ class PreviewFragment : BaseFragment() {
      */
     private fun initSharedAnimationView() {
         mViewPager2 = ViewPager2(requireContext())
+        // 给动态ViewPager打标记，自动化专用
+        mViewPager2.setContentDescription("ViewPager2");
         mViewHolder.sharedAnimationView.setContentView(mViewPager2)
         if (isSharedAnimation()) {
             val alpha = if (mIsSavedInstanceState) 1F else 0F
