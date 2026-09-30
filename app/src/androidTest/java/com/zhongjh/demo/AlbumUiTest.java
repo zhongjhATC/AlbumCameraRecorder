@@ -138,7 +138,7 @@ public class AlbumUiTest {
 
 //        testSimple();
 //        testSuperSimple();
-        testSee();
+//        testSee();
         Thread.sleep(10000);
     }
 
@@ -293,6 +293,9 @@ public class AlbumUiTest {
 
         // 2. 重新添加满为止 拍满照片，然后删除一个，再选择照片，反正最后拉满所有数据
         takePhotoBySuperSimple();
+
+        // 3. 不停点击赋值、重置看看有什么问题
+        repeatClickAssignResetAndDetectBugs();
     }
 
     /**
@@ -434,6 +437,7 @@ public class AlbumUiTest {
 
     /**
      * 循环删除：依次删第一个、最后一个、中间，直到九宫列表全部清空
+     * 来自 《默认数据 - 用例》
      */
     private void deleteAllBySequence() {
         // 九宫界面 - 删除第一个
@@ -450,6 +454,18 @@ public class AlbumUiTest {
         deleteGridViewItemByMainFragment(0);
     }
 
+    /**
+     * 不停点击赋值、重置看看有什么问题
+     * 来自 《默认数据 - 用例》
+     */
+    private void repeatClickAssignResetAndDetectBugs() {
+        for (int i = 0; i < 9; i++) {
+            // 赋值
+            onView(withId(R.id.btnSetValue)).perform(click());
+            // 重置
+            onView(withId(R.id.btnReset)).perform(click());
+        }
+    }
 
     /**
      * 点击gridView
