@@ -11,9 +11,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 
+import android.Manifest;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
@@ -45,6 +45,7 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 public class AlbumUiTest {
 
@@ -54,6 +55,15 @@ public class AlbumUiTest {
     // 每个@Test执行前，启动MainActivity
     @Before
     public void beforeTest() throws IOException, InterruptedException {
+        // 通过shell命令授予所有运行时权限，避免测试中途弹权限框阻塞UI
+        String pkg = "com.zhongjh.demo";
+        grantPermission(pkg, Manifest.permission.CAMERA);
+        grantPermission(pkg, Manifest.permission.RECORD_AUDIO);
+        grantPermission(pkg, Manifest.permission.READ_MEDIA_IMAGES);
+        grantPermission(pkg, Manifest.permission.READ_MEDIA_VIDEO);
+        grantPermission(pkg, Manifest.permission.READ_EXTERNAL_STORAGE);
+        grantPermission(pkg, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
         // 获取当前被测App包名
         scenario = ActivityScenario.launch(MainListActivity.class);
         uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
@@ -61,6 +71,18 @@ public class AlbumUiTest {
         // logcat -c 清空缓冲区
         Process clearProc = Runtime.getRuntime().exec("logcat -c");
         clearProc.waitFor();
+    }
+
+    /**
+     * 通过 UiAutomation shell 命令授予权限
+     */
+    private void grantPermission(String pkg, String permission) {
+        try {
+            InstrumentationRegistry.getInstrumentation().getUiAutomation()
+                    .executeShellCommand("pm grant " + pkg + " " + permission).close();
+        } catch (Exception ignored) {
+            // 忽略失败（如该权限在当前API不存在）
+        }
     }
 
     // 每个@Test执行完毕，关闭Activity
@@ -95,23 +117,24 @@ public class AlbumUiTest {
     // UI测试用例：点击打开相册按钮
     @Test
     public void testClickOpenAlbumButton() throws Exception {
-        // 1. 点击按钮进入简单版用例
-        onView(withId(R.id.btnSimple)).perform(click());
-
-        // 九宫界面 - 点击GridView第0项（第一个格子）
-        clickGridViewItem(0);
-
-        // 三合一界面 - 通过所有权限
-        passAllPermissions();
-
-        // 等待2秒让界面渲染一会
-        Thread.sleep(2000);
-
-        // 三合一界面 - 返回到简单版界面
-        uiDevice.pressBack();
-
-        // 简单版界面 - 返回首页
-        uiDevice.pressBack();
+        // 这个主要是用来让自动化自己走通过权限流程的
+//        // 1. 点击按钮进入简单版用例
+//        onView(withId(R.id.btnSimple)).perform(click());
+//
+//        // 九宫界面 - 点击GridView第0项（第一个格子）
+//        clickGridViewItem(0);
+//
+//        // 三合一界面 - 通过所有权限
+//        passAllPermissions();
+//
+//        // 等待2秒让界面渲染一会
+//        Thread.sleep(2000);
+//
+//        // 三合一界面 - 返回到简单版界面
+//        uiDevice.pressBack();
+//
+//        // 简单版界面 - 返回首页
+//        uiDevice.pressBack();
 
 //        testSimple();
 //        testSuperSimple();
@@ -452,8 +475,23 @@ public class AlbumUiTest {
                         // view就是com.zhongjh.gridview.widget.GridView实例
                         com.zhongjh.gridview.widget.GridView gridView = (com.zhongjh.gridview.widget.GridView) view;
                         RecyclerView recyclerView = gridView.getRecyclerView();
-                        // 点击第0项，修改数字切换不同item
-                        actionOnItemAtPosition(position, click()).perform(uiController, recyclerView);
+
+                        // 诊断日志：打印adapter状态，确认删除后剩什么
+                        RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
+                        int count = adapter != null ? adapter.getItemCount() : -1;
+                        RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(position);
+                        Log.d("TEST_LOG", "clickGridViewItem position=" + position
+                                + " adapterCount=" + count
+                                + " holder=" + (holder != null)
+                                + " hasListener=" + (holder != null && holder.itemView.hasOnClickListeners()));
+
+                        if (holder != null) {
+                            // 直接触发itemView的点击监听，绕过坐标tap的命中问题（与删除辅助方法同一思路）
+                            holder.itemView.performClick();
+                        } else {
+                            // item不在屏幕上时回退到Espresso坐标点击
+                            actionOnItemAtPosition(position, click()).perform(uiController, recyclerView);
+                        }
 
                         uiController.loopMainThreadForAtLeast(1000);
                     }
@@ -716,34 +754,28 @@ public class AlbumUiTest {
     }
 
     /**
-     * 点击主界面的tab
+     * 点击主界面的tab（使用UiAutomator，避免跨Activity后Espresso窗口焦点不同步问题）
      */
     private void clickMainTab(int position) {
-        onView(allOf(withId(com.zhongjh.multimedia.R.id.tableLayout), isDisplayed())).perform(new ViewAction() {
-            @Override
-            public Matcher<View> getConstraints() {
-                return isDisplayed();
-            }
-
-            @Override
-            public String getDescription() {
-                return "点击CommonTabLayout第二个tab(index=1)";
-            }
-
-            @Override
-            public void perform(UiController uiController, View view) {
-                com.flyco.tablayout.CommonTabLayout tabLayout = (com.flyco.tablayout.CommonTabLayout) view;
-                // 【重点修复】CommonTabLayout的第0个子View就是mTabsContainer
-                ViewGroup tabsContainer = (ViewGroup) tabLayout.getChildAt(0);
-                // 取对应索引tabItem
-                View targetTab = tabsContainer.getChildAt(position);
-                // 触发点击
-                targetTab.performClick();
-
-                // 等待2秒让界面渲染一会
-                uiController.loopMainThreadForAtLeast(2000);
-            }
-        });
+        String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
+                .getResources().getResourceName(com.zhongjh.multimedia.R.id.tableLayout);
+        UiObject2 tabLayout = uiDevice.wait(Until.findObject(By.res(res)), 10000);
+        // CommonTabLayout 的第 0 个子 View 是 tabsContainer，里面是各个 tab
+        List<UiObject2> children = tabLayout.getChildren();
+        if (children.isEmpty()) {
+            throw new AssertionError("clickMainTab: tableLayout 没有子元素");
+        }
+        UiObject2 tabsContainer = children.get(0);
+        List<UiObject2> tabs = tabsContainer.getChildren();
+        if (position >= tabs.size()) {
+            throw new AssertionError("clickMainTab: tab索引越界 position=" + position + " tabs=" + tabs.size());
+        }
+        tabs.get(position).click();
+        // 等待2秒让界面渲染一会
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ignored) {
+        }
     }
 
     /**
