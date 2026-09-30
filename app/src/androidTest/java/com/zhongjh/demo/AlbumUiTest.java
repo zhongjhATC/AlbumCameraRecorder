@@ -113,13 +113,14 @@ public class AlbumUiTest {
         // 简单版界面 - 返回首页
         uiDevice.pressBack();
 
-        testSimple();
-        testSuperSimple();
+//        testSimple();
+//        testSuperSimple();
+        testSee();
         Thread.sleep(10000);
     }
 
     /**
-     * 简单版用例
+     * 简单版 - 用例
      */
     private void testSimple() throws Exception {
         // 1. 点击按钮进入简单版用例
@@ -232,7 +233,7 @@ public class AlbumUiTest {
     }
 
     /**
-     * 超级简单版用例
+     * 超级简单版 - 用例
      * 视频三个
      * 语音三个
      * 拍照六个
@@ -248,6 +249,26 @@ public class AlbumUiTest {
         recordTwoAudioBySuperSimple();
 
         // 拍满照片，然后删除一个，再选择照片，反正最后拉满所有数据
+        takePhotoBySuperSimple();
+    }
+
+    /**
+     * 默认数据 - 用例
+     */
+    private void testSee() throws InterruptedException {
+        // 点击按钮进入默认数据用例
+        onView(withId(R.id.btnOpenSee)).perform(click());
+
+        // 1. 删除第一个，删除最后一个，删除中间的，直到全部删除完
+        deleteAllBySequence();
+
+        // 2. 重新添加满为止 录制两个视频
+        recordTwoVideosBySuperSimple();
+
+        // 2. 重新添加满为止 录音两个音频
+        recordTwoAudioBySuperSimple();
+
+        // 2. 重新添加满为止 拍满照片，然后删除一个，再选择照片，反正最后拉满所有数据
         takePhotoBySuperSimple();
     }
 
@@ -387,6 +408,25 @@ public class AlbumUiTest {
         // 三合一界面(录制) - 点击确定回到九宫界面
         btnConfirm();
     }
+
+    /**
+     * 循环删除：依次删第一个、最后一个、中间，直到九宫列表全部清空
+     */
+    private void deleteAllBySequence() {
+        // 九宫界面 - 删除第一个
+        deleteGridViewItemByMainFragment(0);
+        // 九宫界面 - 删除最后一个
+        deleteGridViewItemByMainFragment(10);
+
+        // 从中间第二个开始删除
+        for (int i = 0; i < 9; i++) {
+            deleteGridViewItemByMainFragment(1);
+        }
+
+        // 全部清空
+        deleteGridViewItemByMainFragment(0);
+    }
+
 
     /**
      * 点击gridView
