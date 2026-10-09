@@ -141,7 +141,8 @@ public class AlbumUiTest {
 //        testSimple();
 //        testSuperSimple();
 //        testSee();
-        testPreview();
+//        testPreview();
+        testUpperLimit();
         Thread.sleep(10000);
     }
 
@@ -319,6 +320,95 @@ public class AlbumUiTest {
 
         // 返回上一页
         uiDevice.pressBack();
+    }
+
+    /**
+     * 灵活配置版 - 用例
+     */
+    private void testUpperLimit() throws InterruptedException {
+        // 点击按钮进入灵活配置版用例
+        onView(withId(R.id.btnUpperLimit)).perform(click());
+        // 1. 总上限(null) 图片上限(2) 视频上限(1) 音频上限(1)
+        clickGridViewItem(0);
+        // 1.1 图片上限2
+        clickMainTab(1);
+        takePhoto();
+        takePhoto();
+        btnConfirm();
+        clickGridViewItem(2);
+        // 1.2 视频上限1
+        recordVideoSteps();
+        clickGridViewItem(3);
+        // 1.3 音频上限1
+        waitMainActivityReady();
+        recordAudio(12000);
+        btnConfirmByAudio();
+        // 等待灵活配置版界面
+        waitMainUpperLimitActivityReady();
+        // 检测没有+号才是正常的
+
+        // 清空
+        onView(allOf(withId(R.id.btnReset),isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 2. 总上限(20) 图片上限(null) 视频上限(null) 音频上限(null)
+        clickGridViewItem(0);
+        // 2.1 图片上限18
+        clickMainTab(1);
+        for (int i = 0; i < 18; i++) {
+            takePhoto();
+        }
+        btnConfirm();
+        clickGridViewItem(18);
+        // 1.2 视频上限1
+        recordVideoSteps();
+        clickGridViewItem(19);
+        // 1.3 音频上限1
+        waitMainActivityReady();
+        recordAudio(12000);
+        btnConfirmByAudio();
+        // 清空
+        onView(allOf(withId(R.id.btnReset),isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 3. 总上限(5) 图片上限(null) 视频上限(1) 音频上限(1)
+        clickGridViewItem(0);
+        // 3.1 图片上限3
+        clickMainTab(1);
+        for (int i = 0; i < 3; i++) {
+            takePhoto();
+        }
+        btnConfirm();
+        clickGridViewItem(4);
+        // 3.2 视频上限1
+        recordVideoSteps();
+        clickGridViewItem(5);
+        // 3.3 音频上限1
+        waitMainActivityReady();
+        recordAudio(12000);
+        btnConfirmByAudio();
+        // 清空
+        onView(allOf(withId(R.id.btnReset),isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 4. 总上限(5) 图片上限(3) 视频上限(null) 音频上限(1)
+        clickGridViewItem(0);
+        // 3.1 图片上限3
+        clickMainTab(1);
+        for (int i = 0; i < 3; i++) {
+            takePhoto();
+        }
+        // 3.2 音频上限1
+        waitMainActivityReady();
+        recordAudio(12000);
+        btnConfirmByAudio();
+        // 3.3 视频上限1
+        recordVideoSteps();
+        clickGridViewItem(3);
+
     }
 
     /**
@@ -672,6 +762,31 @@ public class AlbumUiTest {
     }
 
     /**
+     * 有关录像的步骤
+     */
+    private void recordVideoSteps() throws InterruptedException {
+        // 等待 三合一界面
+        waitMainActivityReady();
+
+        // 三合一界面 - 点击tab跳转拍摄功能
+        clickMainTab(1);
+
+        // 三合一界面(录制) - 接着录像到一半
+        recordVideo(5500);
+
+        // 三合一界面(录制) - 点击确定到录像预览界面
+        btnConfirm();
+
+        // 等待 录像预览界面
+        waitPreviewVideoActivityReady();
+
+        // 录像预览界面 - 点击确定回到九宫界面
+        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+    }
+
+    /**
      * 录像
      */
     private void recordVideo(long holdMs) throws InterruptedException {
@@ -702,7 +817,7 @@ public class AlbumUiTest {
      */
     private void waitMainActivityReady() {
         String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
-                .getResources().getResourceName(com.zhongjh.multimedia.R.id.tableLayout);
+                .getResources().getResourceName(com.zhongjh.multimedia.R.id.viewPager);
         uiDevice.wait(Until.hasObject(By.res(res)), 10000);
     }
 
@@ -724,6 +839,15 @@ public class AlbumUiTest {
     }
 
     /**
+     *  等待灵活配置版界面(UpperLimitActivity)渲染完成
+     */
+    private void waitMainUpperLimitActivityReady() {
+        String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
+                .getResources().getResourceName(R.id.rbEachLimit);
+        uiDevice.wait(Until.hasObject(By.res(res)), 10000);
+    }
+
+    /**
      * 录像 - 确定
      */
     private void btnConfirm() {
@@ -739,6 +863,23 @@ public class AlbumUiTest {
                 hasAncestor(pvLayoutMatcher),
                 isDisplayed()
         )).perform(click());
+    }
+
+    /**
+     * 有关录音的步骤
+     */
+    private void recordAudioSteps() throws InterruptedException {
+        // 等待 三合一界面
+        waitMainActivityReady();
+
+        // 三合一界面 - 点击tab跳转录音功能
+        clickMainTab(2);
+
+        // 三合一界面(录音) - 再重新录音直到自动满
+        recordAudio(12000);
+
+        // 三合一界面(录音) - 点击确定回到九宫界面
+        btnConfirmByAudio();
     }
 
     /**
