@@ -32,6 +32,7 @@ import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 
 import com.zhongjh.circularprogressview.CircularProgress;
+import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.demo.phone.MainListActivity;
 import com.zhongjh.multimedia.camera.ui.camera.BaseCameraFragment;
 import com.zhongjh.multimedia.recorder.BaseSoundRecordingFragment;
@@ -47,6 +48,7 @@ import org.junit.Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AlbumUiTest {
@@ -329,86 +331,137 @@ public class AlbumUiTest {
         // 点击按钮进入灵活配置版用例
         onView(withId(R.id.btnUpperLimit)).perform(click());
         // 1. 总上限(null) 图片上限(2) 视频上限(1) 音频上限(1)
-        clickGridViewItem(0);
+        onView(withId(R.id.rbEachLimit)).perform(click());
         // 1.1 图片上限2
+        clickGridViewItem(0);
         clickMainTab(1);
         takePhoto();
         takePhoto();
         btnConfirm();
-        clickGridViewItem(2);
         // 1.2 视频上限1
+        clickGridViewItem(2);
         recordVideoSteps();
-        clickGridViewItem(3);
         // 1.3 音频上限1
-        waitMainActivityReady();
-        recordAudio(12000);
-        btnConfirmByAudio();
-        // 等待灵活配置版界面
-        waitMainUpperLimitActivityReady();
+        clickGridViewItem(3);
+        recordAudioSteps(0);
         // 检测没有+号才是正常的
-
+        assertGridViewLastMediaNotAdd();
         // 清空
         onView(allOf(withId(R.id.btnReset),isDisplayed()))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
         // 2. 总上限(20) 图片上限(null) 视频上限(null) 音频上限(null)
-        clickGridViewItem(0);
+        onView(withId(R.id.rbSumLimit)).perform(click());
         // 2.1 图片上限18
+        clickGridViewItem(0);
         clickMainTab(1);
         for (int i = 0; i < 18; i++) {
             takePhoto();
         }
         btnConfirm();
-        clickGridViewItem(18);
         // 1.2 视频上限1
+        clickGridViewItem(18);
         recordVideoSteps();
-        clickGridViewItem(19);
         // 1.3 音频上限1
-        waitMainActivityReady();
-        recordAudio(12000);
-        btnConfirmByAudio();
+        clickGridViewItem(19);
+        recordAudioSteps();
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
         // 清空
         onView(allOf(withId(R.id.btnReset),isDisplayed()))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
         // 3. 总上限(5) 图片上限(null) 视频上限(1) 音频上限(1)
-        clickGridViewItem(0);
+        onView(withId(R.id.rbImageLimit)).perform(click());
         // 3.1 图片上限3
+        clickGridViewItem(0);
         clickMainTab(1);
         for (int i = 0; i < 3; i++) {
             takePhoto();
         }
         btnConfirm();
-        clickGridViewItem(4);
         // 3.2 视频上限1
+        clickGridViewItem(3);
         recordVideoSteps();
-        clickGridViewItem(5);
         // 3.3 音频上限1
-        waitMainActivityReady();
-        recordAudio(12000);
-        btnConfirmByAudio();
+        clickGridViewItem(4);
+        recordAudioSteps();
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
         // 清空
         onView(allOf(withId(R.id.btnReset),isDisplayed()))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
         // 4. 总上限(5) 图片上限(3) 视频上限(null) 音频上限(1)
+        onView(withId(R.id.rbVideoLimit)).perform(click());
+        // 4.1 图片上限3
         clickGridViewItem(0);
-        // 3.1 图片上限3
         clickMainTab(1);
         for (int i = 0; i < 3; i++) {
             takePhoto();
         }
-        // 3.2 音频上限1
-        waitMainActivityReady();
-        recordAudio(12000);
-        btnConfirmByAudio();
-        // 3.3 视频上限1
-        recordVideoSteps();
+        btnConfirm();
+        // 4.2 视频上限1
         clickGridViewItem(3);
+        recordVideoSteps();
+        // 4.3 音频上限1
+        clickGridViewItem(4);
+        recordAudioSteps();
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
+        // 清空
+        onView(allOf(withId(R.id.btnReset), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
 
+        // 5. 总上限(5) 图片上限(3) 视频上限(1) 音频上限(null)
+        onView(withId(R.id.rbAudioLimit)).perform(click());
+        // 5.1 图片上限3
+        clickGridViewItem(0);
+        clickMainTab(1);
+        for (int i = 0; i < 3; i++) {
+            takePhoto();
+        }
+        btnConfirm();
+        // 5.2 视频上限1
+        clickGridViewItem(3);
+        recordVideoSteps();
+        // 5.3 音频上限1
+        clickGridViewItem(4);
+        recordAudioSteps(0);
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
+        // 清空
+        onView(allOf(withId(R.id.btnReset), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 6. 总上限(5) 图片上限(3) 视频上限(null) 音频上限(null)
+        onView(withId(R.id.rbOne)).perform(click());
+        // 5.1 图片上限3
+        clickGridViewItem(0);
+        clickMainTab(1);
+        for (int i = 0; i < 3; i++) {
+            takePhoto();
+        }
+        btnConfirm();
+        // 5.2 视频上限1
+        clickGridViewItem(3);
+        recordVideoSteps();
+        // 5.3 音频上限1
+        clickGridViewItem(4);
+        recordAudioSteps();
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
+        // 清空
+        onView(allOf(withId(R.id.btnReset), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 7.
     }
 
     /**
@@ -419,25 +472,8 @@ public class AlbumUiTest {
         // 九宫界面 - 点击GridView第0项（第一个格子）
         clickGridViewItem(0);
 
-        // 等待 三合一界面
-        waitMainActivityReady();
-
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
-        // 三合一界面(录制) - 接着录像到一半
-        recordVideo(5500);
-
-        // 三合一界面(录制) - 点击确定到录像预览界面
-        btnConfirm();
-
-        // 等待 录像预览界面
-        waitPreviewVideoActivityReady();
-
-        // 录像预览界面 - 点击确定回到九宫界面
-        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        // 录像
+        recordVideoSteps();
 
         // 等预览界面关闭回到九宫页面
         uiDevice.wait(Until.hasObject(By.res(
@@ -446,25 +482,8 @@ public class AlbumUiTest {
         // 九宫界面 - 点击GridView第1项（第二个格子）
         clickGridViewItem(1);
 
-        // 等待 三合一界面
-        waitMainActivityReady();
-
-        // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
-
-        // 三合一界面(录制) - 接着录像到一半
-        recordVideo(5500);
-
-        // 三合一界面(录制) - 点击确定到录像预览界面
-        btnConfirm();
-
-        // 等待 录像预览界面
-        waitPreviewVideoActivityReady();
-
-        // 录像预览界面 - 点击确定回到九宫界面
-        onView(allOf(withId(com.zhongjh.multimedia.R.id.btnConfirm),isDisplayed()))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        // 录像
+        recordVideoSteps();
 
         // 等预览界面关闭回到九宫页面
         uiDevice.wait(Until.hasObject(By.res(
@@ -628,6 +647,38 @@ public class AlbumUiTest {
     }
 
     /**
+     * 断言最后一条数据是否add,如果是add则断言失败
+     */
+    private void assertGridViewLastMediaNotAdd() {
+        onView(withId(R.id.gridView))
+                .check(matches(isDisplayed()))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(FrameLayout.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "获取自定义GridView内部RecyclerView并点击第0个item";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        // view就是com.zhongjh.gridview.widget.GridView实例
+                        com.zhongjh.gridview.widget.GridView gridView = (com.zhongjh.gridview.widget.GridView) view;
+                        ArrayList<GridMedia> mediaList = gridView.getAllData();
+                        if (!mediaList.isEmpty()) {
+                            GridMedia lastMedia = mediaList.get(mediaList.size() - 1);
+                            if (lastMedia.isAdd()) {
+                                throw new AssertionError("断言失败：最后一条媒体是add加号Item！");
+                            }
+                        }
+                    }
+                });
+    }
+
+    /**
      * 点击录制界面-gridView的删除事件
      */
     private void deleteGridViewItemByCameraFragment() {
@@ -765,11 +816,21 @@ public class AlbumUiTest {
      * 有关录像的步骤
      */
     private void recordVideoSteps() throws InterruptedException {
+        recordVideoSteps(1);
+    }
+
+    /**
+     * 有关录像的步骤
+     * @param tabPosition 三合一界面的position
+     */
+    private void recordVideoSteps(int tabPosition) throws InterruptedException {
         // 等待 三合一界面
         waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转拍摄功能
-        clickMainTab(1);
+        if (tabPosition != 0) {
+            clickMainTab(tabPosition);
+        }
 
         // 三合一界面(录制) - 接着录像到一半
         recordVideo(5500);
@@ -869,11 +930,21 @@ public class AlbumUiTest {
      * 有关录音的步骤
      */
     private void recordAudioSteps() throws InterruptedException {
+        recordAudioSteps(2);
+    }
+
+    /**
+     * 有关录音的步骤
+     * @param tabPosition 三合一界面的position
+     */
+    private void recordAudioSteps(int tabPosition) throws InterruptedException {
         // 等待 三合一界面
         waitMainActivityReady();
 
         // 三合一界面 - 点击tab跳转录音功能
-        clickMainTab(2);
+        if (tabPosition != 0) {
+            clickMainTab(tabPosition);
+        }
 
         // 三合一界面(录音) - 再重新录音直到自动满
         recordAudio(12000);
