@@ -441,17 +441,17 @@ public class AlbumUiTest {
 
         // 6. 总上限(5) 图片上限(3) 视频上限(null) 音频上限(null)
         onView(withId(R.id.rbOne)).perform(click());
-        // 5.1 图片上限3
+        // 6.1 图片上限3
         clickGridViewItem(0);
         clickMainTab(1);
         for (int i = 0; i < 3; i++) {
             takePhoto();
         }
         btnConfirm();
-        // 5.2 视频上限1
+        // 6.2 视频上限1
         clickGridViewItem(3);
         recordVideoSteps();
-        // 5.3 音频上限1
+        // 6.3 音频上限1
         clickGridViewItem(4);
         recordAudioSteps();
         // 检测没有+号才是正常的
@@ -461,7 +461,53 @@ public class AlbumUiTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // 7.
+        // 7. 总上限(5) 图片上限(null) 视频上限(2) 音频上限(null)
+        onView(withId(R.id.rbTwo)).perform(click());
+        // 7.1 图片上限3
+        clickGridViewItem(0);
+        clickMainTab(1);
+        for (int i = 0; i < 2; i++) {
+            takePhoto();
+        }
+        btnConfirm();
+        // 7.2 视频上限2
+        clickGridViewItem(2);
+        recordVideoSteps();
+        clickGridViewItem(3);
+        recordVideoSteps();
+        // 7.3 音频上限1
+        clickGridViewItem(4);
+        recordAudioSteps();
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
+        // 清空
+        onView(allOf(withId(R.id.btnReset), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // 8. 总上限(5) 图片上限(null) 视频上限(null) 音频上限(2)
+        onView(withId(R.id.rbThree)).perform(click());
+        // 8.1 图片上限3
+        clickGridViewItem(0);
+        clickMainTab(1);
+        for (int i = 0; i < 2; i++) {
+            takePhoto();
+        }
+        btnConfirm();
+        // 8.2 视频上限1
+        clickGridViewItem(2);
+        recordVideoSteps();
+        // 8.3 音频上限1
+        clickGridViewItem(3);
+        recordAudioSteps();
+        clickGridViewItem(4);
+        recordAudioSteps();
+        // 检测没有+号才是正常的
+        assertGridViewLastMediaNotAdd();
+        // 清空
+        onView(allOf(withId(R.id.btnReset), isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
     }
 
     /**
