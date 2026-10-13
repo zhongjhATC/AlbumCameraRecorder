@@ -48,40 +48,6 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/global_function" />
-
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/rbAllAll"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:checked="true"
-                        android:gravity="center"
-                        android:text="@string/support_all" />
-
-                    <RadioButton
-                        android:id="@+id/rbAllImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="@string/support_image" />
-
-                    <RadioButton
-                        android:id="@+id/rbAllVideo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="@string/support_video" />
-
-                </RadioGroup>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

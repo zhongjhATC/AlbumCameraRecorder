@@ -2,6 +2,7 @@ package com.zhongjh.demo;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -518,7 +519,9 @@ public class AlbumUiTest {
         // 点击按钮进入灵活配置版用例
         onView(withId(R.id.btnConfigure)).perform(click());
         // 默认配置
-        TestConfigure.Default(this, uiDevice);
+//        TestConfigure.defaultTest(this, uiDevice);
+        // 测试纯图片功能
+        TestConfigure.imageSupport(this, uiDevice);
     }
 
     /**
@@ -663,8 +666,7 @@ public class AlbumUiTest {
      */
     public void clickGridViewItem(int position) {
         onView(withId(R.id.gridView))
-                .check(matches(isDisplayed()))
-                .perform(new ViewAction() {
+                .perform(scrollTo(), new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
                         return isAssignableFrom(FrameLayout.class);
@@ -969,7 +971,7 @@ public class AlbumUiTest {
     /**
      * 录像
      */
-    private void recordVideo(long holdMs) throws InterruptedException {
+    public void recordVideo(long holdMs) throws InterruptedException {
         Matcher<View> pvLayoutMatcher = allOf(
                 withId(R.id.pvLayout),
                 isInFragment(BaseCameraFragment.class),

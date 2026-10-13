@@ -260,14 +260,6 @@ public class MainActivity extends BaseActivity {
 
         //  全局
         Set<MimeType> mimeTypes = MimeType.ofAll();
-        if (mBinding.rbAllAll.isChecked()) {
-            mimeTypes = MimeType.ofAll();
-        } else if (mBinding.rbAllVideo.isChecked()) {
-            mimeTypes = MimeType.ofVideo();
-        } else if (mBinding.rbAllImage.isChecked()) {
-            mimeTypes = MimeType.ofImage();
-        }
-
         mGlobalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         // 默认从第二个开始
         mGlobalSetting.defaultPosition(1);
