@@ -514,11 +514,11 @@ public class AlbumUiTest {
     /**
      * 配置版 - 用例
      */
-    private void testConfigure() {
+    private void testConfigure() throws InterruptedException {
         // 点击按钮进入灵活配置版用例
         onView(withId(R.id.btnConfigure)).perform(click());
         // 默认配置
-        TestConfigure.Default(this);
+        TestConfigure.Default(this, uiDevice);
     }
 
     /**
@@ -657,7 +657,7 @@ public class AlbumUiTest {
     }
 
     /**
-     * 点击gridView
+     * 点击九宫格gridView
      *
      * @param position 索引
      */
@@ -847,6 +847,68 @@ public class AlbumUiTest {
         if (permissionBtn3 != null) {
             permissionBtn3.click();
         }
+    }
+
+    /**
+     * 选择相册中前面 count 张图片
+     * 通过点击每项的 checkView 来勾选
+     *
+     * @param count 选择数量
+     */
+    public void selectAlbumItems(int count) {
+        onView(withId(com.zhongjh.multimedia.R.id.recyclerview))
+                .check(matches(isDisplayed()))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isAssignableFrom(RecyclerView.class);
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "点击相册RecyclerView前" + count + "项的checkView";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        RecyclerView recyclerView = (RecyclerView) view;
+                        RecyclerView.Adapter<?> adapter = recyclerView.getAdapter();
+                        int adapterCount = adapter != null ? adapter.getItemCount() : 0;
+                        Log.d("TEST_LOG", "selectAlbumItems adapterCount=" + adapterCount);
+
+                        // i从1开始是因为可能默认第一个是拍照功能
+                        for (int i = 1; i < count + 1 && i < adapterCount; i++) {
+                            // 每次重新获取ViewHolder，因为上一次勾选可能触发了rebind
+                            RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(i);
+                            if (holder != null) {
+                                View checkView = holder.itemView.findViewById(com.zhongjh.multimedia.R.id.checkView);
+                                if (checkView != null) {
+                                    Log.d("TEST_LOG", "selectAlbumItems position=" + i
+                                            + " checkView=" + checkView
+                                            + " enabled=" + checkView.isEnabled());
+                                    // 直接调用performClick()绕过坐标命中问题
+                                    checkView.performClick();
+                                } else {
+                                    Log.d("TEST_LOG", "selectAlbumItems position=" + i + " checkView=null!");
+                                }
+                            } else {
+                                Log.d("TEST_LOG", "selectAlbumItems position=" + i + " holder=null!");
+                            }
+                            // 等待rebind和动画完成
+                            uiController.loopMainThreadForAtLeast(500);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * 相册的图片提交
+     */
+    public void albumConfirm() {
+        // 点击确定
+        onView(withId(com.zhongjh.multimedia.R.id.buttonApply))
+                .check(matches(isDisplayed()))
+                .perform(click());
     }
 
     /**
