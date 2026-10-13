@@ -144,7 +144,8 @@ public class AlbumUiTest {
 //        testSuperSimple();
 //        testSee();
 //        testPreview();
-        testUpperLimit();
+//        testUpperLimit();
+        testConfigure();
         Thread.sleep(10000);
     }
 
@@ -511,6 +512,16 @@ public class AlbumUiTest {
     }
 
     /**
+     * 配置版 - 用例
+     */
+    private void testConfigure() {
+        // 点击按钮进入灵活配置版用例
+        onView(withId(R.id.btnConfigure)).perform(click());
+        // 默认配置
+        TestConfigure.Default(this);
+    }
+
+    /**
      * 录制两个视频
      * 来自超级简单版用例
      */
@@ -650,7 +661,7 @@ public class AlbumUiTest {
      *
      * @param position 索引
      */
-    private void clickGridViewItem(int position) {
+    public void clickGridViewItem(int position) {
         onView(withId(R.id.gridView))
                 .check(matches(isDisplayed()))
                 .perform(new ViewAction() {
@@ -695,7 +706,7 @@ public class AlbumUiTest {
     /**
      * 断言最后一条数据是否add,如果是add则断言失败
      */
-    private void assertGridViewLastMediaNotAdd() {
+    public void assertGridViewLastMediaNotAdd() {
         onView(withId(R.id.gridView))
                 .check(matches(isDisplayed()))
                 .perform(new ViewAction() {
@@ -841,7 +852,7 @@ public class AlbumUiTest {
     /**
      * 拍照
      */
-    private void takePhoto() {
+    public void takePhoto() {
         Matcher<View> pvLayoutMatcher = allOf(
                 withId(R.id.pvLayout),
                 isInFragment(BaseCameraFragment.class),
@@ -861,7 +872,7 @@ public class AlbumUiTest {
     /**
      * 有关录像的步骤
      */
-    private void recordVideoSteps() throws InterruptedException {
+    public void recordVideoSteps() throws InterruptedException {
         recordVideoSteps(1);
     }
 
@@ -957,7 +968,7 @@ public class AlbumUiTest {
     /**
      * 录像 - 确定
      */
-    private void btnConfirm() {
+    public void btnConfirm() {
         Matcher<View> pvLayoutMatcher = allOf(
                 withId(R.id.pvLayout),
                 isInFragment(BaseCameraFragment.class),
@@ -975,7 +986,7 @@ public class AlbumUiTest {
     /**
      * 有关录音的步骤
      */
-    private void recordAudioSteps() throws InterruptedException {
+    public void recordAudioSteps() throws InterruptedException {
         recordAudioSteps(2);
     }
 
@@ -1059,7 +1070,7 @@ public class AlbumUiTest {
     /**
      * 点击主界面的tab（使用UiAutomator，避免跨Activity后Espresso窗口焦点不同步问题）
      */
-    private void clickMainTab(int position) {
+    public void clickMainTab(int position) {
         String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
                 .getResources().getResourceName(com.zhongjh.multimedia.R.id.tableLayout);
         UiObject2 tabLayout = uiDevice.wait(Until.findObject(By.res(res)), 10000);

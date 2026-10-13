@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zhongjh.common.entity.GridMedia;
 import com.zhongjh.demo.R;
+import com.zhongjh.demo.configuration.Glide4Engine;
 import com.zhongjh.gridview.apapter.GridAdapter;
 import com.zhongjh.gridview.listener.GridViewListener;
 import com.zhongjh.gridview.widget.GridView;
@@ -77,15 +78,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public RecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
-        viewHolder.mplImageList.setOperation(true);
+        viewHolder.gridView.setOperation(true);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.mplImageList.reset();
-        holder.mplImageList.setUrls(dataArrayList.get(position).getImageUrls(), dataArrayList.get(position).getVideoUrls(), dataArrayList.get(position).getAudioUrls());
-        holder.mplImageList.setGridViewListener(new GridViewListener() {
+        holder.gridView.reset();
+        holder.gridView.setUrls(dataArrayList.get(position).getImageUrls(), dataArrayList.get(position).getVideoUrls(), dataArrayList.get(position).getAudioUrls());
+        holder.gridView.setGridViewListener(new GridViewListener() {
 
             @Override
             public void onItemAdd(@NonNull View view, @NonNull GridMedia gridMedia, int alreadyImageCount, int alreadyVideoCount, int alreadyAudioCount) {
@@ -121,12 +122,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public final GridView mplImageList;
+        public final GridView gridView;
 
         /** @noinspection unused*/
         public ViewHolder(View view) {
             super(view);
-            mplImageList = view.findViewById(R.id.gridView);
+            gridView = view.findViewById(R.id.gridView);
+            // 设置图片加载引擎
+            gridView.setImageEngine(new Glide4Engine());
         }
     }
 }
