@@ -388,6 +388,10 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                             activity.lifecycleScope.launch {
                                 // 这里进入协程，可以调用suspend函数
                                 val motionPhotoUri = convertToMotion(uri)
+                                // 原始视频已被convertToMotion处理完毕（提取封面帧+导出动态图），删除临时视频文件
+                                runCatching {
+                                    activity.contentResolver.delete(uri, null, null)
+                                }
                                 // 执行完成后，回到主线程
                                 motionPhotoUri?.let { motionUri ->
                                     UriUtils.uriToFile(activity, motionUri.toUri())?.absolutePath?.let { path ->
