@@ -485,8 +485,8 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
      * 绑定相机预览模式
      */
     private fun initCameraPreviewMode() {
-        if (cameraSpec.onlySupportImages()) {
-            // 只支持拍照
+        if (cameraSpec.onlySupportImages() && !cameraSpec.enableMotion) {
+            // 只支持拍照,并且不支持动态图片才允许
             bindCameraPreviewModeByImage()
         } else if (cameraSpec.onlySupportVideos()) {
             // 只支持录制
