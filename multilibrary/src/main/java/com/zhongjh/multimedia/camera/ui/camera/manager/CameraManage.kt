@@ -978,11 +978,13 @@ class CameraManage(appCompatActivity: AppCompatActivity, val previewView: Previe
                 height = coverBitmap.height,
                 colorSpace = ColorSpaceInfo(), // 默认SDR；HDR需要MediaExtractor解析MediaFormat
                 metadata = VideoMetadata(
+                    // 填充拍摄时间，写入EXIF的TAG_DATETIME_ORIGINAL，避免后续displayToGalleryAndroidQ因该标签为空而调用saveAttributes()，导致ExifInterface重写文件时丢弃动态照片尾部的MP4数据
+                    dateTime = java.time.OffsetDateTime.now().toString(),
                     rotation = 0, // 视频旋转角度，需要解析视频流获取
                     videoWidth = coverBitmap.width,
                     videoHeight = coverBitmap.height,
                     durationMs = durationMs
-                    // dateTime、gps、make、model 录制时如果有就填充，没有留null
+                    // gps、make、model 录制时如果有就填充，没有留null
                 )
             )
 

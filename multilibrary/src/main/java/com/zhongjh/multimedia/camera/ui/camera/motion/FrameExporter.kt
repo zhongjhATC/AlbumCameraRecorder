@@ -18,6 +18,7 @@ import android.util.Xml
 import androidx.core.graphics.scale
 import androidx.documentfile.provider.DocumentFile
 import androidx.exifinterface.media.ExifInterface
+import com.zhongjh.common.enums.MediaType
 import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.camera.ui.camera.motion.colorspace.HdrToneMapper
 import com.zhongjh.multimedia.camera.ui.camera.motion.model.CapturedFrame
@@ -31,6 +32,7 @@ import com.zhongjh.multimedia.camera.ui.camera.motion.model.PcmAudio
 import com.zhongjh.multimedia.camera.ui.camera.motion.model.VideoClipResult
 import com.zhongjh.multimedia.camera.ui.camera.motion.model.VideoMetadata
 import com.zhongjh.multimedia.camera.ui.camera.motion.utils.DateTimeUtils
+import com.zhongjh.multimedia.utils.FileMediaUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -38,6 +40,7 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.StringWriter
 import java.nio.ByteBuffer
@@ -204,7 +207,6 @@ class FrameExporter(private val context: Context) {
 
 
         try {
-            val effectiveConfig = config
             // 步骤1：如果是HARDWARE则转为ARGB_8888
             softBitmap = ensureSoftwareBitmap(bitmap)
 
@@ -221,7 +223,7 @@ class FrameExporter(private val context: Context) {
             val resultHeight = finalBitmap.height
 
             // 步骤4：生成过滤非法字符、动态照片标识的合规文件名
-            val fileName = generateFileName(frame, effectiveConfig, isMotion = true)
+            val fileName = generateFileName(frame, config, isMotion = true)
 
             // 步骤5：动态照片规范强制要求主载体为JPEG格式，先把封面帧压缩成JPEG字节数组
             val jpegBytes = compressBitmapToBytes(finalBitmap, Bitmap.CompressFormat.JPEG, config.quality)
@@ -266,11 +268,10 @@ class FrameExporter(private val context: Context) {
                 )
 
                 // 二进制拼接JPEG+MP4写入目标存储
-                val dateTakenMs = frame.metadata.dateTime?.let { DateTimeUtils.parseToMillis(it) }
                 val savedUri = if (customExportTreeUri != null) {
                     saveMotionPhotoToCustomDirectory(xmpJpegBytes, videoClipFile, fileName, customExportTreeUri)
                 } else {
-                    saveMotionPhotoToMediaStore(xmpJpegBytes, videoClipFile, fileName, effectiveConfig, dateTakenMs)
+                    saveMotionPhotoToCacheFile(xmpJpegBytes, videoClipFile, fileName)
                 }
                 outputUri = savedUri
 
@@ -280,7 +281,7 @@ class FrameExporter(private val context: Context) {
                     width = resultWidth,
                     height = resultHeight,
                     fileSizeBytes = getFileSize(savedUri),
-                    format = effectiveConfig.format,
+                    format = config.format,
                     isMotionPhoto = true,
                     metadataPreserved = metadataPreserved,
                     requestedFormat = null,
@@ -2012,42 +2013,23 @@ class FrameExporter(private val context: Context) {
     }
 
     /**
-     * 将动态照片保存到系统图库MediaStore，采用流拷贝方式，避免一次性加载全部大文件导致内存溢出OOM
+     * 将动态照片保存到应用缓存目录，不插入MediaStore图库记录。
+     * 后续由 movePictureFileTaskInBackground 统一拷贝到 DCIM/Camera，避免产生两份图片。
      * 动态照片结构：JPEG图片字节(已经打好XMP动态照片标记) + 文件尾部直接拼接MP4短视频
      * @param jpegBytes 注入完Motion‑Photo XMP元数据的JPEG图片字节数组
      * @param videoFile 本地缓存的临时MP4短视频文件
-     * @param fileName 导出文件显示名称
-     * @param config 导出配置，包含保存目录等参数
-     * @param dateTakenMs 图片拍摄时间，毫秒，可以为空
-     * @return 保存成功后返回图库的Uri
+     * @param fileName 导出文件显示名称（带MVIMG前缀）
+     * @return 保存成功后返回缓存文件的Uri
      */
-    internal fun saveMotionPhotoToMediaStore(jpegBytes: ByteArray, videoFile: File, fileName: String, config: ExportConfig, dateTakenMs: Long? = null): Uri {
-        // ContentValues：准备要插入到图库数据库的字段信息
-        val values = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-            put(MediaStore.Images.Media.MIME_TYPE, ExportFormat.JPEG.mimeType)
-            dateTakenMs?.let { put(MediaStore.Images.Media.DATE_TAKEN, it) }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android10及以上分区存储：设置保存到图库的相对目录，比如 DCIM/FrameEcho
-                put(MediaStore.Images.Media.RELATIVE_PATH, config.exportDirectory.relativePath)
-                // IS_PENDING=1：标记文件正在写入，图库暂时不扫描显示这个文件，写完再改成0对外可见
-                put(MediaStore.Images.Media.IS_PENDING, 1)
-            } else {
-                // Android9及以下旧版本：直接填写完整文件绝对路径
-                put(MediaStore.Images.Media.DATA, resolveLegacyOutputFile(fileName, config.exportDirectory).absolutePath)
-            }
-        }
-
-        // 向图库数据库插入一条记录，相当于占一个文件位置
-        val uri = context.contentResolver.insert(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
-        ) ?: throw IOException("Failed to create MediaStore entry — storage may be full or unavailable")
+    internal fun saveMotionPhotoToCacheFile(jpegBytes: ByteArray, videoFile: File, fileName: String): Uri {
+        // 动态照片写入应用缓存目录，不插入MediaStore图库记录，
+        // 后续由 movePictureFileTaskInBackground 统一拷贝到 DCIM/Camera，避免产生两份图片
+        val cacheFile = FileMediaUtil.createCacheFile(context, MediaType.TYPE_PICTURE)
+        // 使用传入的文件名（带MVIMG前缀）替换默认缓存文件名，便于区分
+        val namedCacheFile = File(cacheFile.parentFile, fileName)
 
         try {
-            // 获取输出流，往这个图库Uri里面写二进制数据
-            val outputStream = context.contentResolver.openOutputStream(uri) ?: throw IOException("Failed to open output stream for MediaStore entry")
-
-            outputStream.use { os ->
+            FileOutputStream(namedCacheFile).use { os ->
                 // 先写入带XMP标记的JPEG图片二进制
                 os.write(jpegBytes)
 
@@ -2061,22 +2043,14 @@ class FrameExporter(private val context: Context) {
                 }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Android10+：写入完成，把IS_PENDING改为0，告诉图库这个文件已经写完，可以展示出来了
-                values.clear()
-                values.put(MediaStore.Images.Media.IS_PENDING, 0)
-                context.contentResolver.update(uri, values, null, null)
-            }
-
-            // 全部写入成功，返回图库Uri
-            return uri
+            // 写入成功，返回缓存文件的Uri
+            return Uri.fromFile(namedCacheFile)
         } catch (e: Exception) {
-            // 导出过程出错，把图库里面这条残缺损坏的文件删掉，避免图库出现损坏图片
+            // 导出过程出错，删除残缺的缓存文件
             try {
-                context.contentResolver.delete(uri, null, null)
+                namedCacheFile.delete()
             } catch (deleteException: Exception) {
-                // 删除也可能失败，只打印警告日志，不要把删除异常覆盖原本的导出错误
-                LogUtil.e("FrameExporter", "Failed to delete URI after export failure", deleteException)
+                LogUtil.e("FrameExporter", "Failed to delete cache file after export failure", deleteException)
             }
             // 把原始异常继续往上抛，上层处理导出失败
             throw e

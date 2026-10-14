@@ -415,11 +415,13 @@ open class CameraPictureViewManager(baseCameraFragment: BaseCameraFragment<out C
                 val cacheFile = File(item.absolutePath)
                 LogUtil.d(TAG, "1. 拍照文件：" + cacheFile.absolutePath)
                 val localMedia = LocalMedia()
-                // 压缩图片
-                val compressionFile = baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
-                    baseCameraFragment.myContext, cacheFile
-                ) ?: let {
+                // 动态照片是JPEG+MP4拼接结构，压缩会破坏尾部MP4导致动态照片失效，因此开启动态照片时跳过压缩
+                val compressionFile = if (baseCameraFragment.cameraSpec.enableMotion) {
                     cacheFile
+                } else {
+                    baseCameraFragment.globalSpec.onImageCompressionListener?.compressionFile(
+                        baseCameraFragment.myContext, cacheFile
+                    ) ?: cacheFile
                 }
                 LogUtil.d(TAG, "3. 压缩图片：" + compressionFile.absolutePath)
                 localMedia.compressPath = compressionFile.absolutePath

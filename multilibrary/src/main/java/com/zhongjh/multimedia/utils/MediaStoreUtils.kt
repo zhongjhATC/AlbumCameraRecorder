@@ -330,10 +330,7 @@ object MediaStoreUtils {
                     val exif = ExifInterface(file.path)
                     if (TextUtils.isEmpty(exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL))) {
                         val simpleDateFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.getDefault())
-                        exif.setAttribute(
-                            ExifInterface.TAG_DATETIME_ORIGINAL,
-                            simpleDateFormat.format(System.currentTimeMillis())
-                        )
+                        exif.setAttribute(ExifInterface.TAG_DATETIME_ORIGINAL,simpleDateFormat.format(System.currentTimeMillis()))
                         exif.saveAttributes()
                     }
                 } catch (e: IOException) {
