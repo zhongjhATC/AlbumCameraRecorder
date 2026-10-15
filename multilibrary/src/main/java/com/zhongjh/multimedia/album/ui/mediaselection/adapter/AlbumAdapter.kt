@@ -34,7 +34,7 @@ class AlbumAdapter(
     private val tag: String = this@AlbumAdapter.javaClass.simpleName
 
     private val mAlbumSpec = AlbumSpec
-    private var data: List<LocalMedia> = ArrayList()
+    var data: List<LocalMedia> = ArrayList()
     private var mCheckStateListener: CheckStateListener? = null
     private var mOnMediaClickListener: OnMediaClickListener? = null
     private val mImageResize: Int

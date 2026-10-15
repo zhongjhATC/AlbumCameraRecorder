@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,6 +50,7 @@ import com.zhongjh.common.utils.StatusBarUtils.initStatusBar
 import com.zhongjh.common.utils.request
 import com.zhongjh.imageedit.ImageEditActivity
 import com.zhongjh.multimedia.BaseFragment
+import com.zhongjh.multimedia.BuildConfig
 import com.zhongjh.multimedia.MainActivity
 import com.zhongjh.multimedia.R
 import com.zhongjh.multimedia.album.utils.AlbumCompressFileTask
@@ -98,6 +100,13 @@ class PreviewFragment : BaseFragment() {
 
     companion object {
         const val TAG: String = "PreviewFragment"
+
+        /**
+         * 测试专用静态变量，release版本可以用BuildConfig.DEBUG包裹，打包去掉
+         */
+        @JvmField
+        @Volatile
+        var TEST_LAST_CAPTURE_URI: Uri? = null
     }
 
     private lateinit var mContext: Context
@@ -549,6 +558,10 @@ class PreviewFragment : BaseFragment() {
                         localMedia.width,
                         localMedia.height
                     )
+                    // DEBUG模式才赋值TEST_LAST_CAPTURE_URI
+                    if (BuildConfig.DEBUG) {
+                        TEST_LAST_CAPTURE_URI = uri
+                    }
                     uri?.let {
                         localMedia.absolutePath = localMedia.editorPath as String
                         localMedia.uri = uri.toString()

@@ -263,22 +263,6 @@ public class MainActivity extends BaseActivity {
         mGlobalSetting = MultiMediaSetting.from(MainActivity.this).choose(mimeTypes);
         // 默认从第二个开始
         mGlobalSetting.defaultPosition(1);
-        // 这种是App内自己修改成强制英文
-        if (mBinding.cbEnglish.isChecked()) {
-            Resources resources = getResources();
-            DisplayMetrics dm = resources.getDisplayMetrics();
-            Configuration config = resources.getConfiguration();
-            // 应用用户选择语言
-            config.setLocale(Locale.ENGLISH);
-            resources.updateConfiguration(config, dm);
-        } else {
-            Resources resources = getResources();
-            DisplayMetrics dm = resources.getDisplayMetrics();
-            Configuration config = resources.getConfiguration();
-            // 应用用户选择语言
-            config.setLocale(Locale.getDefault());
-            resources.updateConfiguration(config, dm);
-        }
 
         // 启动过场动画，从下往上动画
         mGlobalSetting.isCutscenes(mBinding.cbIsCutscenes.isChecked());

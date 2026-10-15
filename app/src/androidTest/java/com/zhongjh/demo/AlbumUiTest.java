@@ -521,7 +521,13 @@ public class AlbumUiTest {
         // 默认配置
 //        TestConfigure.defaultTest(this, uiDevice);
         // 测试纯图片功能
-        TestConfigure.imageSupport(this, uiDevice);
+//        TestConfigure.imageSupport(this, uiDevice);
+        // 相册\录制配置只支持视频，测试点击是否拍照
+//        TestConfigure.videoSupport(this, uiDevice);
+        // 验证预览界面的图片编辑后加入相册
+//        TestConfigure.verifyEditedImageAddedToAlbum(this, uiDevice);
+        // 测试编辑图片，拍摄处编辑多个图片,相册处编辑图片
+        TestConfigure.testEditImagesFromCaptureAndAlbum(this, uiDevice);
     }
 
     /**
