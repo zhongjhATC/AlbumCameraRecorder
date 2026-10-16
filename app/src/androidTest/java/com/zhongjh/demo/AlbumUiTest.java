@@ -527,7 +527,7 @@ public class AlbumUiTest {
         // 验证预览界面的图片编辑后加入相册
 //        TestConfigure.verifyEditedImageAddedToAlbum(this, uiDevice);
         // 测试编辑图片，拍摄处编辑多个图片,相册处编辑图片
-        TestConfigure.testEditImagesFromCaptureAndAlbum(this, uiDevice);
+        TestConfigure.testEdit(this, uiDevice);
     }
 
     /**
