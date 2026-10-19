@@ -173,6 +173,7 @@ public class TestConfigure {
         // 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片]
         testEditImagesFromCaptureAndAlbum(albumUiTest,uiDevice);
         // 去掉编辑选项
+        onView(withId(R.id.cbIsAddAlbumByEdit)).perform(scrollTo(), click());
         // 测试 [非编辑]
 
     }
