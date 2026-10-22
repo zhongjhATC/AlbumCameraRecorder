@@ -3,6 +3,7 @@ package com.zhongjh.demo;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -15,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 import android.net.Uri;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -172,10 +172,43 @@ public class TestConfigure {
     public static void testEdit(AlbumUiTest albumUiTest, UiDevice uiDevice) {
         // 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片]
         testEditImagesFromCaptureAndAlbum(albumUiTest,uiDevice);
-        // 去掉编辑选项
+        // 清空
+        onView(allOf(withId(R.id.btnReset),isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        // 去掉编辑选项，测试 [非编辑]
         onView(withId(R.id.cbIsAddAlbumByEdit)).perform(scrollTo(), click());
-        // 测试 [非编辑]
+        // 打开三合一
+        albumUiTest.clickGridViewItem(0);
+        // 等待 三合一界面
+        waitMainActivityReady(uiDevice);
+        // 拍照
+        albumUiTest.clickMainTab(1);
+        for (int i = 0; i < 1; i++) {
+            albumUiTest.takePhoto();
+        }
+        // 点击第一个图片
+        clickCameraItem(0);
+        // 看看预览界面是否有编辑按钮
+        Matcher<View> editBtnMatcher = allOf(withId(com.zhongjh.multimedia.R.id.tvEdit), isDisplayed());
+        onView(editBtnMatcher).check(doesNotExist());
+        // 返回三合一界面
+        uiDevice.pressBack();
 
+        // 选择相册
+        albumUiTest.clickMainTab(0);
+        // 点击相册第二个数据
+        clickAlbumItem(1);
+        // 看看预览界面是否有编辑按钮
+        Matcher<View> editBtnMatcher2 = allOf(withId(com.zhongjh.multimedia.R.id.tvEdit), isDisplayed());
+        onView(editBtnMatcher2).check(doesNotExist());
+        // 返回三合一界面
+        uiDevice.pressBack();
+
+        // 返回配置界面
+        uiDevice.pressBack();
+        // 重新开启编辑选项
+        onView(withId(R.id.cbIsAddAlbumByEdit)).perform(scrollTo(), click());
     }
 
     /**
@@ -323,6 +356,7 @@ public class TestConfigure {
         // 点击绘制
         Matcher<View> rbDoodle2 = allOf(withId(com.zhongjh.imageedit.R.id.rb_doodle),isDisplayed());
         onView(rbDoodle2).check(matches(isDisplayed())).perform(click());
+
         // 随便在屏幕中间画
         int screenW2 = uiDevice.getDisplayWidth();
         int screenH2 = uiDevice.getDisplayHeight();

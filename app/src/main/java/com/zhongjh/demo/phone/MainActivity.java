@@ -8,8 +8,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,14 +19,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.camera.core.AspectRatio;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.Preview;
@@ -120,6 +115,9 @@ public class MainActivity extends BaseActivity {
                 timer.schedule();
             }
         });
+
+        // 清空数据
+        mBinding.btnReset.setOnClickListener(view -> mBinding.gridView.reset());
 
         mBinding.llScreenOrientation.setOnClickListener(v -> showPopupMenu());
 
