@@ -45,7 +45,6 @@ import com.zhongjh.common.utils.DisplayMetricsUtils.dip2px
 import com.zhongjh.common.utils.DisplayMetricsUtils.getScreenHeight
 import com.zhongjh.common.utils.DoubleUtils.isFastDoubleClick
 import com.zhongjh.common.utils.LogUtil
-import com.zhongjh.common.utils.StatusBarUtils.getStatusBarHeight
 import com.zhongjh.common.utils.UriUtils
 import com.zhongjh.common.utils.request
 import com.zhongjh.multimedia.MainActivity
@@ -273,12 +272,16 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 初始化view
      */
     private fun initView() {
-        // 兼容沉倾状态栏
-        val statusBarHeight = getStatusBarHeight(requireActivity())
-        mBinding.root.setPadding(
-            mBinding.root.paddingLeft, statusBarHeight,
-            mBinding.root.paddingRight, mBinding.root.paddingBottom
-        )
+        // 用 setOnApplyWindowInsetsListener 处理状态栏 inset，而不是一次性 getStatusBarHeight()：
+        // 1. ViewCompat.getRootWindowInsets 在 Fragment 视图尚未 layout 时可能返回 0 或陈旧值
+        // 2. 折叠屏内/外屏切换会触发 insets 重派发，listener 能自动再次回调更新 padding
+        mBinding.root.setOnApplyWindowInsetsListener { v, insets ->
+            val statusBarInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+            v.setPadding(v.paddingLeft, statusBarInsets.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
+        // 主动触发一次 insets 派发，确保非折叠场景也能在首次 layout 前拿到值
+        mBinding.root.requestApplyInsets()
         // 修改颜色
         val navigationIcon = mBinding.toolbar.navigationIcon
         val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
