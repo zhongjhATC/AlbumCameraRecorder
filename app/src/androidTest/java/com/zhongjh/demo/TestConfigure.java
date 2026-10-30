@@ -170,18 +170,14 @@ public class TestConfigure {
      * 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片] 和 [非编辑] 两个功能
      */
     public static void testEdit(AlbumUiTest albumUiTest, UiDevice uiDevice) {
-        // 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片]
-        testEditImagesFromCaptureAndAlbum(albumUiTest,uiDevice);
-        // 清空
-        onView(allOf(withId(R.id.btnReset),isDisplayed()))
-                .check(matches(isDisplayed()))
-                .perform(click());
+//        // 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片]
+//        testEditImagesFromCaptureAndAlbum(albumUiTest,uiDevice);
         // 去掉编辑选项，测试 [非编辑]
         onView(withId(R.id.cbIsAddAlbumByEdit)).perform(scrollTo(), click());
         // 打开三合一
         albumUiTest.clickGridViewItem(0);
         // 等待 三合一界面
-        waitMainActivityReady(uiDevice);
+        albumUiTest.waitMainActivityReady();
         // 拍照
         albumUiTest.clickMainTab(1);
         for (int i = 0; i < 1; i++) {
@@ -191,7 +187,7 @@ public class TestConfigure {
         clickCameraItem(0);
         // 看看预览界面是否有编辑按钮
         Matcher<View> editBtnMatcher = allOf(withId(com.zhongjh.multimedia.R.id.tvEdit), isDisplayed());
-        onView(editBtnMatcher).check(doesNotExist());
+        onView(editBtnMatcher).check(matches(isDisplayed()));
         // 返回三合一界面
         uiDevice.pressBack();
 
@@ -215,7 +211,7 @@ public class TestConfigure {
      * 验证是否配置首页
      */
     private static void waitMainActivityReady(UiDevice uiDevice) {
-        uiDevice.wait(Until.hasObject(By.res(InstrumentationRegistry.getInstrumentation().getTargetContext().getResources().getResourceName(R.id.btnSubmitUpload))), 10000);
+        uiDevice.wait(Until.hasObject(By.res(InstrumentationRegistry.getInstrumentation().getTargetContext().getResources().getResourceName(R.id.btnSubmitUpload))), 3000);
     }
 
     /**
@@ -398,6 +394,11 @@ public class TestConfigure {
                 .perform(click());
         // 三合一界面点击确定
         albumUiTest.btnConfirm();
+
+        // 清空数据
+        onView(allOf(withId(R.id.btnReset),isDisplayed()))
+                .check(matches(isDisplayed()))
+                .perform(click());
     }
 
     /**

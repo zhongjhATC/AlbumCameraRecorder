@@ -1003,7 +1003,7 @@ public class AlbumUiTest {
     /**
      * 等待三合一界面(MainActivity)渲染完成。
      */
-    private void waitMainActivityReady() {
+    public void waitMainActivityReady() {
         String res = InstrumentationRegistry.getInstrumentation().getTargetContext()
                 .getResources().getResourceName(com.zhongjh.multimedia.R.id.viewPager);
         uiDevice.wait(Until.hasObject(By.res(res)), 10000);
