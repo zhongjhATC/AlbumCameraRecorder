@@ -273,12 +273,15 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 初始化view
      */
     private fun initView() {
-        // 兼容沉倾状态栏
-        val statusBarHeight = getStatusBarHeight(requireActivity())
-        mBinding.root.setPadding(
-            mBinding.root.paddingLeft, statusBarHeight,
-            mBinding.root.paddingRight, mBinding.root.paddingBottom
-        )
+        // 用 setOnApplyWindowInsetsListener 处理状态栏 inset，而不是一次性 getStatusBarHeight()：
+        // 1. ViewCompat.getRootWindowInsets 在 Fragment 视图尚未 layout 时可能返回 0 或陈旧值
+        // 2. 折叠屏内/外屏切换会触发 insets 重派发，listener 能自动再次回调更新 padding
+        mBinding.root.setOnApplyWindowInsetsListener { v, insets ->
+            val statusBarInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+            v.setPadding(v.paddingLeft, statusBarInsets.top, v.paddingRight, v.paddingBottom)
+            insets
+        }
+        mBinding.root.requestApplyInsets()
         // 修改颜色
         val navigationIcon = mBinding.toolbar.navigationIcon
         val ta = requireActivity().theme.obtainStyledAttributes(intArrayOf(R.attr.album_element_color))
