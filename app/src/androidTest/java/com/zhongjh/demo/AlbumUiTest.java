@@ -525,9 +525,11 @@ public class AlbumUiTest {
         // 相册\录制配置只支持视频，测试点击是否拍照
 //        TestConfigure.videoSupport(this, uiDevice);
         // 验证预览界面的图片编辑后加入相册
-//        TestConfigure.verifyEditedImageAddedToAlbum(this, uiDevice);
-        // 测试编辑图片，拍摄处编辑多个图片,相册处编辑图片
-        TestConfigure.testEdit(this, uiDevice);
+        TestConfigure.verifyEditedImageAddedToAlbum(this, uiDevice);
+        // 测试编辑图片，拍摄处编辑多个图片,相册处编辑图片,验证编辑是否支持画线,验证去掉编辑功能后是否还有"编辑字眼"
+//        TestConfigure.testEdit(this, uiDevice);
+        // 验证压缩图片
+        TestConfigure.testImageCompression(this, uiDevice);
     }
 
     /**

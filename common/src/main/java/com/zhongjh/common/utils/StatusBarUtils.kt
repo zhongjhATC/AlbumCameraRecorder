@@ -65,7 +65,10 @@ object StatusBarUtils {
     fun getStatusBarHeight(activity: Activity): Int {
         val windowInsetsCompat =
             ViewCompat.getRootWindowInsets(activity.findViewById(android.R.id.content)) ?: return 0
-        return windowInsetsCompat.getInsets(WindowInsetsCompat.Type.statusBars()).top
+        // 不用 getInsets(Type.statusBars())——部分定制ROM(vivo OriginOS等)会抛 NoSuchMethodError，
+        // AndroidX 误判平台支持 API 30+ 的 android.graphics.Insets。
+        // 用废弃但全版本兼容的 systemWindowInsetTop 替代。
+        return windowInsetsCompat.systemWindowInsetTop
     }
 
 

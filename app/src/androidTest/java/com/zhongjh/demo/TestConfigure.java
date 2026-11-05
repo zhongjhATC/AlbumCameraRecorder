@@ -6,7 +6,9 @@ import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static com.zhongjh.demo.AlbumUiTest.isInFragment;
@@ -69,7 +71,9 @@ public class TestConfigure {
     public static void imageSupport(AlbumUiTest albumUiTest, UiDevice uiDevice) throws InterruptedException {
         // 只支持图片
         onView(withId(R.id.cbAlbumVideo)).perform(scrollTo(), click());
+        onView(withId(R.id.cbAlbumVideo)).check(matches(isNotChecked()));
         onView(withId(R.id.cbCameraVideo)).perform(scrollTo(), click());
+        onView(withId(R.id.cbCameraVideo)).check(matches(isNotChecked()));
         // 拍照两个
         albumUiTest.clickGridViewItem(0);
         albumUiTest.clickMainTab(1);
@@ -90,7 +94,9 @@ public class TestConfigure {
         waitMainActivityReady(uiDevice);
         // 恢复配置
         onView(withId(R.id.cbAlbumVideo)).perform(scrollTo(), click());
+        onView(withId(R.id.cbAlbumVideo)).check(matches(isChecked()));
         onView(withId(R.id.cbCameraVideo)).perform(scrollTo(), click());
+        onView(withId(R.id.cbCameraVideo)).check(matches(isChecked()));
     }
 
     /**
@@ -99,7 +105,9 @@ public class TestConfigure {
     public static void videoSupport(AlbumUiTest albumUiTest, UiDevice uiDevice) {
         // 只支持视频
         onView(withId(R.id.cbAlbumImage)).perform(scrollTo(), click());
+        onView(withId(R.id.cbAlbumImage)).check(matches(isNotChecked()));
         onView(withId(R.id.cbCameraImage)).perform(scrollTo(), click());
+        onView(withId(R.id.cbCameraImage)).check(matches(isNotChecked()));
         // 测试点击是否拍照
         albumUiTest.clickGridViewItem(0);
         albumUiTest.clickMainTab(1);
@@ -108,7 +116,9 @@ public class TestConfigure {
         waitMainActivityReady(uiDevice);
         // 恢复配置
         onView(withId(R.id.cbAlbumImage)).perform(scrollTo(), click());
+        onView(withId(R.id.cbAlbumImage)).check(matches(isChecked()));
         onView(withId(R.id.cbCameraImage)).perform(scrollTo(), click());
+        onView(withId(R.id.cbCameraImage)).check(matches(isChecked()));
     }
 
     public static void verifyEditedImageAddedToAlbum(AlbumUiTest albumUiTest, UiDevice uiDevice) {
@@ -170,15 +180,17 @@ public class TestConfigure {
      * 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片] 和 [非编辑] 两个功能
      */
     public static void testEdit(AlbumUiTest albumUiTest, UiDevice uiDevice) {
-//        // 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片]
-//        testEditImagesFromCaptureAndAlbum(albumUiTest,uiDevice);
+        // 测试 [编辑图片，拍摄处编辑多个图片,相册处编辑图片]
+        testEditImagesFromCaptureAndAlbum(albumUiTest, uiDevice);
         // 去掉编辑选项，测试 [非编辑]
-        onView(withId(R.id.cbIsAddAlbumByEdit)).perform(scrollTo(), click());
+        onView(withId(R.id.cbIsEdit)).perform(scrollTo(), click());
+        onView(withId(R.id.cbIsEdit)).check(matches(isNotChecked()));
+
         // 打开三合一
         albumUiTest.clickGridViewItem(0);
         // 等待 三合一界面
         albumUiTest.waitMainActivityReady();
-        // 拍照
+        // 选择拍照
         albumUiTest.clickMainTab(1);
         for (int i = 0; i < 1; i++) {
             albumUiTest.takePhoto();
@@ -187,10 +199,17 @@ public class TestConfigure {
         clickCameraItem(0);
         // 看看预览界面是否有编辑按钮
         Matcher<View> editBtnMatcher = allOf(withId(com.zhongjh.multimedia.R.id.tvEdit), isDisplayed());
-        onView(editBtnMatcher).check(matches(isDisplayed()));
+        onView(editBtnMatcher).check(doesNotExist());
         // 返回三合一界面
         uiDevice.pressBack();
+        // 返回配置界面
+        uiDevice.pressBack();
+        uiDevice.pressBack();
 
+        // 打开三合一
+        albumUiTest.clickGridViewItem(0);
+        // 等待 三合一界面
+        albumUiTest.waitMainActivityReady();
         // 选择相册
         albumUiTest.clickMainTab(0);
         // 点击相册第二个数据
@@ -198,13 +217,24 @@ public class TestConfigure {
         // 看看预览界面是否有编辑按钮
         Matcher<View> editBtnMatcher2 = allOf(withId(com.zhongjh.multimedia.R.id.tvEdit), isDisplayed());
         onView(editBtnMatcher2).check(doesNotExist());
+
         // 返回三合一界面
         uiDevice.pressBack();
-
         // 返回配置界面
         uiDevice.pressBack();
         // 重新开启编辑选项
-        onView(withId(R.id.cbIsAddAlbumByEdit)).perform(scrollTo(), click());
+        onView(withId(R.id.cbIsEdit)).perform(scrollTo(), click());
+        onView(withId(R.id.cbIsEdit)).check(matches(isChecked()));
+    }
+
+    /**
+     * 测试压缩图片，同时验证拍摄、相册选择的图片。最终在九宫列表查看数据是否有压缩图片地址即可
+     */
+    public static void testImageCompression(AlbumUiTest albumUiTest, UiDevice uiDevice) {
+        // 测试 相册界面的图片
+        albumUiTest.clickGridViewItem(0);
+        albumUiTest.clickMainTab(0);
+        clickAlbumItem(1);
     }
 
     /**

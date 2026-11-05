@@ -272,12 +272,14 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
      * 初始化view
      */
     private fun initView() {
-        // 用 setOnApplyWindowInsetsListener 处理状态栏 inset，而不是一次性 getStatusBarHeight()：
+        // 用 setOnApplyWindowInsetsListener 处理状态栏 inset，
+        // 而不是一次性 getStatusBarHeight()：
         // 1. ViewCompat.getRootWindowInsets 在 Fragment 视图尚未 layout 时可能返回 0 或陈旧值
         // 2. 折叠屏内/外屏切换会触发 insets 重派发，listener 能自动再次回调更新 padding
+        // 3. 取高度不用 getInsets(Type.statusBars())——它在部分定制ROM(如vivo OriginOS)上会抛
+        //    NoSuchMethodError，因为 AndroidX 误判平台支持 API 30+ 的 android.graphics.Insets
         mBinding.root.setOnApplyWindowInsetsListener { v, insets ->
-            val statusBarInsets = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())
-            v.setPadding(v.paddingLeft, statusBarInsets.top, v.paddingRight, v.paddingBottom)
+            v.setPadding(v.paddingLeft, insets.systemWindowInsetTop, v.paddingRight, v.paddingBottom)
             insets
         }
         // 主动触发一次 insets 派发，确保非折叠场景也能在首次 layout 前拿到值
