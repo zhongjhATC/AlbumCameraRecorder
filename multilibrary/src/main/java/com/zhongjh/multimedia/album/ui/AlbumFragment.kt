@@ -455,6 +455,8 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
             mSelectedModel.clearAllData()
             mMainModel.reloadPageMediaData(targetAlbum.id, mAlbumSpec.pageSize)
             mBinding.tvAlbumTitle.text = targetAlbum.name
+            // 更新专辑
+            mAlbum = targetAlbum
         }
         // 选择数据改变
         LifecycleFlowCollector.collect(this, mSelectedModel.selectedDataChangeEvent) { event ->
@@ -549,7 +551,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         if (mIsShowDialog)
             return
         // 判断权限，权限通过才可以初始化相关
-        if (permissions.size > 0) {
+        if (permissions.isNotEmpty()) {
             // 动态消息
             val message = StringBuilder()
             message.append(getString(R.string.z_multi_library_to_use_this_feature))
@@ -721,7 +723,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
     }
 
     /**
-     * 更新专辑标题
+     * 更新专辑数据源
      *
      * @param albums 专辑列表
      */
