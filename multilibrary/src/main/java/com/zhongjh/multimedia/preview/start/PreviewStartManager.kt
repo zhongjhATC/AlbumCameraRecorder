@@ -52,7 +52,7 @@ object PreviewStartManager {
     @JvmStatic
     fun startPreviewFragmentByAlbum(mainActivity: MainActivity, isDisplayCamera: Boolean) {
         // 隐藏底部控件
-        mainActivity.showHideTableLayoutAnimator(false)
+         mainActivity.showHideTableLayoutAnimator(false)
         val fragment: Fragment = PreviewFragment()
         val bundle = Bundle()
         // 支持所有功能

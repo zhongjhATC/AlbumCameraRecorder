@@ -408,7 +408,10 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         } else {
             ta.recycle()
         }
-        mMediaViewUtil = MediaViewUtil(this.mApplicationContext, this, mMainModel, mSelectedModel, mBinding.recyclerview, placeholder, this, this)
+        mMediaViewUtil = MediaViewUtil(
+            this.mApplicationContext, this, mMainModel, mSelectedModel,
+            mBinding.recyclerview, isDisplayCamera(), placeholder, this, this,
+        )
     }
 
     /**
@@ -453,7 +456,7 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
         LifecycleFlowCollector.collect(this, mMainModel.albumChangeEvent) { targetAlbum ->
             LogUtil.d("AlbumFragmentFlow", "mMainModel.albumChangeEvent")
             mSelectedModel.clearAllData()
-            mMainModel.reloadPageMediaData(targetAlbum.id, mAlbumSpec.pageSize)
+            mMainModel.reloadPageMediaData(targetAlbum.id, mAlbumSpec.pageSize, isDisplayCamera())
             mBinding.tvAlbumTitle.text = targetAlbum.name
             // 更新专辑
             mAlbum = targetAlbum
@@ -530,11 +533,11 @@ class AlbumFragment : Fragment(), AlbumAdapter.CheckStateListener, AlbumAdapter.
                     if (realFilePath.isNotEmpty() && File(realFilePath).exists()) {
                         // 存在真实路径，走媒体扫描
                         MediaScannerConnection.scanFile(mApplicationContext, arrayOf(realFilePath), null) { _, _ ->
-                            mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize)
+                            mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize, isDisplayCamera())
                         }
                     } else {
                         // Android10+ 拿不到真实路径兜底：不扫描，直接刷新（可适当delay）
-                        mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize)
+                        mMainModel.reloadPageMediaData(ALBUM_ID_ALL, mAlbumSpec.pageSize, isDisplayCamera())
                     }
                 }
             }

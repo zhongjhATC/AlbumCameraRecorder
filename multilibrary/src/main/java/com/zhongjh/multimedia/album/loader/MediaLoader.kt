@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.TextUtils
-import android.util.Log
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.enums.MimeType
 import com.zhongjh.common.enums.MimeType.Companion.isAudio
@@ -147,8 +146,9 @@ class MediaLoader(private val context: Context) {
      * @param bucketId 专辑id
      * @param page 页码
      * @param pageSize 页数
+     * @param isDisplayCamera 是否开启了显示拍摄,如果开启了则position+1
      */
-    fun loadMediaMore(bucketId: Long, page: Int, pageSize: Int): MutableList<LocalMedia> {
+    fun loadMediaMore(bucketId: Long, page: Int, pageSize: Int, isDisplayCamera: Boolean): MutableList<LocalMedia> {
         val context = contextRef.get() ?: return mutableListOf()
         val mediaList = mutableListOf<LocalMedia>()
             val selectionArgs = if (bucketId == ALL_BUCKET_ID) {
@@ -166,6 +166,9 @@ class MediaLoader(private val context: Context) {
                             val media = parse(cursor)
                             // 当前位置 = (当前页 - 1)* 每页数量 + 当前列表数量
                             media.position = (page - 1) * pageSize + mediaList.size
+                            if (isDisplayCamera) {
+                                media.position += 1
+                            }
                             mediaList += media
                         }
                     }
@@ -180,6 +183,9 @@ class MediaLoader(private val context: Context) {
                             val media = parse(cursor)
                             // 当前位置 = (当前页 - 1)* 每页数量 + 当前列表数量
                             media.position = (page - 1) * pageSize + mediaList.size
+                            if (isDisplayCamera) {
+                                media.position += 1
+                            }
                             mediaList += media
                         }
                     }

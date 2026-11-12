@@ -38,7 +38,8 @@ import com.zhongjh.multimedia.utils.LifecycleFlowCollector
  */
 class MediaViewUtil(
     private val context: Context, private val owner: LifecycleOwner, private val mainModel: MainModel, private val selectedModel: SelectedModel,
-    private val recyclerView: RecyclerLoadMoreView, private val placeholder: Drawable?,
+    private val recyclerView: RecyclerLoadMoreView, private val isDisplayCamera: Boolean,
+    private val placeholder: Drawable?,
     private var checkStateListener: AlbumAdapter.CheckStateListener?, private var onMediaClickListener: AlbumAdapter.OnMediaClickListener?
 ) : AlbumAdapter.CheckStateListener, AlbumAdapter.OnMediaClickListener {
 
@@ -82,7 +83,7 @@ class MediaViewUtil(
         setupLongPressSlideSelection()
 
         // 加载更多事件
-        recyclerView.setOnRecyclerViewLoadMoreListener { mainModel.addAllPageMediaData(mAlbum.id, mAlbumSpec.pageSize) }
+        recyclerView.setOnRecyclerViewLoadMoreListener { mainModel.addAllPageMediaData(mAlbum.id, mAlbumSpec.pageSize, isDisplayCamera) }
 
         // 滑动事件
         recyclerView.setOnRecyclerViewScrollStateListener(object : OnRecyclerViewScrollStateListener {
@@ -138,7 +139,7 @@ class MediaViewUtil(
      */
     fun load(album: Album) {
         mAlbum = album
-        mainModel.reloadPageMediaData(mAlbum.id, mAlbumSpec.pageSize)
+        mainModel.reloadPageMediaData(mAlbum.id, mAlbumSpec.pageSize, isDisplayCamera)
     }
 
     /**

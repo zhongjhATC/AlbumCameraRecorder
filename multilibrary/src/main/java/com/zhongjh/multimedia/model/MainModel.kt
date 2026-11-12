@@ -140,12 +140,13 @@ class MainModel(application: Application) : AndroidViewModel(application) {
      *
      * @param bucketId 专辑id，-1是全部
      * @param pageSize 每页数量
+     * @param isDisplayCamera 是否开启了显示拍摄,如果开启了则position+1
      */
-    fun reloadPageMediaData(bucketId: Long, pageSize: Int) {
+    fun reloadPageMediaData(bucketId: Long, pageSize: Int, isDisplayCamera: Boolean) {
         viewModelScope.launch {
             try {
                 // 从 Repository 获取第一页数据
-                val newMedias = mediaRepository.loadMediaPage(bucketId, page = 1, pageSize).first()
+                val newMedias = mediaRepository.loadMediaPage(bucketId, page = 1, pageSize, isDisplayCamera).first()
                 // 计算数据差异（IO 线程执行耗时操作）
                 val diffResult = withContext(Dispatchers.IO) {
                     DiffUtil.calculateDiff(LocalMediaCallback(this@MainModel.localMedias, newMedias))
@@ -180,13 +181,14 @@ class MainModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * 加载更多媒体数据（分页加载）
+     * @param isDisplayCamera 是否开启了显示拍摄,如果开启了则position+1
      */
-    fun addAllPageMediaData(bucketId: Long, pageSize: Int) {
+    fun addAllPageMediaData(bucketId: Long, pageSize: Int, isDisplayCamera: Boolean) {
         viewModelScope.launch {
             try {
                 // 页码自增
                 page += 1
-                val newMedias = mediaRepository.loadMediaPage(bucketId, page, pageSize).first()
+                val newMedias = mediaRepository.loadMediaPage(bucketId, page, pageSize, isDisplayCamera).first()
 
                 if (newMedias.isNotEmpty()) {
                     // 更新缓存（保留原逻辑）

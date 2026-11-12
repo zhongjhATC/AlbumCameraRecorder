@@ -1,6 +1,5 @@
 package com.zhongjh.multimedia.album.repository
 
-import android.util.Log
 import com.zhongjh.common.entity.LocalMedia
 import com.zhongjh.common.utils.LogUtil
 import com.zhongjh.multimedia.album.entity.Album
@@ -17,9 +16,10 @@ import kotlinx.coroutines.flow.flowOn
 class MediaRepository(private val mediaLoader: MediaLoader) {
     /**
      * 分页加载媒体数据（返回 Flow，支持响应式数据流）
+     * @param isDisplayCamera 是否开启了显示拍摄,如果开启了则position+1
      */
-    fun loadMediaPage(bucketId: Long, page: Int, pageSize: Int): Flow<List<LocalMedia>> = flow {
-        emit(mediaLoader.loadMediaMore(bucketId, page, pageSize))
+    fun loadMediaPage(bucketId: Long, page: Int, pageSize: Int, isDisplayCamera: Boolean): Flow<List<LocalMedia>> = flow {
+        emit(mediaLoader.loadMediaMore(bucketId, page, pageSize, isDisplayCamera))
     }.catch { e ->
         // 统一错误处理
         emit(emptyList<LocalMedia>().toMutableList())
