@@ -44,7 +44,7 @@ allprojects {
 
 ext {
 
-    versionCode = 2032
+    versionCode = 2033
     versionName = '2.0.29'
 
     androidCompileSdkVersion = 34
